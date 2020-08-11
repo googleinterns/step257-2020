@@ -1,0 +1,13 @@
+target/
+bin/
+.vscode/
+.project/
+.settings/
+.idea
+.classpath
+.factorypath
+.project
+
+# angular related
+node_modules/
+dist/
