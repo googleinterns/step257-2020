@@ -1,0 +1,17 @@
+.board {
+  padding: 10px;
+  display: flex;
+  /* grid-template: repeat(5, 205px) / repeat(8, 155px); */
+  width: 1000px;
+  height: 700px;
+  overflow: scroll;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.note {
+  width: 150px;
+  height: 200px;
+  background-color: aqua;
+  position: relative;
+}
