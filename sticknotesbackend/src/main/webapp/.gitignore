@@ -1,0 +1,7 @@
+# ignore all files in this directory because they are output of angular ng build
+# and we don't want it to appear in the repository
+*.html
+*.js
+*.map
+*.ico
+*.css
