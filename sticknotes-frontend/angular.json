@@ -123,5 +123,8 @@
       }
     }
   },
-  "defaultProject": "sticknotes-frontend"
+  "defaultProject": "sticknotes-frontend",
+  "cli": {
+    "analytics": false
+  }
 }
