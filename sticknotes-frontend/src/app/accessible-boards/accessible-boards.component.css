@@ -1,9 +1,16 @@
-mat-grid-tile {
-  background: lightblue;
-}
 mat-grid-list {
-  margin: 20px;
   width: 70vw;
+}
+
+mat-card {
+  height: calc(20vw - 20px);
+  width: 100%;
+}
+
+mat-icon {
+  font-size: 5vw;
+  width: 5vw;
+  height: 5vw;
 }
 
 .accessible-board-container {
