@@ -1,17 +1,33 @@
-.board {
+.board-wrapper {
   padding: 10px;
-  display: flex;
-  /* grid-template: repeat(5, 205px) / repeat(8, 155px); */
-  width: 1000px;
-  height: 700px;
-  overflow: scroll;
   border: 1px solid black;
   border-radius: 5px;
+  width: 900px;
+  height: 800px;
 }
 
-.note {
-  width: 150px;
+.board {
+  overflow: scroll;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+.mat-card-wrapper {
   height: 200px;
-  background-color: aqua;
-  position: relative;
+  width: 150px;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mat-card {
+  height: 194px;
+  width: 144px;
+  padding: 0px;
+}
+
+.drag-handle {
+  cursor: move;
 }

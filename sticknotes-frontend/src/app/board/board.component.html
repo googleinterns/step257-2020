@@ -1,4 +1,13 @@
-<div class="board">
-  <div cdkDrag class="note">a</div>
-
+<h3>{{boardTitle}}</h3>
+<div class="board-wrapper">
+  <div class="board">
+    <div *ngFor="let note of notes; let i = index">
+      <div (cdkDragEnded)="onNoteDrop($event, note)" cdkDrag class="mat-card-wrapper"
+        [style]="'left:'+note.x + 'px;top:' + note.y + 'px'">
+        <mat-card>
+          <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+        </mat-card>
+      </div>
+    </div>
+  </div>
 </div>
