@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note } from '../interfaces';
+import { Note, Board } from '../interfaces';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-board',
@@ -10,49 +11,41 @@ import { Note } from '../interfaces';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit {
+  public board: Board;
+  public readonly NOTE_WIDTH = 200;
+  public readonly NOTE_HEIGHT = 250;
 
-  public notes: Note[] = [];
-  public boardTitle = 'Notesboard';
-  public readonly BOARD_WIDTH = 6;
-  public readonly BOARD_HEIGHT = 4;
-  constructor() { }
-
-  ngOnInit(): void {
-    // generate mock notes
-    for (let i = 0; i < 5; ++i) {
-      this.notes.push({ 
-        x: this.getRandomInt(6) * 150,
-        y: this.getRandomInt(4) * 200,
-        translateX: 0,
-        translateY: 0
-      });
-    }
+  constructor(private apiService: ApiService) {
+    // load board
+    this.apiService.getBoard('boardKey').subscribe(board => { 
+      this.board = board;
+    });
   }
 
-  // returns a random int in the range [0, max)
-  private getRandomInt(max: number) {
-    return Math.floor(Math.random() * Math.floor(max));
+  ngOnInit(): void {
+
   }
 
   // moves a note to a proper position after it was released
   public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note) {
     const elementRef = cdkDragEnd.source.element.nativeElement;
     const curTranslate = getTranslateValues(elementRef);
-    note.translateX = curTranslate.x;
-    note.translateY = curTranslate.y;
-    const x = note.x + note.translateX;
-    const y = note.y + note.translateY;
+    const x = note.x + curTranslate.x;
+    const y = note.y + curTranslate.y;
+    // update position temprarily so that it is not excluded from vectors list
+    note.x = x;
+    note.y = y;
     const vectors = [];
     // get the list of all possibly correct positions of the note
-    for (let i = 0; i < this.BOARD_WIDTH; ++i) {
-      for (let j = 0; j < this.BOARD_HEIGHT; ++j) {
-        vectors.push(new Vector2(i * 150, j * 200));
+    for (let i = 0; i < this.board.rows; ++i) {
+      for (let j = 0; j < this.board.cols; ++j) {
+        vectors.push(new Vector2(i * this.NOTE_WIDTH, j * this.NOTE_HEIGHT));
       }
     }
     // exclude already taken positions
     const epsilon = 1;
-    this.notes.forEach(note => {
-      const notePosition = new Vector2(note.x + note.translateX, note.y + note.translateY);
+    this.board.notes.forEach(note => {
+      const notePosition = new Vector2(note.x, note.y);
       // allow some margin of error, so distance shouldn't be exactly equal
       const taken = vectors.find((v: Vector2) => v.distanceTo(notePosition) <= epsilon);
       if (taken) {
@@ -70,9 +63,9 @@ export class BoardComponent implements OnInit {
       }
     }
     // apply new transformation
-    note.translateX += (minDistanceVector.x - x);
-    note.translateY += (minDistanceVector.y - y);
-    const transform = `translate3d(${note.translateX}px, ${note.translateY}px, 0)`;
-    elementRef.style.transform = transform;
+    note.x = minDistanceVector.x;
+    note.y = minDistanceVector.y;
+    cdkDragEnd.source._dragRef.reset();
+    elementRef.style.transform = '';
   }
 }

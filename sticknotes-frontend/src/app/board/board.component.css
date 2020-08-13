@@ -1,21 +1,21 @@
 .board-wrapper {
-  padding: 10px;
   border: 1px solid black;
   border-radius: 5px;
-  width: 900px;
-  height: 800px;
-}
-
-.board {
+  width: 1000px;
+  height: 700px;
   overflow: scroll;
-  height: 100%;
-  width: 100%;
   position: absolute;
 }
 
+.board {
+  position: absolute;
+  background-color:  #f2f2f2;
+  border-radius: 5px;
+}
+
 .mat-card-wrapper {
-  height: 200px;
-  width: 150px;
+  height: 250px;
+  width: 200px;
   position: absolute;
   display: flex;
   justify-content: center;
@@ -23,11 +23,22 @@
 }
 
 .mat-card {
-  height: 194px;
-  width: 144px;
+  height: 244px;
+  width: 194px;
   padding: 0px;
 }
 
 .drag-handle {
   cursor: move;
 }
+
+.mat-card-content {
+  padding: 0px 0px 0px 5px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+

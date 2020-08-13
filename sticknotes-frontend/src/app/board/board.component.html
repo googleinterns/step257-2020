@@ -1,11 +1,18 @@
-<h3>{{boardTitle}}</h3>
+<h3>{{board.title}}</h3>
 <div class="board-wrapper">
-  <div class="board">
-    <div *ngFor="let note of notes; let i = index">
+  <div class="board" [style]="'width:' + NOTE_WIDTH * board.rows + 'px;height:' + NOTE_HEIGHT * board.cols + 'px'">
+    <div *ngFor="let note of board.notes; let i = index">
       <div (cdkDragEnded)="onNoteDrop($event, note)" cdkDrag class="mat-card-wrapper"
         [style]="'left:'+note.x + 'px;top:' + note.y + 'px'">
-        <mat-card>
-          <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+        <mat-card [style]="'background-color:' + note.color">
+          <mat-card-content>
+            <div class="card-header">
+              <p>{{note.creator}}</p>
+              <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+            </div>
+            <p>{{note.content}}</p>
+            <p>{{note.creationDate}}</p>
+          </mat-card-content>
         </mat-card>
       </div>
     </div>
