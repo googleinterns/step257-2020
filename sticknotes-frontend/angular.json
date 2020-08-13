@@ -125,6 +125,6 @@
   },
   "defaultProject": "sticknotes-frontend",
   "cli": {
-    "analytics": "88095907-1c34-4aeb-b808-670003bcc879"
+    "analytics": false
   }
 }
