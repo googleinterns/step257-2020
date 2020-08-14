@@ -24,8 +24,7 @@ import { BoardContainerComponent } from './board-container/board-container.compo
     BrowserModule,
     AppRoutingModule,
     MatSidenavModule,
-    MatIconModule,
-    MatButtonModule,  
+    MatIconModule,  
     BrowserAnimationsModule,
     MatButtonModule,
     MatGridListModule
