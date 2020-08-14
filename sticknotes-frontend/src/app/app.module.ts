@@ -5,6 +5,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LoginPageComponent } from './login-page/login-page.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,6 +16,7 @@ import { BoardContainerComponent } from './board-container/board-container.compo
 @NgModule({
   declarations: [
     AppComponent,
+    LoginPageComponent,
     BoardContainerComponent,
     AccessibleBoardsComponent
   ],
@@ -22,9 +24,9 @@ import { BoardContainerComponent } from './board-container/board-container.compo
     BrowserModule,
     AppRoutingModule,
     MatSidenavModule,
-    MatIconModule,
-    MatButtonModule,  
+    MatIconModule,  
     BrowserAnimationsModule,
+    MatButtonModule,
     MatGridListModule
   ],
   providers: [],
