@@ -1,8 +1,0 @@
-mat-card {
-  margin-top: 16px;
-}
-mat-card-content {
-  height: 600px;
-  width: 250px;
-  overflow: scroll;
-}
