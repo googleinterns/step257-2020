@@ -10,62 +10,97 @@ import { ApiService } from '../services/api.service';
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent {
+  private boardGrid: number[][] = [];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
 
   constructor(private apiService: ApiService) {
     // load board
-    this.apiService.getBoard('boardKey').subscribe(board => { 
+    this.apiService.getBoard('boardKey').subscribe(board => {
       this.board = board;
+      for (let i = 0; i < board.rows; ++i) {
+        this.boardGrid[i] = [];
+        for (let j = 0; j < board.cols; ++j) {
+          this.boardGrid[i][j] = 0;
+        }
+      }
+      this.updateBoardAbstractGrid();
     });
-  }
-
-  ngOnInit(): void {
-
   }
 
   // moves a note to a proper position after it was released
   public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note) {
     const elementRef = cdkDragEnd.source.element.nativeElement;
     const curTranslate = getTranslateValues(elementRef);
-    const x = note.x + curTranslate.x;
-    const y = note.y + curTranslate.y;
-    // update position temprarily so that it is not excluded from vectors list
-    note.x = x;
-    note.y = y;
-    const vectors = [];
-    // get the list of all possibly correct positions of the note
-    for (let i = 0; i < this.board.rows; ++i) {
-      for (let j = 0; j < this.board.cols; ++j) {
-        vectors.push(new Vector2(i * this.NOTE_WIDTH, j * this.NOTE_HEIGHT));
-      }
-    }
-    // exclude already taken positions
-    const epsilon = 1;
-    this.board.notes.forEach(note => {
-      const notePosition = new Vector2(note.x, note.y);
-      // allow some margin of error, so distance shouldn't be exactly equal
-      const taken = vectors.find((v: Vector2) => v.distanceTo(notePosition) <= epsilon);
-      if (taken) {
-        const indexOfTaken = vectors.indexOf(taken);
-        vectors.splice(indexOfTaken, 1);
-      }
-    });
-    // find the shortest vector which is going to be the closest correct note position
-    let minDistanceVector = vectors[0];
-    const curDragPos = new Vector2(x, y);
-    for (const v of vectors) {
-      // calculate distance to the point, find the vector with the minimal distance to the point
-      if (curDragPos.distanceTo(v) < curDragPos.distanceTo(minDistanceVector)) {
-        minDistanceVector = v;
-      }
-    }
+    // free currently taken note position
+    this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
+    // get closest free point
+    const closestPoint = this.getClosestFreeSlot(note, note.x + curTranslate.x, note.y + curTranslate.y);
+    // set the new position of the note on the board
+    this.boardGrid[closestPoint.y][closestPoint.x] = 1;
     // apply new transformation
-    note.x = minDistanceVector.x;
-    note.y = minDistanceVector.y;
+    note.x = closestPoint.x * this.NOTE_WIDTH;
+    note.y = closestPoint.y * this.NOTE_HEIGHT;
     cdkDragEnd.source._dragRef.reset();
     elementRef.style.transform = '';
+  }
+
+  // updates boardGrid with the positions of notes
+  public updateBoardAbstractGrid(): void {
+    this.board.notes.forEach(note => {
+      const i = Math.floor(note.y / this.NOTE_HEIGHT);
+      const j = Math.floor(note.x / this.NOTE_WIDTH);
+      this.boardGrid[i][j] = 1;
+    });
+  }
+
+  // returns the closes available position to the given x and y
+  public getClosestFreeSlot(note: Note, x: number, y: number): Vector2 {
+    // get the closest cells indices
+    const closePoints = [];
+    closePoints.push(new Vector2(Math.floor(x / this.NOTE_WIDTH) * this.NOTE_WIDTH, Math.floor(y / this.NOTE_HEIGHT) * this.NOTE_HEIGHT));
+    closePoints.push(new Vector2((Math.floor(x / this.NOTE_WIDTH) + 1) * this.NOTE_WIDTH, Math.floor(y / this.NOTE_HEIGHT) * this.NOTE_HEIGHT));
+    closePoints.push(new Vector2((Math.floor(x / this.NOTE_WIDTH) + 1) * this.NOTE_WIDTH, (Math.floor(y / this.NOTE_HEIGHT) + 1) * this.NOTE_HEIGHT));
+    closePoints.push(new Vector2(Math.floor(x / this.NOTE_WIDTH) * this.NOTE_WIDTH, (Math.floor(y / this.NOTE_HEIGHT) + 1) * this.NOTE_HEIGHT));
+    let closestPoint = closePoints[0];
+    const curentPosition = new Vector2(x, y);
+    // find the closest one
+    for (const p of closePoints) {
+      if (p.distanceTo(curentPosition) < closestPoint.distanceTo(curentPosition)) {
+        closestPoint = p;
+      }
+    }
+    // now start BFS from this point to find closest free cell
+    const queue = [];
+    const used = new Set<Vector2>();
+    const adjacents = [];
+    // direct border
+    adjacents.push(new Vector2(-1, 0));
+    adjacents.push(new Vector2(0, -1));
+    adjacents.push(new Vector2(0, 1));
+    adjacents.push(new Vector2(1, 0));
+    // corner border
+    adjacents.push(new Vector2(-1, 1));
+    adjacents.push(new Vector2(-1, -1));
+    adjacents.push(new Vector2(1, 1));
+    adjacents.push(new Vector2(1, -1));
+
+    queue.push(new Vector2(closestPoint.x / this.NOTE_WIDTH, closestPoint.y / this.NOTE_HEIGHT));
+    while (queue.length) {
+      const v = queue.shift();
+      // check if point is free, return it
+      if (this.boardGrid[v.y][v.x] === 0) {
+        return v;
+      }
+      used.add(v);
+      for (const adj of adjacents) {
+        const p = adj.add(v);
+        if (p.x >= 0 && p.x < this.board.cols && p.y >= 0 && p.y < this.board.rows && this.boardGrid[p.y][p.x] === 0 && !used.has(p)) {
+          queue.push(p);
+        }
+      }
+    }
   }
 }

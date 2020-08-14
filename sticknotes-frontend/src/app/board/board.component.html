@@ -1,8 +1,8 @@
 <h3>{{board.title}}</h3>
 <div class="board-wrapper">
-  <div class="board" [style]="'width:' + NOTE_WIDTH * board.rows + 'px;height:' + NOTE_HEIGHT * board.cols + 'px'">
+  <div class="board" [style]="'width:' + NOTE_WIDTH * board.cols + 'px;height:' + NOTE_HEIGHT * board.rows + 'px'">
     <div *ngFor="let note of board.notes; let i = index">
-      <div (cdkDragEnded)="onNoteDrop($event, note)" cdkDrag class="mat-card-wrapper"
+      <div cdkDragBoundary=".board" (cdkDragEnded)="onNoteDrop($event, note)" cdkDrag class="mat-card-wrapper"
         [style]="'left:'+note.x + 'px;top:' + note.y + 'px'">
         <mat-card [style]="'background-color:' + note.color">
           <mat-card-content>

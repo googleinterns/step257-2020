@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Board, Note, User, UserBoardRole } from '../interfaces';
+import { Board, Note, User } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -63,8 +63,8 @@ export class ApiService {
       key: boardKey,
       notes: notes,
       title: 'Board title',
-      rows: 6,
-      cols: 4,
+      rows: 4,
+      cols: 6,
       creator: creator,
       users: [],
       backgroundImg: null,
