@@ -3,11 +3,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { NewBoardComponent } from '../new-board/new-board.component';
 
 @Component({
-  selector: 'app-accessible-boards',
-  templateUrl: './accessible-boards.component.html',
-  styleUrls: ['./accessible-boards.component.css']
+  selector: 'app-boards-list',
+  templateUrl: './boards-list.component.html',
+  styleUrls: ['./boards-list.component.css']
 })
-export class AccessibleBoardsComponent implements OnInit {
+export class BoardsListComponent implements OnInit {
 
   constructor(private dialog: MatDialog) { }
 
