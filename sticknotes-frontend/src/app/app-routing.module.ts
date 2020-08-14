@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { LoginPageComponent } from './login-page/login-page.component'
 import { BoardContainerComponent } from './board-container/board-container.component';
-import { AccessibleBoardsComponent } from './accessible-boards/accessible-boards.component';
+import { BoardsListComponent } from './boards-list/boards-list.component';
 
 const routes: Routes = [
   {
@@ -11,8 +11,8 @@ const routes: Routes = [
     component: BoardContainerComponent
   },
   {
-    path: 'accessibleBoards',
-    component: AccessibleBoardsComponent
+    path: 'boards',
+    component: BoardsListComponent,
   },
   { 
     path: 'login-page', 

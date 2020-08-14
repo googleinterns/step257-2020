@@ -10,17 +10,17 @@ import { LoginPageComponent } from './login-page/login-page.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { AccessibleBoardsComponent } from './accessible-boards/accessible-boards.component';
 import { ElevateOnHoverDirective } from './directives/elevate-on-hover.directive';
 import { BoardContainerComponent } from './board-container/board-container.component';
+import { BoardsListComponent } from './boards-list/boards-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AccessibleBoardsComponent,
     ElevateOnHoverDirective,
     LoginPageComponent,
     BoardContainerComponent,
+    BoardsListComponent,
   ],
   imports: [
     BrowserModule,
