@@ -1,9 +1,22 @@
-mat-grid-tile {
-  background: lightblue;
-}
 mat-grid-list {
-  margin: 20px;
   width: 70vw;
+  max-height: 80vh;
+}
+
+mat-grid-tile {
+  max-height: 40vh;
+}
+
+mat-card {
+  height: calc(20vw - 20px);
+  width: 100%;
+  max-height: 40vh;
+}
+
+mat-icon {
+  font-size: 5vw;
+  width: 5vw;
+  height: 5vw;
 }
 
 .accessible-board-container {
@@ -11,6 +24,7 @@ mat-grid-list {
   flex-direction: column;
   align-items: center;
   height: 100vh;
+  margin-bottom: 50px;
 }
 
 .accessible-board-container h1{

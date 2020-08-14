@@ -11,7 +11,7 @@ const routes: Routes = [
     component: BoardContainerComponent
   },
   {
-    path: 'accessibleBoards/:id',
+    path: 'accessibleBoards',
     component: AccessibleBoardsComponent
   },
   { 
