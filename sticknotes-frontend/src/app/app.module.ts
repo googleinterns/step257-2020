@@ -1,8 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,16 +10,15 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AccessibleBoardsComponent } from './accessible-boards/accessible-boards.component';
-import { ElevateOnHoverDirective } from './directives/elevate-on-hover.directive';
 import { BoardContainerComponent } from './board-container/board-container.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    AccessibleBoardsComponent,
-    ElevateOnHoverDirective
     LoginPageComponent,
     BoardContainerComponent,
+    AccessibleBoardsComponent
   ],
   imports: [
     BrowserModule,
@@ -29,10 +26,8 @@ import { BoardContainerComponent } from './board-container/board-container.compo
     MatSidenavModule,
     MatIconModule,  
     BrowserAnimationsModule,
-    MatGridListModule,
-    MatCardModule,
-    MatIconModule
-    MatButtonModule
+    MatButtonModule,
+    MatGridListModule
   ],
   providers: [],
   bootstrap: [AppComponent]
