@@ -8,7 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AccessibleBoardsComponent } from './accessible-boards/accessible-boards.component';
-import { ElevateOnHoverDirective } from './elevate-on-hover.directive';
+import { ElevateOnHoverDirective } from './directives/elevate-on-hover.directive';
 
 @NgModule({
   declarations: [
