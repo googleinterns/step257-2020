@@ -8,3 +8,6 @@ bin/
 .factorypath
 .project
 
+# angular related
+node_modules/
+dist/
