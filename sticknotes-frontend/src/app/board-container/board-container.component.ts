@@ -3,6 +3,7 @@
  */
 import { Component, OnInit } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-board-container',
@@ -12,7 +13,8 @@ import { MatDrawer } from '@angular/material/sidenav';
 export class BoardContainerComponent implements OnInit {
 
   public iconName = 'menu';
-  constructor() { }
+ 
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -27,4 +29,7 @@ export class BoardContainerComponent implements OnInit {
     }
   }
 
+  public backToBoards(): void {
+    this.router.navigateByUrl('/boards');
+  }
 }

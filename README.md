@@ -1,4 +1,4 @@
-STEP Capstone project "Sticknotes" by apodob@ and paulkovalov@
+STEP Capstone project "Notesboard" by apodob@ and paulkovalov@
 
 To deploy the app, run `./deploy.sh`
 
