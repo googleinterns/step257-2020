@@ -7,10 +7,6 @@ import { BoardsListComponent } from './boards-list/boards-list.component';
 
 const routes: Routes = [
   {
-    path: 'board-demo',
-    component: BoardComponent
-  },
-  {
     path: 'board/:id',
     component: BoardContainerComponent
   },
@@ -19,7 +15,7 @@ const routes: Routes = [
     component: BoardsListComponent,
   },
   { 
-    path: 'login-page', 
+    path: '', 
     component: LoginPageComponent 
   }
 ]
