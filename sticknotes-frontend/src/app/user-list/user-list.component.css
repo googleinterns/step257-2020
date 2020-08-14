@@ -1,0 +1,5 @@
+.users-list-wrapper {
+  width: fit-content;
+  padding-right: 16px;
+  border: solid 1px black; 
+}
