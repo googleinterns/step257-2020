@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AccessibleBoardsComponent } from './accessible-boards/accessible-boards.component';
 
 const routes: Routes = [
-  { path:'accessibleBoards/:id', component:AccessibleBoardsComponent }
+  { path:'accessibleBoards', component: AccessibleBoardsComponent }
 ];
 
 @NgModule({
