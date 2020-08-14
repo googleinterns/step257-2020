@@ -1,0 +1,14 @@
+<mat-drawer-container autosize>
+  <mat-drawer #drawer mode="side">
+    <div class="side-menu">
+      <button mat-raised-button color="primary">Back to boards</button>
+      <app-user-list></app-user-list>
+    </div>
+  </mat-drawer>
+  <div class="board-container">
+    <button mat-icon-button (click)="toggleMenu(drawer)" class="toggle-button">
+      <mat-icon >{{iconName}}</mat-icon>
+    </button>
+    <app-board></app-board>
+  </div>
+</mat-drawer-container>
