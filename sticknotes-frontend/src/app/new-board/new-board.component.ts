@@ -12,6 +12,7 @@ export class NewBoardComponent implements OnInit {
   public newBoardForm = new FormGroup({
     boardName: new FormControl('', [
       Validators.required,
+      this.noSpacesValidator
     ])
   })
   constructor(private router: Router, private dialogRef: MatDialogRef<NewBoardComponent>) { }
@@ -20,13 +21,16 @@ export class NewBoardComponent implements OnInit {
   }
 
   public createNewBoard() {
-    if (this.validBoardName()) {
+    if (this.newBoardForm.valid) {
       this.dialogRef.close();
       this.router.navigateByUrl('board/1');
     }
   }
 
-  public validBoardName(): boolean {
-    return this.newBoardForm.valid;
+
+  private noSpacesValidator(control: FormControl) {
+    const isWhitespace = (control.value || '').trim().length === 0;
+    const isValid = !isWhitespace;
+    return isValid ? null : { 'whitespace': true };
   }
 }

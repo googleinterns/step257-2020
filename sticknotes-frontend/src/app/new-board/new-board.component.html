@@ -3,7 +3,7 @@
     <mat-form-field>
       <mat-label>Board name</mat-label>
       <input matInput formControlName="boardName">
-      <mat-error *ngIf="!validBoardName()">
+      <mat-error *ngIf="!this.newBoardForm.valid">
         Please enter a valid board name
       </mat-error>
     </mat-form-field>

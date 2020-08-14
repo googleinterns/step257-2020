@@ -14,7 +14,7 @@ export class AccessibleBoardsComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public newBoard(): void {
+  public showNewBoardDialog(): void {
     this.dialog.open(NewBoardComponent, {
       width: '500px',
     });
