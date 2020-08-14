@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { BoardComponent } from './board/board.component';
 import { LoginPageComponent } from './login-page/login-page.component'
 import { BoardContainerComponent } from './board-container/board-container.component';
 import { BoardsListComponent } from './boards-list/boards-list.component';
