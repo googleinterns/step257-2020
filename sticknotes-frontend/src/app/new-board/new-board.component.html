@@ -1,0 +1,12 @@
+<div class="new-board-form">
+  <form [formGroup]="newBoardForm">
+    <mat-form-field>
+      <mat-label>Board name</mat-label>
+      <input matInput formControlName="boardName">
+      <mat-error *ngIf="!validBoardName()">
+        Please enter a valid board name
+      </mat-error>
+    </mat-form-field>
+  </form>
+  <button mat-raised-button color="primary" (click)="createNewBoard()">Create</button>
+</div>

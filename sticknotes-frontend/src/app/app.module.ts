@@ -13,6 +13,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { AccessibleBoardsComponent } from './accessible-boards/accessible-boards.component';
 import { ElevateOnHoverDirective } from './directives/elevate-on-hover.directive';
 import { BoardContainerComponent } from './board-container/board-container.component';
+import { NewBoardComponent } from './new-board/new-board.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -21,17 +25,21 @@ import { BoardContainerComponent } from './board-container/board-container.compo
     ElevateOnHoverDirective,
     LoginPageComponent,
     BoardContainerComponent,
+    NewBoardComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MatSidenavModule,
-    MatIconModule,  
+    MatIconModule,
     BrowserAnimationsModule,
     MatGridListModule,
     MatCardModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

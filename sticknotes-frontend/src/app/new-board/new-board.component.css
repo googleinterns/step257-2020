@@ -1,0 +1,12 @@
+.new-board-form {
+  width: 450px;
+  height: 100px;
+}
+
+.new-board-form form {
+  margin-bottom: 10px;
+}
+
+mat-form-field {
+  width: 100%;
+}
