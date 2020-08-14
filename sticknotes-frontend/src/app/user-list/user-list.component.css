@@ -1,5 +1,8 @@
-.users-list-wrapper {
-  width: fit-content;
-  padding-right: 16px;
-  border: solid 1px black; 
+mat-card {
+  margin-top: 16px;
+}
+mat-card-content {
+  height: 600px;
+  width: 250px;
+  overflow: scroll;
 }
