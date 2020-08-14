@@ -6,17 +6,22 @@ import { MatCardModule } from '@angular/material/card';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ElevateOnHoverDirective } from './directives/elevate-on-hover.directive';
 import { BoardContainerComponent } from './board-container/board-container.component';
+import { BoardComponent } from './board/board.component';
+
+
 import { BoardsListComponent } from './boards-list/boards-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    BoardComponent,
     ElevateOnHoverDirective,
     LoginPageComponent,
     BoardContainerComponent,
@@ -25,13 +30,13 @@ import { BoardsListComponent } from './boards-list/boards-list.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    MatSidenavModule,
-    MatIconModule,  
     BrowserAnimationsModule,
-    MatGridListModule,
+    DragDropModule,
     MatCardModule,
     MatIconModule,
-    MatButtonModule
+    MatSidenavModule,
+    MatButtonModule,
+    MatGridListModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
