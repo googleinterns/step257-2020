@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
+import { noSpacesValidator } from '../utility/util';
 
 @Component({
   selector: 'app-new-board',
@@ -12,7 +13,7 @@ export class NewBoardComponent implements OnInit {
   public newBoardForm = new FormGroup({
     boardName: new FormControl('', [
       Validators.required,
-      this.noSpacesValidator
+      noSpacesValidator
     ])
   })
   constructor(private router: Router, private dialogRef: MatDialogRef<NewBoardComponent>) { }
@@ -25,12 +26,5 @@ export class NewBoardComponent implements OnInit {
       this.dialogRef.close();
       this.router.navigateByUrl('board/1');
     }
-  }
-
-
-  private noSpacesValidator(control: FormControl) {
-    const isWhitespace = (control.value || '').trim().length === 0;
-    const isValid = !isWhitespace;
-    return isValid ? null : { 'whitespace': true };
   }
 }

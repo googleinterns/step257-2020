@@ -1,4 +1,5 @@
 import { Vector2 } from './vector';
+import { FormControl } from '@angular/forms';
 
 export function getTranslateValues(element: HTMLElement): Vector2 {
   const style = window.getComputedStyle(element)
@@ -22,4 +23,10 @@ export function getTranslateValues(element: HTMLElement): Vector2 {
   if (matrixType === '3d') {
     return new Vector2(Number(matrixValues[12]), Number(matrixValues[13]));
   }
+}
+
+export function noSpacesValidator(control: FormControl) {
+  const isWhitespace = (control.value || '').trim().length === 0;
+  const isValid = !isWhitespace;
+  return isValid ? null : { 'whitespace': true };
 }
