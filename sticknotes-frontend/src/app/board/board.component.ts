@@ -6,6 +6,7 @@ import { Note, Board } from '../interfaces';
 import { ApiService } from '../services/api.service';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
+import { NotesApiService } from '../services/notes-api.service';
 
 @Component({
   selector: 'app-board',
@@ -18,7 +19,7 @@ export class BoardComponent {
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
 
-  constructor(private apiService: ApiService, private dialog: MatDialog) {
+  constructor(private apiService: ApiService, private dialog: MatDialog, private notesApiService: NotesApiService) {
     // load board
     this.apiService.getBoard('boardKey').subscribe(board => {
       this.board = board;
@@ -49,6 +50,8 @@ export class BoardComponent {
     note.y = closestPoint.y * this.NOTE_HEIGHT;
     cdkDragEnd.source._dragRef.reset();
     elementRef.style.transform = '';
+    // update note data
+    this.notesApiService.updateNote(note).subscribe();
   }
 
   // updates boardGrid with the positions of notes
@@ -140,6 +143,23 @@ export class BoardComponent {
         // update grid
         this.updateBoardAbstractGrid();
       }
-    })
+    });
   }
+
+  public openEditNoteDialog(note: Note) {
+    const dialogRef = this.dialog.open(NewNoteComponent, {
+      data: note
+    });
+    dialogRef.afterClosed().subscribe(note => {
+      // receive an updated note here and update it in the board
+      // data maybe undefined
+      if (note) {
+        const updateNote = this.board.notes.find(n => n.key === note.key);
+        if (updateNote) {
+          updateNote.content = note.content;
+          updateNote.color = note.color;
+        }
+      }
+    });
+  } 
 }

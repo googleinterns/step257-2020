@@ -23,7 +23,7 @@ export class ApiService {
       y: 0,
     });
     notes.push({
-      key: 'key1',
+      key: 'key2',
       content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque porta odio ut magna finibus scelerisque vel malesuada mi.',
       image: null,
       creationDate: new Date().toISOString(),
@@ -34,7 +34,7 @@ export class ApiService {
       y: 500,
     });
     notes.push({
-      key: 'key1',
+      key: 'key3',
       content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque porta odio ut magna finibus scelerisque vel malesuada mi.',
       image: null,
       creationDate: new Date().toISOString(),
@@ -45,7 +45,7 @@ export class ApiService {
       y: 0,
     });
     notes.push({
-      key: 'key1',
+      key: 'key4',
       content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque porta odio ut magna finibus scelerisque vel malesuada mi.',
       image: null,
       creationDate: new Date().toISOString(),

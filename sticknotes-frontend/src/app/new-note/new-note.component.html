@@ -10,5 +10,5 @@
           class="circle" [style]="'background-color:' + getColorHexValue((i + 1).toString())"></span></mat-radio-button>
     </mat-radio-group>
   </form>
-  <button mat-raised-button color="primary" (click)="createNote()" [disabled]="sendingData">Add</button>
+  <button mat-raised-button color="primary" (click)="mode === 'create' ? createNote(): updateNote()" [disabled]="sendingData">{{submitButtonText}}</button>
 </div>

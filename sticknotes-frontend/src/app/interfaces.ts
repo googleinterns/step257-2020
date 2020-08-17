@@ -1,3 +1,5 @@
+import { Vector2 } from './utility/vector';
+
 export interface User {
   key: string;
   nickname: string;
@@ -23,7 +25,12 @@ export interface Board {
   backgroundImg: string | null;
 }
 
-export interface CreateNoteData {
+export interface CreateNotePopupData {
+  position: Vector2;
+  boardKey: string;
+}
+
+export interface CreateNoteApiData {
   content: string;
   image?: string;
   color: string;
@@ -32,7 +39,7 @@ export interface CreateNoteData {
   boardKey: string;
 }
 
-export interface Note extends CreateNoteData {
+export interface Note extends CreateNoteApiData {
   key: string;
   creationDate: string;
   creator: string;
