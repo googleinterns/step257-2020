@@ -163,4 +163,17 @@ export class BoardComponent {
     });
   }
 
+  public deleteNote(note: Note) {
+    const reallyWantToDelete = confirm('Delete this note?');
+    if (reallyWantToDelete) {
+      const noteKey = note.key;
+      const indexOfNote = this.board.notes.indexOf(note);
+      if (indexOfNote !== -1) {
+        this.notesApiService.deleteNote(noteKey).subscribe(() => {
+          this.board.notes.splice(indexOfNote, 1);
+          this.updateBoardAbstractGrid();
+        });
+      }
+    }
+  }
 }

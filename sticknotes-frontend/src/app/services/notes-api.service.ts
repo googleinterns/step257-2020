@@ -32,4 +32,9 @@ export class NotesApiService {
     // return this.http.post<Note>('api/notes/', note);
     return of (note);
   }
+
+  public deleteNote(noteKey: string): Observable<void> {
+    // return this.http.delete<void>(`api/notes?key=${noteKey}`);
+    return of(undefined);
+  }
 }

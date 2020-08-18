@@ -15,15 +15,17 @@
         cdkDrag class="mat-card-wrapper" [style]="getNoteStyle(note)">
         <mat-card [style]="'background-color:' + note.color">
           <mat-card-content>
+            
             <div class="card-header">
-              <p>{{note.creator}}</p>
               <div class="card-header-buttons-group">
-                <button mat-icon-button class="edit-note-button" (click)="openEditNoteDialog(note)">
-                  <mat-icon class="edit-note-icon">edit</mat-icon>
+                <button mat-icon-button class="note-button" (click)="deleteNote(note);"><mat-icon class="note-icon">delete</mat-icon></button>
+                <button mat-icon-button class="note-button" (click)="openEditNoteDialog(note)">
+                  <mat-icon class="note-icon">edit</mat-icon>
                 </button>
-                <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
               </div>
+              <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
             </div>
+            <p>{{note.creator}}</p>
             <p>{{note.content}}</p>
             <p>{{note.creationDate}}</p>
           </mat-card-content>
