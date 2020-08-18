@@ -1,26 +1,11 @@
 <mat-card class="mat-elevation-z12">
-  <mat-card-title>Users</mat-card-title>
+  <mat-card-title> Users {{adminView}}</mat-card-title>
   <mat-card-content>
     <mat-list>
-      <mat-list-item>
+      <mat-list-item *ngFor="let userWithRole of usersWithRole">
         <mat-icon color="primary"  matListIcon>account_circle</mat-icon>
-        <div matLine> User1 </div>
-        <div mat-line> user1@google.com </div> 
-      </mat-list-item>
-      <mat-list-item >
-        <mat-icon color="primary"  matListIcon>account_circle</mat-icon>
-        <div matLine> User2 </div>
-        <div mat-line> user2@google.com </div> 
-      </mat-list-item>
-      <mat-list-item>
-        <mat-icon color="primary"  matListIcon>account_circle</mat-icon>
-        <div matLine> User3 </div>
-        <div mat-line> user3@google.com </div> 
-      </mat-list-item>
-      <mat-list-item>
-        <mat-icon color="primary"  matListIcon>account_circle</mat-icon>
-        <div matLine> User4 </div>
-        <div mat-line> user4@google.com </div> 
+        <div matLine> {{ userWithRole.user.nickname }} </div>
+        <div mat-line> {{ userWithRole.user.email }} </div> 
       </mat-list-item>
     </mat-list>
   </mat-card-content>

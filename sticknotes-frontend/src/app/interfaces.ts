@@ -1,3 +1,5 @@
+import { UserRole } from './models/user-role.enum';
+
 export interface User {
   key: string;
   nickname: string;
@@ -7,8 +9,8 @@ export interface User {
 
 export interface UserBoardRole {
   user: User;
-  board: Board;
-  role: string;
+  boardKey: string;
+  role: UserRole;
 }
 
 export interface Board {
