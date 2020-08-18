@@ -1,0 +1,58 @@
+import { Component, OnInit } from '@angular/core';
+import { UserRole } from '../models/user-role.enum';
+import { UserBoardRole, User } from '../interfaces';
+import { FormGroup, FormControl } from '@angular/forms';
+import { BoardUsersApiService } from '../services/board-users-api.service';
+import { MatDialogRef } from '@angular/material/dialog';
+
+@Component({
+  selector: 'app-add-user',
+  templateUrl: './add-user.component.html',
+  styleUrls: ['./add-user.component.css']
+})
+export class AddUserComponent implements OnInit {
+
+  public get userRole(): typeof UserRole {
+    return UserRole;
+  }
+
+  public addUserForm = new FormGroup({
+    userEmail: new FormControl(''),
+    role: new FormControl(UserRole.USER.toString())
+  });
+
+  constructor(private boardUsersService: BoardUsersApiService,
+              private dialogRef: MatDialogRef<AddUserComponent>) { }
+
+  ngOnInit(): void {
+  }
+
+  addUser(){
+    const mockUser: User = {
+      key: 'key123',
+      nickname: 'ola',
+      email: 'ola@google.com',
+      accessibleBoards: []
+    };
+
+    const mockUserWithRole: UserBoardRole  = {
+      user: mockUser,
+      boardKey: 'board1',
+      role: UserRole.USER
+    };
+
+    if(this.addUserForm.valid){
+      this.boardUsersService
+          .addBoardUser(this.addUserForm.controls.userEmail.value, this.addUserForm.controls.role.value)
+          .subscribe(user => {
+            console.log(user);
+            this.dialogRef.close(user);
+      }, err => {
+        // something went wrong
+        alert('Error occurred');
+        this.dialogRef.close();
+      });
+    }
+  }
+
+}

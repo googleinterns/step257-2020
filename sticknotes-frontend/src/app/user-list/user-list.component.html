@@ -7,6 +7,11 @@
         <div matLine> {{ userWithRole.user.nickname }} </div>
         <div mat-line> {{ userWithRole.user.email }} </div> 
       </mat-list-item>
+      <mat-list-item>
+        <button mat-mini-fab color="primary" (click) = 'openAddUserDialog()' aria-label="Open add user dialog">
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-list-item>
     </mat-list>
   </mat-card-content>
 </mat-card>

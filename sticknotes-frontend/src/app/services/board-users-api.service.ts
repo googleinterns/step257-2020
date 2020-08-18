@@ -7,7 +7,6 @@ import { UserRole } from '../models/user-role.enum';
   providedIn: 'root'
 })
 export class BoardUsersApiService {
-
   private users: UserBoardRole[];
 
   constructor() {
@@ -22,7 +21,7 @@ export class BoardUsersApiService {
       boardKey: 'boardKey',
       role: UserRole.ADMIN
     });
-    for (let i = 1; i < 10; i++) {
+    for (let i = 1; i < 3; i++) {
       this.users.push({
         user: {
           key: `key${i}`,
@@ -37,12 +36,23 @@ export class BoardUsersApiService {
   }
 
   public getBoardUsers(boardKey: string): Observable<UserBoardRole[]> {
-    return of(this.users);
+    //return deep copy of this.users instead of reference
+    return of(JSON.parse(JSON.stringify(this.users)));
   }
 
-  public addBoardUser(userBoardRole: UserBoardRole): Observable<UserBoardRole> {
-    this.users.push(userBoardRole);
-    return of(userBoardRole);
+  public addBoardUser(userEmail: string, userRole: UserRole): Observable<UserBoardRole> {
+    const user: UserBoardRole = {
+      user: {
+        key: userEmail,
+        nickname: userEmail,
+        email: userEmail,
+        accessibleBoards: []
+      },
+      boardKey: 'boardKey',
+      role: userRole
+    }
+    this.users.push(user);
+    return of(user);
   }
 
   public removeUser(userKey: string): Observable<void> {

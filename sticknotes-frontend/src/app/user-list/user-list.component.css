@@ -6,3 +6,7 @@ mat-card-content {
   width: 250px;
   overflow: scroll;
 }
+
+button {
+  margin: auto;
+}
