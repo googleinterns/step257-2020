@@ -163,7 +163,7 @@ export class BoardComponent {
     });
   }
 
-  public deleteNote(note: Note) {
+  public deleteNote(note: Note): void {
     const reallyWantToDelete = confirm('Delete this note?');
     if (reallyWantToDelete) {
       const noteKey = note.key;
