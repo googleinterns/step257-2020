@@ -7,15 +7,10 @@ export interface User {
   accessibleBoards: Board[];
 }
 
-export interface UserWithRole {
-  user: User,
-  role: UserRole
-}
-
 export interface UserBoardRole {
   user: User;
-  board: Board;
-  role: string;
+  boardKey: string;
+  role: UserRole;
 }
 
 export interface Board {

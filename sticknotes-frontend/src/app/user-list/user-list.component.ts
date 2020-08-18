@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { BoardUsersApiService } from '../services/board-users-api.service';
-import { UserWithRole, User } from '../interfaces';
+import { UserBoardRole, User } from '../interfaces';
 import { Observable, of, forkJoin, from } from 'rxjs';
 import { UserRole } from '../models/user-role.enum';
 import { take } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { take } from 'rxjs/operators';
 export class UserListComponent implements OnInit {
 
   public adminView: Boolean = false;
-  public usersWithRole: UserWithRole[] = [];
+  public usersWithRole: UserBoardRole[] = [];
   public currentUser: User;
 
   constructor(private userService: UserService, private boardUsersService: BoardUsersApiService) { }

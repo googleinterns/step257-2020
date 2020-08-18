@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { User, UserWithRole } from '../interfaces';
+import { User, UserBoardRole } from '../interfaces';
 import { UserRole } from '../models/user-role.enum';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { UserRole } from '../models/user-role.enum';
 })
 export class BoardUsersApiService {
 
-  private users: UserWithRole[];
+  private users: UserBoardRole[];
 
   constructor() { 
     this.users = [];
@@ -19,6 +19,7 @@ export class BoardUsersApiService {
         email: 'admin@google.com',
         accessibleBoards: []
       },
+      boardKey:'boardKey',
       role: UserRole.ADMIN
     })
     for (let i = 1; i < 10; i++) {
@@ -29,18 +30,19 @@ export class BoardUsersApiService {
           email: `user${i}@google.com`,
           accessibleBoards: []
         },
+        boardKey:'boardKey',
         role: UserRole.USER
       });
     }
   }
 
-  public getBoardUsers(boardKey: string): Observable<UserWithRole[]> {
+  public getBoardUsers(boardKey: string): Observable<UserBoardRole[]> {
     return of(this.users);
   }
 
-  public addBoardUser(userWithRole: UserWithRole): Observable<void> {
-    this.users.push(userWithRole);
-    return of();
+  public addBoardUser(userBoardRole: UserBoardRole): Observable<UserBoardRole> {
+    this.users.push(userBoardRole);
+    return of(userBoardRole);
   }
 
   public removeUser(userKey: string): Observable<void> {

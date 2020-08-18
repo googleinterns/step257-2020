@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class UserService {
-
+  
   private userSubject: BehaviorSubject<User>;
 
   constructor() {
