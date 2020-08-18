@@ -6,6 +6,8 @@ import { User } from '../interfaces';
   providedIn: 'root'
 })
 export class UserService {
+  private authenticated: BehaviorSubject<boolean>;
+
   private userSubject: BehaviorSubject<User>;
 
   constructor() {
@@ -18,6 +20,10 @@ export class UserService {
     this.userSubject = new BehaviorSubject(null);
 
     of(user).subscribe(fetchedUser => this.userSubject.next(fetchedUser));
+  }
+
+  isAuthenticated(): Observable<boolean> {
+    return this.authenticated.asObservable();
   }
 
   getUser(): Observable<User> {
