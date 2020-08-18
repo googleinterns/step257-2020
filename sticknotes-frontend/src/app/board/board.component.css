@@ -6,6 +6,7 @@
   height: 50px;
   align-items: center;
 }
+
 .board-header h3 {
   margin: 0px;
 }
@@ -21,17 +22,22 @@
 
 .board {
   position: absolute;
-  background-color:  #f2f2f2;
+  background-color: #f2f2f2;
   border-radius: 5px;
 }
 
-.mat-card-wrapper {
+.mat-card-wrapper, .new-note-container {
   height: 250px;
   width: 200px;
   position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 3;
+}
+
+.new-note-container {
+  z-index: 2;
 }
 
 .mat-card {
@@ -53,4 +59,3 @@
   justify-content: space-between;
   width: 100%;
 }
-

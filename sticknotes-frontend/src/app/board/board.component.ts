@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { CdkDragEnd } from '@angular/cdk/drag-drop';
+import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
 import { Note, Board } from '../interfaces';
 import { ApiService } from '../services/api.service';
+import { NewNoteComponent } from '../new-note/new-note.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-board',
@@ -16,7 +18,7 @@ export class BoardComponent {
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: ApiService, private dialog: MatDialog) {
     // load board
     this.apiService.getBoard('boardKey').subscribe(board => {
       this.board = board;
@@ -30,9 +32,17 @@ export class BoardComponent {
     });
   }
 
-  // moves a note to a proper position after it was released
+  // updates the z-index of the note
+  public onNoteDragStart(cdkDragStart: CdkDragStart) {
+    const elementRef = cdkDragStart.source.element.nativeElement;
+    elementRef.style.setProperty('z-index', '10');
+  }
+
+  // moves a note to a proper position after it was released, resets z-index
   public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note) {
     const elementRef = cdkDragEnd.source.element.nativeElement;
+    // reset z-index
+    elementRef.style.setProperty('z-index', '3');
     const curTranslate = getTranslateValues(elementRef);
     // free currently taken note position
     this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
@@ -102,5 +112,22 @@ export class BoardComponent {
         }
       }
     }
+  }
+
+  // generates a correct style to position the note
+  public getNoteStyle(note: Note): string {
+    return `left:${note.x}px;top:${note.y}px`;
+  }
+
+  // generates a correct style to position the slot
+  public getSlotStyle(x: number, y: number): string {
+    return `left:${x * this.NOTE_WIDTH}px;top:${y * this.NOTE_HEIGHT}px`;
+  }
+
+  // opens new-note component in a dialog and passes the position where the note has to be created
+  public openNewNoteDialog(x: number, y: number): void {
+    this.dialog.open(NewNoteComponent, {
+      data: new Vector2(x, y),
+    });
   }
 }

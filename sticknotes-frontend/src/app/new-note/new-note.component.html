@@ -1,0 +1,16 @@
+<div class="new-note-form-container">
+  <form [formGroup]="newNoteForm" class="new-note-form">
+    <mat-form-field>
+      <mat-label>Note</mat-label>
+      <input formControlName="content" matInput placeholder="What would you like to note?">
+    </mat-form-field>
+    <label id="colorpicker-label">Note color</label>
+    <mat-radio-group aria-labelledby="colorpicker-label" class="color-picker">
+      <mat-radio-button value="1"><span class="circle color1"></span></mat-radio-button>
+      <mat-radio-button value="2"><span class="circle color2"></span></mat-radio-button>
+      <mat-radio-button value="3"><span class="circle color3"></span></mat-radio-button>
+      <mat-radio-button value="4"><span class="circle color4"></span></mat-radio-button>
+    </mat-radio-group>
+  </form>
+  <button mat-raised-button color="primary">Add</button>
+</div>
