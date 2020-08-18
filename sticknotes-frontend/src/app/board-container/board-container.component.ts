@@ -13,14 +13,14 @@ import { Router } from '@angular/router';
 export class BoardContainerComponent implements OnInit {
 
   public iconName = 'menu';
- 
+
   constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
 
   // toggles the side menu, changes the icon name accordingly to the state
-  public toggleMenu(drawer: MatDrawer) {
+  public toggleMenu(drawer: MatDrawer): void {
     drawer.toggle();
     if (this.iconName === 'menu') {
       this.iconName = 'menu_open';

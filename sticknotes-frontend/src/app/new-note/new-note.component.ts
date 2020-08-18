@@ -31,10 +31,11 @@ export class NewNoteComponent implements OnInit {
     options: new FormControl('1', [
       Validators.required
     ])
-  })
+  });
+
   constructor(@Inject(MAT_DIALOG_DATA) private data: Note | CreateNotePopupData,
-    private notesApiService: NotesApiService,
-    private dialogRef: MatDialogRef<NewNoteComponent>) {
+              private notesApiService: NotesApiService,
+              private dialogRef: MatDialogRef<NewNoteComponent>) {
     if ('position' in data) {
       // creating new note
       const noteData = data as CreateNotePopupData;
@@ -57,7 +58,7 @@ export class NewNoteComponent implements OnInit {
   }
 
   // creates new note
-  public createNote() {
+  public createNote(): void {
     if (this.newNoteForm.valid) {
       // disable button
       this.sendingData = true;
@@ -70,7 +71,7 @@ export class NewNoteComponent implements OnInit {
         content: noteContent,
         color: noteColor,
         boardKey: this.boardKey
-      }
+      };
       // service returns a new note object
       this.notesApiService.createNote(noteData).subscribe(note => {
         // successfully created, close the dialog and pass the note back to the board
@@ -84,7 +85,7 @@ export class NewNoteComponent implements OnInit {
   }
 
   // updates the note
-  public updateNote() {
+  public updateNote(): void {
     if (this.newNoteForm.valid) {
       // disable button
       this.sendingData = true;
@@ -96,7 +97,7 @@ export class NewNoteComponent implements OnInit {
       }, err => {
         alert('Error occurred');
         this.dialogRef.close();
-      })
+      });
     }
   }
 

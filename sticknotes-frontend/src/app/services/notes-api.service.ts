@@ -23,7 +23,7 @@ export class NotesApiService {
       content: note.content,
       color: note.color,
       boardKey: note.boardKey
-    }
+    };
     return of(mockedNoteResponse);
   }
 

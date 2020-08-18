@@ -28,13 +28,13 @@ export class BoardComponent {
   }
 
   // updates the z-index of the note
-  public onNoteDragStart(cdkDragStart: CdkDragStart) {
+  public onNoteDragStart(cdkDragStart: CdkDragStart): void {
     const elementRef = cdkDragStart.source.element.nativeElement;
     elementRef.style.setProperty('z-index', '10');
   }
 
   // moves a note to a proper position after it was released, resets z-index
-  public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note) {
+  public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note): void {
     const elementRef = cdkDragEnd.source.element.nativeElement;
     // reset z-index
     elementRef.style.setProperty('z-index', '3');
@@ -133,7 +133,7 @@ export class BoardComponent {
   // opens new-note component in a dialog and passes the position where the note has to be created
   public openNewNoteDialog(x: number, y: number): void {
     const dialogRef = this.dialog.open(NewNoteComponent, {
-      data: {position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardKey: this.board.key}
+      data: { position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardKey: this.board.key }
     });
     dialogRef.afterClosed().subscribe(note => {
       // receive a new note here and add it to the board
@@ -146,20 +146,21 @@ export class BoardComponent {
     });
   }
 
-  public openEditNoteDialog(note: Note) {
+  public openEditNoteDialog(note: Note): void {
     const dialogRef = this.dialog.open(NewNoteComponent, {
       data: note
     });
-    dialogRef.afterClosed().subscribe(note => {
+    dialogRef.afterClosed().subscribe(newNote => {
       // receive an updated note here and update it in the board
       // data maybe undefined
-      if (note) {
-        const updateNote = this.board.notes.find(n => n.key === note.key);
+      if (newNote) {
+        const updateNote = this.board.notes.find(n => n.key === newNote.key);
         if (updateNote) {
-          updateNote.content = note.content;
-          updateNote.color = note.color;
+          updateNote.content = newNote.content;
+          updateNote.color = newNote.color;
         }
       }
     });
-  } 
+  }
+
 }

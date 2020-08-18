@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { LoginPageComponent } from './login-page/login-page.component'
+import { LoginPageComponent } from './login-page/login-page.component';
 import { BoardContainerComponent } from './board-container/board-container.component';
 import { BoardsListComponent } from './boards-list/boards-list.component';
 
@@ -13,11 +13,11 @@ const routes: Routes = [
     path: 'boards',
     component: BoardsListComponent,
   },
-  { 
-    path: '', 
-    component: LoginPageComponent 
-  }
-]
+  {
+    path: '',
+    component: LoginPageComponent
+  },
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -73,7 +73,7 @@ export class ApiService {
       users: [],
       backgroundImg: null,
       creationDate: new Date().toISOString(),
-    }
+    };
 
     creator.accessibleBoards.push(board);
     return of(board);
