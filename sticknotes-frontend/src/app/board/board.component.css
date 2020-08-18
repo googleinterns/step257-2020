@@ -1,27 +1,11 @@
-.board-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  width: 1000px;
-  height: 50px;
-  align-items: center;
-}
-
-.board-header h3 {
-  margin: 0px;
-}
-
 .board-wrapper {
   border: 1px solid black;
   border-radius: 5px;
-  width: 1000px;
-  height: 700px;
+  position: relative;
   overflow: scroll;
-  position: absolute;
 }
 
 .board {
-  position: absolute;
   background-color: #f2f2f2;
   border-radius: 5px;
 }
@@ -58,4 +42,14 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
+}
+
+.flex-container {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: calc(100vw - 40px);
+  height: 100%;
 }

@@ -6,6 +6,7 @@ import { Note, Board } from '../interfaces';
 import { ApiService } from '../services/api.service';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-board',
@@ -18,11 +19,15 @@ export class BoardComponent {
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
 
-  constructor(private apiService: ApiService, private dialog: MatDialog) {
+  constructor(private apiService: ApiService, private dialog: MatDialog, private activatedRoute: ActivatedRoute) {
     // load board
-    this.apiService.getBoard('boardKey').subscribe(board => {
-      this.board = board;
-      this.updateBoardAbstractGrid();
+    this.activatedRoute.paramMap.subscribe(params => {
+      const boardKey = params.get('id'); // get board id from route param
+      // load board with the key
+      this.apiService.getBoard(boardKey).subscribe(board => {
+        this.board = board;
+        this.updateBoardAbstractGrid();
+      });
     });
   }
 
@@ -141,5 +146,20 @@ export class BoardComponent {
         this.updateBoardAbstractGrid();
       }
     })
+  }
+
+  public getBoardWidth() {
+    if (this.board) {
+      return `width:${this.NOTE_WIDTH * this.board.cols}px;height:${this.NOTE_HEIGHT * this.board.rows}px`;
+    }
+    return '';
+  }
+
+  public getBoardWrapperStyle() {
+    // if board is wider than 100% of the screen or higher than 100%, set fixed width and height
+    if (this.board) {
+      return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.board.cols}px); height: min(100% - 100px, ${this.NOTE_HEIGHT * this.board.rows}px)`;
+    }
+    return '';
   }
 }
