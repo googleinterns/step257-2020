@@ -18,6 +18,7 @@ export class ApiService {
       creationDate: new Date().toISOString(),
       creator: 'user@google.com',
       color: '#ffff99',
+      boardKey: 'boardKey',
       x: 200,
       y: 0,
     });
@@ -28,6 +29,7 @@ export class ApiService {
       creationDate: new Date().toISOString(),
       creator: 'user2@google.com',
       color: '#ccfff5',
+      boardKey: 'boardKey',
       x: 400,
       y: 500,
     });
@@ -38,6 +40,7 @@ export class ApiService {
       creationDate: new Date().toISOString(),
       creator: 'user3@google.com',
       color: '#ffe6ff',
+      boardKey: 'boardKey',
       x: 600,
       y: 0,
     });
@@ -48,6 +51,7 @@ export class ApiService {
       creationDate: new Date().toISOString(),
       creator: 'user3@google.com',
       color: '#e6e6ff',
+      boardKey: 'boardKey',
       x: 600,
       y: 500,
     });

@@ -23,13 +23,17 @@ export interface Board {
   backgroundImg: string | null;
 }
 
-export interface Note {
-  key: string;
+export interface CreateNoteData {
   content: string;
-  image: string | null;
-  creationDate: string;
+  image?: string;
   color: string;
-  creator: string;
   x: number;
   y: number;
+  boardKey: string;
+}
+
+export interface Note extends CreateNoteData {
+  key: string;
+  creationDate: string;
+  creator: string;
 }

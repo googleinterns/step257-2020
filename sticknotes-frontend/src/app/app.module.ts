@@ -23,6 +23,7 @@ import { BoardsListComponent } from './boards-list/boards-list.component';
 import { NewNoteComponent } from './new-note/new-note.component';
 import { RangeLoopPipe } from './pipes';
 import { MatRadioModule } from '@angular/material/radio';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { MatRadioModule } from '@angular/material/radio';
     MatInputModule,
     MatDialogModule,
     MatGridListModule,
-    MatRadioModule
+    MatRadioModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

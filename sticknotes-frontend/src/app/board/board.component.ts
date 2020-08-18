@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent {
-  private boardGrid: number[][] = [];
+  private boardGrid: number[][];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
@@ -22,12 +22,6 @@ export class BoardComponent {
     // load board
     this.apiService.getBoard('boardKey').subscribe(board => {
       this.board = board;
-      for (let i = 0; i < board.rows; ++i) {
-        this.boardGrid[i] = [];
-        for (let j = 0; j < board.cols; ++j) {
-          this.boardGrid[i][j] = 0;
-        }
-      }
       this.updateBoardAbstractGrid();
     });
   }
@@ -59,6 +53,15 @@ export class BoardComponent {
 
   // updates boardGrid with the positions of notes
   public updateBoardAbstractGrid(): void {
+    if (!this.boardGrid) {
+      this.boardGrid = [];
+      for (let i = 0; i < this.board.rows; ++i) {
+        this.boardGrid[i] = [];
+        for (let j = 0; j < this.board.cols; ++j) {
+          this.boardGrid[i][j] = 0;
+        }
+      }
+    }
     this.board.notes.forEach(note => {
       const i = Math.floor(note.y / this.NOTE_HEIGHT);
       const j = Math.floor(note.x / this.NOTE_WIDTH);
@@ -126,8 +129,17 @@ export class BoardComponent {
 
   // opens new-note component in a dialog and passes the position where the note has to be created
   public openNewNoteDialog(x: number, y: number): void {
-    this.dialog.open(NewNoteComponent, {
-      data: new Vector2(x, y),
+    const dialogRef = this.dialog.open(NewNoteComponent, {
+      data: {position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardKey: this.board.key}
     });
+    dialogRef.afterClosed().subscribe(note => {
+      // receive a new note here and add it to the board
+      // data maybe undefined
+      if (note) {
+        this.board.notes.push(note);
+        // update grid
+        this.updateBoardAbstractGrid();
+      }
+    })
   }
 }
