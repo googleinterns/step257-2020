@@ -6,9 +6,9 @@ import { User } from '../interfaces';
   providedIn: 'root'
 })
 export class UserService {
-  private authenticated: BehaviorSubject<boolean>;
+  private authenticated: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  private userSubject: BehaviorSubject<User>;
+  private userSubject: BehaviorSubject<User> = new BehaviorSubject(null);
 
   constructor() {
     const user: User = {
@@ -17,9 +17,10 @@ export class UserService {
       email: 'user0@google.com',
       accessibleBoards: []
     };
-    this.userSubject = new BehaviorSubject(null);
-
-    of(user).subscribe(fetchedUser => this.userSubject.next(fetchedUser));
+    of(user).subscribe(fetchedUser => {
+      this.authenticated.next(true);
+      this.userSubject.next(fetchedUser)
+    });
   }
 
   isAuthenticated(): Observable<boolean> {
