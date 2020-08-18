@@ -13,7 +13,7 @@ import { take } from 'rxjs/operators';
 })
 export class UserListComponent implements OnInit {
 
-  public adminView: Boolean = false;
+  public adminView = false;
   public usersWithRole: UserBoardRole[] = [];
   public currentUser: User;
 
@@ -21,13 +21,15 @@ export class UserListComponent implements OnInit {
 
   ngOnInit(): void {
     forkJoin(
+    [
       this.userService.getUser().pipe(take(1)),
       this.boardUsersService.getBoardUsers('boardKey')
+    ]
     ).subscribe(([user, users]) => {
       this.currentUser = user;
       this.usersWithRole = users;
       const index = users.findIndex(userWithRole => user.key === userWithRole.user.key && userWithRole.role === UserRole.ADMIN);
-      if(index === -1){
+      if (index === -1) {
         this.adminView = false;
       }else{
         this.adminView = true;

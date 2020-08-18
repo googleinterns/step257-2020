@@ -1,4 +1,4 @@
-import { UserRole } from "./models/user-role.enum";
+import { UserRole } from './models/user-role.enum';
 
 export interface User {
   key: string;

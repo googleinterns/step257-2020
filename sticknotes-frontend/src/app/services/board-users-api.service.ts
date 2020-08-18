@@ -10,7 +10,7 @@ export class BoardUsersApiService {
 
   private users: UserBoardRole[];
 
-  constructor() { 
+  constructor() {
     this.users = [];
     this.users.push({
       user: {
@@ -19,9 +19,9 @@ export class BoardUsersApiService {
         email: 'admin@google.com',
         accessibleBoards: []
       },
-      boardKey:'boardKey',
+      boardKey: 'boardKey',
       role: UserRole.ADMIN
-    })
+    });
     for (let i = 1; i < 10; i++) {
       this.users.push({
         user: {
@@ -30,7 +30,7 @@ export class BoardUsersApiService {
           email: `user${i}@google.com`,
           accessibleBoards: []
         },
-        boardKey:'boardKey',
+        boardKey: 'boardKey',
         role: UserRole.USER
       });
     }
