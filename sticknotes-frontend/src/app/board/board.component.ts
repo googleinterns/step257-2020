@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board } from '../interfaces';
+import { Note, Board, SidenavBoardData } from '../interfaces';
 import { ApiService } from '../services/api.service';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,20 +13,35 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
-export class BoardComponent {
+export class BoardComponent implements OnInit {
+
+  @Output() boardLoaded = new EventEmitter<SidenavBoardData>(true);
+  @Input() boardTitle: string = null;
   private boardGrid: number[][];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
 
   constructor(private apiService: ApiService, private dialog: MatDialog, private activatedRoute: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
     // load board
     this.activatedRoute.paramMap.subscribe(params => {
       const boardKey = params.get('id'); // get board id from route param
       // load board with the key
       this.apiService.getBoard(boardKey).subscribe(board => {
         this.board = board;
+        this.boardTitle = board.title;
         this.updateBoardAbstractGrid();
+        // pass essential board's data to the sidenav
+        const sidenavData: SidenavBoardData = {
+          key: board.key,
+          title: board.title,
+          creationDate: board.creationDate,
+          backgroundImg: board.backgroundImg
+        };
+        this.boardLoaded.emit(sidenavData);
       });
     });
   }
@@ -135,7 +150,7 @@ export class BoardComponent {
   // opens new-note component in a dialog and passes the position where the note has to be created
   public openNewNoteDialog(x: number, y: number): void {
     const dialogRef = this.dialog.open(NewNoteComponent, {
-      data: {position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardKey: this.board.key}
+      data: { position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardKey: this.board.key }
     });
     dialogRef.afterClosed().subscribe(note => {
       // receive a new note here and add it to the board

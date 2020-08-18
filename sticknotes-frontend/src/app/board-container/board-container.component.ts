@@ -1,9 +1,12 @@
 /**
  * A main view of the app, container that holds the board
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
+import { SidenavBoardData } from '../interfaces';
+import { NewBoardComponent } from '../new-board/new-board.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-board-container',
@@ -13,8 +16,9 @@ import { Router } from '@angular/router';
 export class BoardContainerComponent implements OnInit {
 
   public iconName = 'menu';
- 
-  constructor(private router: Router) { }
+  public sidenavBoardData: SidenavBoardData = null;
+  public newTitle: string = null;
+  constructor(private router: Router, private dialog: MatDialog) { }
 
   ngOnInit(): void {
   }
@@ -31,5 +35,21 @@ export class BoardContainerComponent implements OnInit {
 
   public backToBoards(): void {
     this.router.navigateByUrl('/boards');
+  }
+
+  public receiveBoardData(sidenavBoardData: SidenavBoardData): void {
+    // when board data is emitted, add info about the board to the sidenav
+    this.sidenavBoardData = sidenavBoardData;
+  }
+
+  public openEditBoardDialog() {
+    const dialogRef = this.dialog.open(NewBoardComponent, {
+      width: '500px',
+      data: {currentTitle: this.sidenavBoardData.title, boardKey: this.sidenavBoardData.key}
+    });
+    dialogRef.afterClosed().subscribe(updatedBoardTitle => {
+      this.sidenavBoardData.title = updatedBoardTitle;
+      this.newTitle = updatedBoardTitle;
+    });
   }
 }

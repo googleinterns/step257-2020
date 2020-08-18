@@ -2,13 +2,27 @@
   <mat-drawer #drawer mode="side">
     <div class="side-menu">
       <button mat-raised-button color="primary" (click)="backToBoards()">Back to boards</button>
+      <div class="board-info" *ngIf="sidenavBoardData">
+        <mat-card class="mat-elevation-z12">
+          <mat-card-title>Board info</mat-card-title>
+          <mat-card-content>
+            <div class="flex-container">
+              <h3>{{sidenavBoardData.title}}</h3>
+              <button mat-icon-button (click)="openEditBoardDialog()">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+            <h3>Created on {{sidenavBoardData.creationDate}}</h3>
+          </mat-card-content>
+        </mat-card>
+      </div>
       <app-user-list></app-user-list>
     </div>
   </mat-drawer>
   <div class="board-container">
     <button mat-icon-button (click)="toggleMenu(drawer)" class="toggle-button">
-      <mat-icon >{{iconName}}</mat-icon>
+      <mat-icon>{{iconName}}</mat-icon>
     </button>
-    <app-board></app-board>
+    <app-board [boardTitle]="newTitle" (boardLoaded)="receiveBoardData($event)"></app-board>
   </div>
 </mat-drawer-container>
