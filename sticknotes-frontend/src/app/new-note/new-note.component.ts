@@ -15,10 +15,10 @@ export class NewNoteComponent implements OnInit {
   private position: Vector2;
   private boardKey: string;
   // this component can be in 2 states: editing the existing note or creating a new one
-  public mode: 'edit' | 'create';
+  private mode: 'edit' | 'create';
   // this object stores the note the user edits in the moment
   private editableNote: Note = null;
-  public submitButtonText;
+  public submitButtonText: string;
   // to disable button when the data is being sent to the server
   public sendingData = false;
 
@@ -58,7 +58,7 @@ export class NewNoteComponent implements OnInit {
   }
 
   // creates new note
-  public createNote(): void {
+  private createNote(): void {
     if (this.newNoteForm.valid) {
       // disable button
       this.sendingData = true;
@@ -85,7 +85,7 @@ export class NewNoteComponent implements OnInit {
   }
 
   // updates the note
-  public updateNote(): void {
+  private updateNote(): void {
     if (this.newNoteForm.valid) {
       // disable button
       this.sendingData = true;
@@ -98,6 +98,14 @@ export class NewNoteComponent implements OnInit {
         alert('Error occurred');
         this.dialogRef.close();
       });
+    }
+  }
+
+  public handleSubmit(): void {
+    if (this.mode === 'edit') {
+      this.updateNote();
+    } else {
+      this.createNote();
     }
   }
 
