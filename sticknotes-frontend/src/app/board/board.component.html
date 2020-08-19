@@ -1,5 +1,5 @@
 <div class="flex-container">
-  <h3>{{board.title}}</h3>
+  <h3>{{boardTitle}}</h3>
   <div class="board-wrapper" [style]="getBoardWrapperStyle()">
     <div class="board" [style]="getBoardWidth()">
       <div *ngFor="let y of board.rows | rangeLoop">

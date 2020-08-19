@@ -19,7 +19,7 @@ export interface Board {
   key: string;
   notes: Note[];
   users: UserBoardRole[];
-  creationDate: string;
+  creationDate: Date;
   title: string;
   creator: User;
   rows: number;
@@ -45,4 +45,11 @@ export interface Note extends CreateNoteApiData {
   key: string;
   creationDate: string;
   creator: string;
+}
+
+export interface SidenavBoardData {
+  key: string;
+  creationDate: Date;
+  title: string;
+  backgroundImg: string | null;
 }

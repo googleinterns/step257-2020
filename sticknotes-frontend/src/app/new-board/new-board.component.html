@@ -1,12 +1,12 @@
 <div class="new-board-form">
   <form [formGroup]="newBoardForm">
     <mat-form-field>
-      <mat-label>Board name</mat-label>
-      <input (keydown.enter)="createNewBoard()" matInput formControlName="boardTitle">
+      <mat-label>Board title</mat-label>
+      <input (keydown.enter)="handleSubmit()" matInput formControlName="boardTitle">
       <mat-error *ngIf="!this.newBoardForm.valid">
-        Please enter a valid board name
+        Please enter a valid board title
       </mat-error>
     </mat-form-field>
   </form>
-  <button mat-raised-button color="primary" (click)="createNewBoard()" [disabled]="sendingData">Create</button>
+  <button mat-raised-button color="primary" (click)="handleSubmit()" [disabled]="sendingData">{{submitButton}}</button>
 </div>
