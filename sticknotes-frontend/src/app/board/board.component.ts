@@ -165,7 +165,7 @@ export class BoardComponent implements OnInit {
       if (note) {
         this.board.notes.push(note);
         // update grid
-        this.updateBoardAbstractGrid();
+        this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
       }
     });
   }
