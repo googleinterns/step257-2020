@@ -28,7 +28,7 @@ export class BoardApiService {
       rows: 4,
       cols: 6,
       backgroundImg: null
-    }
+    };
     return of(mockedNewBoardResponse);
   }
 }
