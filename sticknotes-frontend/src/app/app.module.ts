@@ -24,6 +24,7 @@ import { NewNoteComponent } from './new-note/new-note.component';
 import { RangeLoopPipe } from './pipes';
 import { MatRadioModule } from '@angular/material/radio';
 import { HttpClientModule } from '@angular/common/http';
+import { MomentModule } from 'ngx-moment';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { HttpClientModule } from '@angular/common/http';
     MatDialogModule,
     MatGridListModule,
     MatRadioModule,
-    HttpClientModule
+    HttpClientModule,
+    MomentModule
   ],
   providers: [],
   bootstrap: [AppComponent]

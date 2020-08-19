@@ -17,7 +17,7 @@ export class BoardApiService {
     key: 'boardKey',
     notes: [],
     users: [],
-    creationDate: new Date().toISOString(),
+    creationDate: new Date(),
     title: 'boardTitle',
     creator: this.mockedUser,
     rows: 4,
