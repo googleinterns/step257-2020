@@ -16,7 +16,7 @@ export class NotesApiService {
     // use mocked response for now
     const mockedNoteResponse: Note = {
       key: 'key',
-      creationDate: new Date().toISOString(),
+      creationDate: this.currentTimestamp,
       creator: 'googler@google.com',
       x: note.x,
       y: note.y,
@@ -31,5 +31,14 @@ export class NotesApiService {
     // comment this for now because we don't have backend yet
     // return this.http.post<Note>('api/notes/', note);
     return of (note);
+  }
+
+  public deleteNote(noteKey: string): Observable<void> {
+    // return this.http.delete<void>(`api/notes?key=${noteKey}`);
+    return of(undefined);
+  }
+
+  get currentTimestamp(): string {
+    return Math.round(new Date().getTime()).toString()
   }
 }
