@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { UserRole } from '../models/user-role.enum';
+import { UserRole } from '../enums/user-role.enum';
 import { UserBoardRole, User } from '../interfaces';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BoardUsersApiService } from '../services/board-users-api.service';
 import { MatDialogRef } from '@angular/material/dialog';
 
@@ -17,8 +17,13 @@ export class AddUserComponent implements OnInit {
   }
 
   public addUserForm = new FormGroup({
-    userEmail: new FormControl(''),
-    role: new FormControl(UserRole.USER.toString())
+    userEmail: new FormControl('', [
+      Validators.required,
+      Validators.email
+    ]),
+    role: new FormControl(UserRole.USER.toString(),[
+    Validators.required
+    ])
   });
 
   constructor(private boardUsersService: BoardUsersApiService,
@@ -45,7 +50,6 @@ export class AddUserComponent implements OnInit {
       this.boardUsersService
           .addBoardUser(this.addUserForm.controls.userEmail.value, this.addUserForm.controls.role.value)
           .subscribe(user => {
-            console.log(user);
             this.dialogRef.close(user);
       }, err => {
         // something went wrong

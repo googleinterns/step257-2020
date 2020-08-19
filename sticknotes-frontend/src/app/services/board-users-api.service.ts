@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { User, UserBoardRole } from '../interfaces';
-import { UserRole } from '../models/user-role.enum';
+import { UserRole } from '../enums/user-role.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +44,7 @@ export class BoardUsersApiService {
     const user: UserBoardRole = {
       user: {
         key: userEmail,
-        nickname: userEmail,
+        nickname: userEmail.slice(0, userEmail.indexOf('@')),
         email: userEmail,
         accessibleBoards: []
       },

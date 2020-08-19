@@ -6,7 +6,6 @@
         <mat-icon color="primary" matListIcon>account_circle</mat-icon>
         <div matLine> {{ userWithRole.user.nickname }} </div>
         <div mat-line> {{ userWithRole.user.email }} <p class="mat-small"> {{ userWithRole.role }} </p> </div>   
-        
       </mat-list-item>
       <mat-list-item>
         <button *ngIf="adminView" mat-mini-fab color="primary" (click) = 'openAddUserDialog()' aria-label="Open add user dialog">

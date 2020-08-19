@@ -3,7 +3,7 @@ import { UserService } from '../services/user.service';
 import { BoardUsersApiService } from '../services/board-users-api.service';
 import { UserBoardRole, User } from '../interfaces';
 import { Observable, of, forkJoin, from } from 'rxjs';
-import { UserRole } from '../models/user-role.enum';
+import { UserRole } from '../enums/user-role.enum';
 import { take } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUserComponent } from '../add-user/add-user.component';
