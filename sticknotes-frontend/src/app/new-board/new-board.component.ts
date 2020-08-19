@@ -25,7 +25,7 @@ export class NewBoardComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public createNewBoard() {
+  public createNewBoard(): void {
     if (this.newBoardForm.valid) {
       // to create a board we only need a title
       const boardTitle = this.newBoardForm.controls.boardTitle.value;
