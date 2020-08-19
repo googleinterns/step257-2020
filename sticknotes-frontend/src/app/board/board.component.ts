@@ -7,6 +7,8 @@ import { ApiService } from '../services/api.service';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { NotesApiService } from '../services/notes-api.service';
+import { State } from '../enums/state.enum';
 
 @Component({
   selector: 'app-board',
@@ -22,7 +24,10 @@ export class BoardComponent implements OnInit {
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
 
-  constructor(private apiService: ApiService, private dialog: MatDialog, private activatedRoute: ActivatedRoute) {
+  constructor(private apiService: ApiService, 
+              private dialog: MatDialog, 
+              private activatedRoute: ActivatedRoute,
+              private notesApiService: NotesApiService) {
   }
 
   ngOnInit(): void {
@@ -47,13 +52,13 @@ export class BoardComponent implements OnInit {
   }
 
   // updates the z-index of the note
-  public onNoteDragStart(cdkDragStart: CdkDragStart) {
+  public onNoteDragStart(cdkDragStart: CdkDragStart): void {
     const elementRef = cdkDragStart.source.element.nativeElement;
     elementRef.style.setProperty('z-index', '10');
   }
 
   // moves a note to a proper position after it was released, resets z-index
-  public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note) {
+  public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note): void {
     const elementRef = cdkDragEnd.source.element.nativeElement;
     // reset z-index
     elementRef.style.setProperty('z-index', '3');
@@ -69,6 +74,8 @@ export class BoardComponent implements OnInit {
     note.y = closestPoint.y * this.NOTE_HEIGHT;
     cdkDragEnd.source._dragRef.reset();
     elementRef.style.transform = '';
+    // update note data
+    this.notesApiService.updateNote(note).subscribe();
   }
 
   // updates boardGrid with the positions of notes
@@ -150,7 +157,7 @@ export class BoardComponent implements OnInit {
   // opens new-note component in a dialog and passes the position where the note has to be created
   public openNewNoteDialog(x: number, y: number): void {
     const dialogRef = this.dialog.open(NewNoteComponent, {
-      data: { position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardKey: this.board.key }
+      data: { mode: State.CREATE, noteData: {position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardKey: this.board.key }}
     });
     dialogRef.afterClosed().subscribe(note => {
       // receive a new note here and add it to the board
@@ -160,7 +167,24 @@ export class BoardComponent implements OnInit {
         // update grid
         this.updateBoardAbstractGrid();
       }
-    })
+    });
+  }
+
+  public openEditNoteDialog(note: Note): void {
+    const dialogRef = this.dialog.open(NewNoteComponent, {
+      data: {mode: State.EDIT, noteData: note}
+    });
+    dialogRef.afterClosed().subscribe(newNote => {
+      // receive an updated note here and update it in the board
+      // data maybe undefined
+      if (newNote) {
+        const updateNote = this.board.notes.find(n => n.key === newNote.key);
+        if (updateNote) {
+          updateNote.content = newNote.content;
+          updateNote.color = newNote.color;
+        }
+      }
+    });
   }
 
   public getBoardWidth() {

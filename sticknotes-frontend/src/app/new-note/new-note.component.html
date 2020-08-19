@@ -2,7 +2,7 @@
   <form [formGroup]="newNoteForm" class="new-note-form">
     <mat-form-field>
       <mat-label>Note</mat-label>
-      <input formControlName="content" matInput placeholder="What would you like to note?">
+      <input (keydown.enter)="handleSubmit()" formControlName="content" matInput placeholder="What would you like to note?">
     </mat-form-field>
     <label id="colorpicker-label">Note color</label>
     <mat-radio-group aria-labelledby="colorpicker-label" class="color-picker" formControlName="options">
@@ -10,5 +10,5 @@
           class="circle" [style]="'background-color:' + getColorHexValue((i + 1).toString())"></span></mat-radio-button>
     </mat-radio-group>
   </form>
-  <button mat-raised-button color="primary" (click)="createNote()" [disabled]="sendingData">Add</button>
+  <button mat-raised-button color="primary" (click)="handleSubmit()" [disabled]="sendingData">{{submitButtonText}}</button>
 </div>

@@ -16,7 +16,12 @@
             <mat-card-content>
               <div class="card-header">
                 <p>{{note.creator}}</p>
-                <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+                <div class="card-header-buttons-group">
+                  <button mat-icon-button class="edit-note-button" (click)="openEditNoteDialog(note)">
+                    <mat-icon class="edit-note-icon">edit</mat-icon>
+                  </button>
+                  <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+                </div>
               </div>
               <p>{{note.content}}</p>
               <p>{{note.creationDate}}</p>
