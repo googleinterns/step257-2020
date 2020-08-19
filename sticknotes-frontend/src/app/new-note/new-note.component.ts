@@ -37,7 +37,6 @@ export class NewNoteComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) private data: NotePopupData,
               private notesApiService: NotesApiService,
               private dialogRef: MatDialogRef<NewNoteComponent>) {
-                console.log(data);
     if (data.mode === State.CREATE) {
       // creating new note
       const noteData = data.noteData as {position: Vector2, boardKey: string};
