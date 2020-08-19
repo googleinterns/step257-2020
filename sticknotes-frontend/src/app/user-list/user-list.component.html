@@ -6,7 +6,7 @@
         <mat-icon color="primary" matListIcon>account_circle</mat-icon>
         <div matLine> {{ userWithRole.user.nickname }} </div>
         <div mat-line> {{ userWithRole.user.email }} <p class="mat-small"> {{ userWithRole.role }} </p> </div>
-        <button mat-icon-button *ngIf="adminView  && currentUser.key != userWithRole.user.key && userWithRole.role === 'user'" color="primary" (click) = 'removeUser(userWithRole)' aria-label="Open add user dialog">
+        <button mat-icon-button *ngIf="adminView  && currentUser.key !== userWithRole.user.key && userWithRole.role === 'user'" color="primary" (click) = 'removeUser(userWithRole)' aria-label="Open add user dialog">
           <mat-icon>delete</mat-icon>
         </button>   
       </mat-list-item>
