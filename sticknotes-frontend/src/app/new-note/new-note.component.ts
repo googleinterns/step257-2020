@@ -3,8 +3,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Vector2 } from '../utility/vector';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { noSpacesValidator } from '../utility/util';
-import { CreateNoteApiData, Note, CreateNotePopupData } from '../interfaces';
+import { CreateNoteApiData, Note, NotePopupData } from '../interfaces';
 import { NotesApiService } from '../services/notes-api.service';
+import { State } from '../enums/state.enum';
 
 @Component({
   selector: 'app-new-note',
@@ -15,7 +16,7 @@ export class NewNoteComponent implements OnInit {
   private position: Vector2;
   private boardKey: string;
   // this component can be in 2 states: editing the existing note or creating a new one
-  private mode: 'edit' | 'create';
+  private mode: State;
   // this object stores the note the user edits in the moment
   private editableNote: Note = null;
   public submitButtonText: string;
@@ -33,24 +34,24 @@ export class NewNoteComponent implements OnInit {
     ])
   });
 
-  constructor(@Inject(MAT_DIALOG_DATA) private data: Note | CreateNotePopupData,
+  constructor(@Inject(MAT_DIALOG_DATA) private data: NotePopupData,
               private notesApiService: NotesApiService,
               private dialogRef: MatDialogRef<NewNoteComponent>) {
-    if ('position' in data) {
+    if (data.mode === State.CREATE) {
       // creating new note
-      const noteData = data as CreateNotePopupData;
+      const noteData = data.noteData as {position: Vector2, boardKey: string};
       this.position = noteData.position;
       this.boardKey = noteData.boardKey;
-      this.mode = 'create';
+      this.mode = State.CREATE;
       this.submitButtonText = 'Create';
     }
     else {
       // editing existing note
-      this.editableNote = data as Note;
+      this.editableNote = data.noteData as Note;
       this.newNoteForm.controls.content.setValue(this.editableNote.content);
       this.newNoteForm.controls.options.setValue(this.getValueByHex(this.editableNote.color));
       this.submitButtonText = 'Update';
-      this.mode = 'edit';
+      this.mode = State.EDIT;
     }
   }
 
@@ -102,7 +103,7 @@ export class NewNoteComponent implements OnInit {
   }
 
   public handleSubmit(): void {
-    if (this.mode === 'edit') {
+    if (this.mode === State.EDIT) {
       this.updateNote();
     } else {
       this.createNote();
