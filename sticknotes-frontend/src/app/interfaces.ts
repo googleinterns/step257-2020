@@ -1,6 +1,6 @@
 import { Vector2 } from './utility/vector';
 import { State } from './enums/state.enum';
-import { UserRole } from './models/user-role.enum';
+import { UserRole } from './enums/user-role.enum';
 
 export interface User {
   key: string;

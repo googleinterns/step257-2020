@@ -24,6 +24,7 @@ import { NewNoteComponent } from './new-note/new-note.component';
 import { RangeLoopPipe } from './pipes';
 import { MatRadioModule } from '@angular/material/radio';
 import { HttpClientModule } from '@angular/common/http';
+import { AddUserComponent } from './add-user/add-user.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { HttpClientModule } from '@angular/common/http';
     UserListComponent,
     BoardsListComponent,
     NewNoteComponent,
-    RangeLoopPipe
+    RangeLoopPipe,
+    AddUserComponent
   ],
   imports: [
     BrowserModule,
