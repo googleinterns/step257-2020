@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { noSpacesValidator } from '../utility/util';
 import { BoardApiService } from '../services/board-api.service';
+import { State } from '../enums/state.enum';
 
 @Component({
   selector: 'app-new-board',
@@ -13,7 +14,7 @@ import { BoardApiService } from '../services/board-api.service';
 export class NewBoardComponent implements OnInit {
   public sendingData = false;
   public submitButton: string;
-  private mode: 'create' | 'edit';
+  private mode: State;
   private boardKey: string;
   public newBoardForm = new FormGroup({
     boardTitle: new FormControl('', [
@@ -32,10 +33,10 @@ export class NewBoardComponent implements OnInit {
       this.newBoardForm.controls.boardTitle.setValue(this.data.currentTitle);
       this.boardKey = this.data.boardKey;
       this.submitButton = 'Update';
-      this.mode = 'edit';
+      this.mode = State.EDIT;
     } else {
       this.submitButton = 'Create';
-      this.mode = 'create';
+      this.mode = State.CREATE;
     }
   }
 
@@ -64,7 +65,7 @@ export class NewBoardComponent implements OnInit {
   }
 
   public handleSubmit(): void {
-    if (this.mode === 'edit') {
+    if (this.mode === State.EDIT) {
       this.updateBoard();
     } else {
       this.createNewBoard();
