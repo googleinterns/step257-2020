@@ -15,13 +15,13 @@ export class NewBoardComponent implements OnInit {
       Validators.required,
       noSpacesValidator
     ])
-  })
+  });
   constructor(private router: Router, private dialogRef: MatDialogRef<NewBoardComponent>) { }
 
   ngOnInit(): void {
   }
 
-  public createNewBoard() {
+  public createNewBoard(): void {
     if (this.newBoardForm.valid) {
       this.dialogRef.close();
       this.router.navigateByUrl('board/1');
