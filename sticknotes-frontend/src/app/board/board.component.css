@@ -54,12 +54,12 @@
   height: 100%;
 }
 
-.edit-note-button {
+.note-button {
   height: 24px;
   width: 24px;
 }
 
-.edit-note-icon {
+.note-icon {
   vertical-align: unset;
 }
 

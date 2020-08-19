@@ -17,3 +17,24 @@
 .toggle-button {
   font-size: 30px;
 }
+
+.board-info {
+  margin-top: 20px;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-container h3 {
+  margin: 0px;
+}
+
+mat-card-content {
+  width: 250px;
+}
+
+
