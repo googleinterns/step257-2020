@@ -187,6 +187,20 @@ export class BoardComponent implements OnInit {
     });
   }
 
+  public deleteNote(note: Note): void {
+    const reallyWantToDelete = confirm('Delete this note?');
+    if (reallyWantToDelete) {
+      const noteKey = note.key;
+      const indexOfNote = this.board.notes.indexOf(note);
+      if (indexOfNote !== -1) {
+        this.notesApiService.deleteNote(noteKey).subscribe(() => {
+          this.board.notes.splice(indexOfNote, 1);
+          this.updateBoardAbstractGrid();
+        });
+      }
+    }
+  }
+  
   public getBoardWidth() {
     if (this.board) {
       return `width:${this.NOTE_WIDTH * this.board.cols}px;height:${this.NOTE_HEIGHT * this.board.rows}px`;

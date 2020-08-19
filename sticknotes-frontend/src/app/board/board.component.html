@@ -9,25 +9,28 @@
           </button>
         </div>
       </div>
-      <div *ngFor="let note of board.notes; let i = index">
-        <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)" (cdkDragEnded)="onNoteDrop($event, note)"
-          cdkDrag class="mat-card-wrapper" [style]="getNoteStyle(note)">
-          <mat-card [style]="'background-color:' + note.color">
-            <mat-card-content>
-              <div class="card-header">
-                <p>{{note.creator}}</p>
-                <div class="card-header-buttons-group">
-                  <button mat-icon-button class="edit-note-button" (click)="openEditNoteDialog(note)">
-                    <mat-icon class="edit-note-icon">edit</mat-icon>
-                  </button>
-                  <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
-                </div>
+    </div>
+    <div *ngFor="let note of board.notes; let i = index">
+      <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)" (cdkDragEnded)="onNoteDrop($event, note)"
+        cdkDrag class="mat-card-wrapper" [style]="getNoteStyle(note)">
+        <mat-card [style]="'background-color:' + note.color">
+          <mat-card-content>
+            <div class="card-header">
+              <div class="card-header-buttons-group">
+                <button mat-icon-button class="note-button" (click)="deleteNote(note);">
+                  <mat-icon class="note-icon">delete</mat-icon>
+                </button>
+                <button mat-icon-button class="note-button" (click)="openEditNoteDialog(note)">
+                  <mat-icon class="note-icon">edit</mat-icon>
+                </button>
               </div>
-              <p>{{note.content}}</p>
-              <p>{{note.creationDate}}</p>
-            </mat-card-content>
-          </mat-card>
-        </div>
+              <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+            </div>
+            <p>{{note.creator}}</p>
+            <p>{{note.content}}</p>
+            <p>{{note.creationDate}}</p>
+          </mat-card-content>
+        </mat-card>
       </div>
     </div>
   </div>
