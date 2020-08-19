@@ -28,7 +28,7 @@
             </div>
             <p>{{note.creator}}</p>
             <p>{{note.content}}</p>
-            <p>{{note.creationDate}}</p>
+            <p>{{getNoteCreationDate(note) | amCalendar}}</p>
           </mat-card-content>
         </mat-card>
       </div>

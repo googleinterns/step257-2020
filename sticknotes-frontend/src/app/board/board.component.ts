@@ -3,12 +3,12 @@ import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
 import { Note, Board, SidenavBoardData } from '../interfaces';
-import { ApiService } from '../services/api.service';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
+import { BoardApiService } from '../services/board-api.service';
 
 @Component({
   selector: 'app-board',
@@ -24,7 +24,7 @@ export class BoardComponent implements OnInit {
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
 
-  constructor(private apiService: ApiService, 
+  constructor(private boardApiService: BoardApiService,
               private dialog: MatDialog, 
               private activatedRoute: ActivatedRoute,
               private notesApiService: NotesApiService) {
@@ -35,7 +35,7 @@ export class BoardComponent implements OnInit {
     this.activatedRoute.paramMap.subscribe(params => {
       const boardKey = params.get('id'); // get board id from route param
       // load board with the key
-      this.apiService.getBoard(boardKey).subscribe(board => {
+      this.boardApiService.getBoard(boardKey).subscribe(board => {
         this.board = board;
         this.boardTitle = board.title;
         this.updateBoardAbstractGrid();
@@ -214,5 +214,9 @@ export class BoardComponent implements OnInit {
       return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.board.cols}px); height: min(100% - 100px, ${this.NOTE_HEIGHT * this.board.rows}px)`;
     }
     return '';
+  }
+
+  public getNoteCreationDate(note: Note) {
+    return new Date(Number(note.creationDate));
   }
 }
