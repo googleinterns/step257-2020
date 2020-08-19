@@ -27,7 +27,7 @@ export class AddUserComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  addUser(){
+  addUser(): void {
     const mockUser: User = {
       key: 'key123',
       nickname: 'ola',
@@ -41,7 +41,7 @@ export class AddUserComponent implements OnInit {
       role: UserRole.USER
     };
 
-    if(this.addUserForm.valid){
+    if (this.addUserForm.valid) {
       this.boardUsersService
           .addBoardUser(this.addUserForm.controls.userEmail.value, this.addUserForm.controls.role.value)
           .subscribe(user => {

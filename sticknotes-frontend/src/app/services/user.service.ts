@@ -19,7 +19,7 @@ export class UserService {
     };
     of(user).subscribe(fetchedUser => {
       this.authenticated.next(true);
-      this.userSubject.next(fetchedUser)
+      this.userSubject.next(fetchedUser);
     });
   }
 
