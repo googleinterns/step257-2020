@@ -1,3 +1,5 @@
+import { Vector2 } from './utility/vector';
+import { State } from './enums/state.enum';
 import { UserRole } from './enums/user-role.enum';
 
 export interface User {
@@ -25,7 +27,12 @@ export interface Board {
   backgroundImg: string | null;
 }
 
-export interface CreateNoteData {
+export interface NotePopupData {
+  mode: State;
+  noteData: {position: Vector2, boardKey: string} | Note;
+}
+
+export interface CreateNoteApiData {
   content: string;
   image?: string;
   color: string;
@@ -34,7 +41,7 @@ export interface CreateNoteData {
   boardKey: string;
 }
 
-export interface Note extends CreateNoteData {
+export interface Note extends CreateNoteApiData {
   key: string;
   creationDate: string;
   creator: string;

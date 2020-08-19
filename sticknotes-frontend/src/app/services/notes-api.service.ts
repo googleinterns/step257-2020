@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CreateNoteData, Note } from '../interfaces';
+import { CreateNoteApiData, Note } from '../interfaces';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
@@ -10,7 +10,7 @@ export class NotesApiService {
 
   constructor(private http: HttpClient) { }
 
-  public createNote(note: CreateNoteData): Observable<Note> {
+  public createNote(note: CreateNoteApiData): Observable<Note> {
     // comment this for now because we don't have backend yet
     // return this.http.post<Note>('api/notes/', note);
     // use mocked response for now
@@ -23,7 +23,13 @@ export class NotesApiService {
       content: note.content,
       color: note.color,
       boardKey: note.boardKey
-    }
+    };
     return of(mockedNoteResponse);
+  }
+
+  public updateNote(note: Note): Observable<Note> {
+    // comment this for now because we don't have backend yet
+    // return this.http.post<Note>('api/notes/', note);
+    return of (note);
   }
 }
