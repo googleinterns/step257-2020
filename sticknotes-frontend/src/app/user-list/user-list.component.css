@@ -11,6 +11,9 @@ mat-card-content {
   font-size: 48px;
   width: 48px;
   height: 60px;
+  padding: 0;
+  margin-left: -16px;
+  margin-right: -8px;
 }
 
 button {
