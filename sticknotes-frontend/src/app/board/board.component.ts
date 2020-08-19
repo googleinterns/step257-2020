@@ -7,6 +7,7 @@ import { ApiService } from '../services/api.service';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NotesApiService } from '../services/notes-api.service';
+import { State } from '../enums/state.enum';
 
 @Component({
   selector: 'app-board',
@@ -133,7 +134,7 @@ export class BoardComponent {
   // opens new-note component in a dialog and passes the position where the note has to be created
   public openNewNoteDialog(x: number, y: number): void {
     const dialogRef = this.dialog.open(NewNoteComponent, {
-      data: { position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardKey: this.board.key }
+      data: { mode: State.CREATE, noteData: {position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardKey: this.board.key }}
     });
     dialogRef.afterClosed().subscribe(note => {
       // receive a new note here and add it to the board
@@ -148,7 +149,7 @@ export class BoardComponent {
 
   public openEditNoteDialog(note: Note): void {
     const dialogRef = this.dialog.open(NewNoteComponent, {
-      data: note
+      data: {mode: State.EDIT, noteData: note}
     });
     dialogRef.afterClosed().subscribe(newNote => {
       // receive an updated note here and update it in the board

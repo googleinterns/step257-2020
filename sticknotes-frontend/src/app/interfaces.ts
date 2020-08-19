@@ -1,4 +1,5 @@
 import { Vector2 } from './utility/vector';
+import { State } from './enums/state.enum';
 
 export interface User {
   key: string;
@@ -25,9 +26,9 @@ export interface Board {
   backgroundImg: string | null;
 }
 
-export interface CreateNotePopupData {
-  position: Vector2;
-  boardKey: string;
+export interface NotePopupData {
+  mode: State;
+  noteData: {position: Vector2, boardKey: string} | Note;
 }
 
 export interface CreateNoteApiData {
