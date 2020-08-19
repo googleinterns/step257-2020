@@ -48,7 +48,6 @@ export class NewNoteComponent implements OnInit {
     else {
       // editing existing note
       this.editableNote = data.noteData as Note;
-      console.log(this.editableNote);
       this.newNoteForm.controls.content.setValue(this.editableNote.content);
       this.newNoteForm.controls.options.setValue(this.getValueByHex(this.editableNote.color));
       this.submitButtonText = 'Update';
