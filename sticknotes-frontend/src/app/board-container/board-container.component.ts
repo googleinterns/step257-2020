@@ -52,4 +52,10 @@ export class BoardContainerComponent implements OnInit {
       this.newTitle = updatedBoardTitle;
     });
   }
+
+  public getBoardCreatedDate(): Date {
+    if (this.sidenavBoardData) {
+      return new Date(Number(this.sidenavBoardData.creationDate));
+    }
+  }
 }
