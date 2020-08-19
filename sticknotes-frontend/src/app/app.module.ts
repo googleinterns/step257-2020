@@ -25,6 +25,7 @@ import { RangeLoopPipe } from './pipes';
 import { MatRadioModule } from '@angular/material/radio';
 import { HttpClientModule } from '@angular/common/http';
 import { MomentModule } from 'ngx-moment';
+import { AddUserComponent } from './add-user/add-user.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { MomentModule } from 'ngx-moment';
     UserListComponent,
     BoardsListComponent,
     NewNoteComponent,
-    RangeLoopPipe
+    RangeLoopPipe,
+    AddUserComponent
   ],
   imports: [
     BrowserModule,

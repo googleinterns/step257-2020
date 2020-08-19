@@ -1,11 +1,16 @@
 <mat-card class="mat-elevation-z12">
-  <mat-card-title> Users {{adminView}}</mat-card-title>
+  <mat-card-title> Users </mat-card-title>
   <mat-card-content>
     <mat-list>
       <mat-list-item *ngFor="let userWithRole of usersWithRole">
-        <mat-icon color="primary"  matListIcon>account_circle</mat-icon>
+        <mat-icon color="primary" matListIcon>account_circle</mat-icon>
         <div matLine> {{ userWithRole.user.nickname }} </div>
-        <div mat-line> {{ userWithRole.user.email }} </div> 
+        <div mat-line> {{ userWithRole.user.email }} <p class="mat-small"> {{ userWithRole.role }} </p> </div>   
+      </mat-list-item>
+      <mat-list-item>
+        <button *ngIf="adminView" mat-mini-fab color="primary" (click) = 'openAddUserDialog()' aria-label="Open add user dialog">
+          <mat-icon>add</mat-icon>
+        </button>
       </mat-list-item>
     </mat-list>
   </mat-card-content>
