@@ -1,33 +1,33 @@
-<div class="board-header">
+<div class="flex-container">
   <h3>{{board.title}}</h3>
-</div>
-<div class="board-wrapper">
-  <div class="board" [style]="'width:' + NOTE_WIDTH * board.cols + 'px;height:' + NOTE_HEIGHT * board.rows + 'px'">
-    <div *ngFor="let y of board.rows | rangeLoop">
-      <div *ngFor="let x of board.cols | rangeLoop" class="new-note-container" [style]="getSlotStyle(x, y)">
-        <button mat-icon-button aria-label="Create new note" (click)="openNewNoteDialog(x, y)">
-          <mat-icon color="primary">add</mat-icon>
-        </button>
+  <div class="board-wrapper" [style]="getBoardWrapperStyle()">
+    <div class="board" [style]="getBoardWidth()">
+      <div *ngFor="let y of board.rows | rangeLoop">
+        <div *ngFor="let x of board.cols | rangeLoop" class="new-note-container" [style]="getSlotStyle(x, y)">
+          <button mat-icon-button aria-label="Create new note" (click)="openNewNoteDialog(x, y)">
+            <mat-icon color="primary">add</mat-icon>
+          </button>
+        </div>
       </div>
-    </div>
-    <div *ngFor="let note of board.notes; let i = index">
-      <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)" (cdkDragEnded)="onNoteDrop($event, note)"
-        cdkDrag class="mat-card-wrapper" [style]="getNoteStyle(note)">
-        <mat-card [style]="'background-color:' + note.color">
-          <mat-card-content>
-            <div class="card-header">
-              <p>{{note.creator}}</p>
-              <div class="card-header-buttons-group">
-                <button mat-icon-button class="edit-note-button" (click)="openEditNoteDialog(note)">
-                  <mat-icon class="edit-note-icon">edit</mat-icon>
-                </button>
-                <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+      <div *ngFor="let note of board.notes; let i = index">
+        <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)" (cdkDragEnded)="onNoteDrop($event, note)"
+          cdkDrag class="mat-card-wrapper" [style]="getNoteStyle(note)">
+          <mat-card [style]="'background-color:' + note.color">
+            <mat-card-content>
+              <div class="card-header">
+                <p>{{note.creator}}</p>
+                <div class="card-header-buttons-group">
+                  <button mat-icon-button class="edit-note-button" (click)="openEditNoteDialog(note)">
+                    <mat-icon class="edit-note-icon">edit</mat-icon>
+                  </button>
+                  <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+                </div>
               </div>
-            </div>
-            <p>{{note.content}}</p>
-            <p>{{note.creationDate}}</p>
-          </mat-card-content>
-        </mat-card>
+              <p>{{note.content}}</p>
+              <p>{{note.creationDate}}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
       </div>
     </div>
   </div>
