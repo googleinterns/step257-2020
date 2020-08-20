@@ -10,7 +10,7 @@ import com.googlecode.objectify.annotation.Load;
 public class Whiteboard {
   public @Id Long id;
   public Long creationDate; //it's a timestamp
-  public @Load Ref<User> creator;
+  private @Load Ref<User> creator;
   public String title;
   public int rows;
   public int cols;
