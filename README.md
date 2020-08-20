@@ -11,7 +11,7 @@ ng serve
 To run backend locally, execute
 ```
 cd sticknotesbackend
-mvn package appengine:run
+./run.sh
 ```
 
 To run tests, launch datastore emulator with `gcloud beta emulators datastore start`
