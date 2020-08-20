@@ -24,6 +24,7 @@ public class RedirectFilter implements Filter {
       RequestDispatcher dispatcher = context.getRequestDispatcher("/index.html");
       dispatcher.forward(request, response);
     }
+    chain.doFilter(request, response);
   }
 
   private boolean isApiUrl(String url) {

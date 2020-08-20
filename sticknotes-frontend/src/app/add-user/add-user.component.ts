@@ -21,7 +21,7 @@ export class AddUserComponent implements OnInit {
       Validators.required,
       Validators.email
     ]),
-    role: new FormControl(UserRole.USER.toString(),[
+    role: new FormControl(UserRole.USER.toString(), [
     Validators.required
     ])
   });

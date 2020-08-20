@@ -36,7 +36,7 @@ export class BoardUsersApiService {
   }
 
   public getBoardUsers(boardKey: string): Observable<UserBoardRole[]> {
-    //return deep copy of this.users instead of reference
+    // return deep copy of this.users instead of reference
     return of(JSON.parse(JSON.stringify(this.users)));
   }
 
@@ -50,14 +50,14 @@ export class BoardUsersApiService {
       },
       boardKey: 'boardKey',
       role: userRole
-    }
+    };
     this.users.push(user);
     return of(user);
   }
 
-  public removeUser(userKey: string): Observable<void> {
+  public removeUser(userKey: string): Observable<string> {
     const indexOfUser = this.users.findIndex(user => user.user.key === userKey);
     this.users.splice(indexOfUser, 1);
-    return of();
+    return of(userKey);
   }
 }

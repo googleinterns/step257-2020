@@ -49,4 +49,13 @@ export class UserListComponent implements OnInit {
       }
     });
   }
+
+  removeUser(user: UserBoardRole): void {
+    this.boardUsersService.removeUser(user.user.key).subscribe( (userKey) => {
+      const userIndex = this.usersWithRole.findIndex(userWithRole => userWithRole.user.key === userKey);
+      if (userIndex >= 0 && userIndex < this.usersWithRole.length){
+        this.usersWithRole.splice(userIndex, 1);
+      }
+    });
+  }
 }

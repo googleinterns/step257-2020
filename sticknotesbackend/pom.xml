@@ -41,6 +41,11 @@
       <artifactId>jstl</artifactId>
       <version>1.2</version>
     </dependency>
+    <dependency>
+      <groupId>com.googlecode.objectify</groupId>
+      <artifactId>objectify</artifactId>
+      <version>6.0.6</version>
+    </dependency>
 
     <!-- Test Dependencies -->
     <dependency>
@@ -55,21 +60,24 @@
       <version>1.9.59</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-tools-sdk</artifactId>
       <version>1.9.59</version>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-endpoints</artifactId>
+      <version>1.9.59</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.google.truth</groupId>
       <artifactId>truth</artifactId>
       <version>0.33</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

@@ -46,3 +46,10 @@ export interface Note extends CreateNoteApiData {
   creationDate: string;
   creator: string;
 }
+
+export interface SidenavBoardData {
+  key: string;
+  creationDate: string;
+  title: string;
+  backgroundImg: string | null;
+}
