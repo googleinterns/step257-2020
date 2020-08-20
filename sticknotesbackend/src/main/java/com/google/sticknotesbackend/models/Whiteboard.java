@@ -7,13 +7,13 @@ import com.googlecode.objectify.annotation.Load;
 
 @Entity
 public class Whiteboard {
-  @Id Long id;
-  Long creationDate; //it's a timestamp
-  @Load Ref<User> creator;
-  String title;
-  int rows;
-  int cols;
-  String backgroundImg;
+  public @Id Long id;
+  public Long creationDate; //it's a timestamp
+  public @Load Ref<User> creator;
+  public String title;
+  public int rows;
+  public int cols;
+  public String backgroundImg;
 
   public Whiteboard() {}
 

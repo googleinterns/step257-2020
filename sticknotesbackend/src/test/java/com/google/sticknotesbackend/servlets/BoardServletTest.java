@@ -1,4 +1,4 @@
-package com.google.sticknotesbackend;
+package com.google.sticknotesbackend.servlets;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.when;
@@ -6,11 +6,9 @@ import static org.mockito.Mockito.when;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.cloud.NoCredentials;
-import com.google.cloud.ServiceOptions;
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
 import com.google.gson.JsonObject;
+import com.google.sticknotesbackend.models.User;
+import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.Closeable;
@@ -47,7 +45,8 @@ public class BoardServletTest {
   @BeforeClass
   public static void setUpBeforeClass() {
     ObjectifyService.init(new ObjectifyFactory());
-    ObjectifyService.register(Board.class);
+    ObjectifyService.register(Whiteboard.class);
+    ObjectifyService.register(User.class);
   }
 
   @Before
@@ -55,7 +54,7 @@ public class BoardServletTest {
     MockitoAnnotations.initMocks(this);
     helper.setUp();
     session = ObjectifyService.begin();
-    ObjectifyService.register(Board.class);
+    ObjectifyService.register(Whiteboard.class);
     // Set up a HTTP request
     when(mockRequest.getContentType()).thenReturn("application/json");
     // Set up a fake HTTP response

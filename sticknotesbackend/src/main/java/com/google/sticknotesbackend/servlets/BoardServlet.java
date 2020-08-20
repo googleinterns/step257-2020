@@ -2,13 +2,15 @@
  * Notesboard
  * Board API servlet
  */
-package com.google.sticknotesbackend;
+package com.google.sticknotesbackend.servlets;
+
+import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import static com.googlecode.objectify.ObjectifyService.ofy;
-
 import com.google.gson.Gson;
+import com.google.sticknotesbackend.models.User;
+import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Key;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -32,14 +34,13 @@ public class BoardServlet extends NotesboardAbstractServlet {
   // creates a new board
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Gson gson = new Gson();
-    Board board = gson.fromJson(req.getReader(), Board.class);
-    board.creationDate = Long.toString(System.currentTimeMillis());
-    board.creator = "googler@google.com";
+    Whiteboard board = gson.fromJson(req.getReader(), Whiteboard.class);
+    board.creationDate = System.currentTimeMillis();
+    board.setCreator(new User("googler@google.com", "nickname", "email"));
     board.rows = 4;
     board.cols = 6;
-    Key<Board> savedBoardKey = ofy().save().entity(board).now();
+    Key<Whiteboard> savedBoardKey = ofy().save().entity(board).now();
     board.id = savedBoardKey.getId();
     resp.getWriter().println(gson.toJson(board));
   }

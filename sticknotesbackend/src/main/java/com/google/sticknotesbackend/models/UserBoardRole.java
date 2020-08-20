@@ -11,7 +11,7 @@ public class UserBoardRole {
   @Load Ref<Whiteboard> board;
   @Load Ref<User> user;
 
-  public UserBoardRole(Role role, Whiteboard board, User user){
+  public UserBoardRole(Role role, Whiteboard board, User user) {
     this.board = Ref.create(board);
     this.user = Ref.create(user);
     this.role = role.label;

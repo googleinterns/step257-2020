@@ -1,4 +1,4 @@
-package com.google.sticknotesbackend;
+package com.google.sticknotesbackend.servlets;
 
 /**
  * Notesboard

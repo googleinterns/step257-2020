@@ -10,7 +10,7 @@ public class Note {
   @Id Long id;
   String content;
   String image;
-  Long creationDate; //timestamp here
+  Long creationDate; // timestamp here
   int x;
   int y;
   String color;
