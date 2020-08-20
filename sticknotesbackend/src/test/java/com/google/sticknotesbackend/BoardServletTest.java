@@ -4,7 +4,12 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.cloud.NoCredentials;
+import com.google.cloud.ServiceOptions;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
 import com.google.gson.JsonObject;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
@@ -30,7 +35,8 @@ import org.mockito.MockitoAnnotations;
 @RunWith(JUnit4.class)
 public class BoardServletTest {
   // Set up a helper so that the ApiProxy returns a valid environment for local testing.
-  private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+  private final LocalServiceTestHelper helper =
+      new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(), new LocalDatastoreServiceTestConfig());
   private Closeable session;
 
   @Mock private HttpServletRequest mockRequest;
@@ -40,8 +46,7 @@ public class BoardServletTest {
 
   @BeforeClass
   public static void setUpBeforeClass() {
-    // Reset the Factory so that all translators work properly.
-    ObjectifyService.init();
+    ObjectifyService.init(new ObjectifyFactory());
     ObjectifyService.register(Board.class);
   }
 
