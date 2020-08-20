@@ -1,5 +1,6 @@
 package com.google.sticknotesbackend.models;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -25,7 +26,8 @@ public class Whiteboard {
     return creator.get();
   }
 
-  public void setCreator(User user){
+  public void setCreator(Key<User> user){
+    // for now create a user, later retrieve key of the existing user from datastore
     this.creator = Ref.create(user);
   }
 }
