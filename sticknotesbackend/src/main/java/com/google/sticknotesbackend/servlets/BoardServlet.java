@@ -11,7 +11,6 @@ import com.google.gson.GsonBuilder;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.google.sticknotesbackend.serializers.WhiteboardSerializer;
-import com.googlecode.objectify.Key;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("api/board/")
 public class BoardServlet extends NotesboardAbstractServlet {
-  private final int CREATED = 204;
+  private final int CREATED = 201;
   private final int BAD_REQUEST = 400;
   // retrieves a board with the given id
   @Override
@@ -54,7 +53,7 @@ public class BoardServlet extends NotesboardAbstractServlet {
     Whiteboard board = gson.fromJson(request.getReader(), Whiteboard.class);
     board.creationDate = System.currentTimeMillis();
     // for now I create a dummy user entity, later user entity will be retrieved from datastore
-    board.setCreator(ofy().save().entity(new User("randomid", "googler@google.com", "nickname")).now());
+    board.setCreator(new User("randomid", "googler@google.com", "nickname"));
     board.rows = 4;
     board.cols = 6;
     // when the board is saved, get the auto generated id and assign to the board field

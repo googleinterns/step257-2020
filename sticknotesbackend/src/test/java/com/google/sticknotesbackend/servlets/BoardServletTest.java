@@ -39,7 +39,7 @@ import org.mockito.MockitoAnnotations;
  */
 @RunWith(JUnit4.class)
 public class BoardServletTest {
-  private final int CREATED = 204;
+  private final int CREATED = 201;
   private final int BAD_REQUEST = 400;
   // Set up a helper so that the ApiProxy returns a valid environment for local testing.
   private final LocalServiceTestHelper helper =
@@ -56,7 +56,7 @@ public class BoardServletTest {
     // necessary setup to make Obejctify work
     DatastoreOptions options = DatastoreOptions.newBuilder()
             .setProjectId("dummy")
-            .setHost("localhost:8081")
+            .setHost("localhost:8484")
             .setCredentials(NoCredentials.getInstance())
             .setRetrySettings(ServiceOptions.getNoRetrySettings())
             .build();
@@ -192,7 +192,7 @@ public class BoardServletTest {
     Whiteboard board = new Whiteboard("test");
     board.creationDate = System.currentTimeMillis();
     // create dummy user and set this user as a creator of the board
-    board.setCreator(ofy().save().entity(new User("randomid", "googler@google.com", "nickname")).now());
+    board.setCreator(new User("randomid", "googler@google.com", "nickname"));
     board.rows = 4;
     board.cols = 6;
     return board;

@@ -26,7 +26,7 @@ public class Whiteboard {
     return creator.get();
   }
 
-  public void setCreator(Key<User> user){
+  public void setCreator(User user){
     // for now create a user, later retrieve key of the existing user from datastore
     this.creator = Ref.create(user);
   }
