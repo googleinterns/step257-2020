@@ -34,6 +34,11 @@ public class BoardServlet extends NotesboardAbstractServlet {
     if (boardIdParam != null) {
       long boardId = Long.parseLong(boardIdParam);
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
+      if (board == null) {
+        response.getWriter().println("Board with this id doesn't exist");
+        response.sendError(BAD_REQUEST);
+        return;
+      }
       Gson gson = getBoardGsonParser();
       response.getWriter().println(gson.toJson(board));
     } else {
@@ -66,11 +71,24 @@ public class BoardServlet extends NotesboardAbstractServlet {
     // load board with requested id from the database
     String boardIdParam = request.getParameter("id");
     if (boardIdParam != null) {
+      // get board that is to be edited from datastore
       long boardId = Long.parseLong(boardIdParam);
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
+      if (board == null) {
+        // if board is null, it means there is no board with such id in the datastore
+        response.getWriter().println("Board with this id doesn't exist");
+        response.sendError(BAD_REQUEST);
+        return;
+      }
       Gson gson = getBoardGsonParser();
       // get board object with edited fields
       Whiteboard editedBoard = gson.fromJson(request.getReader(), Whiteboard.class);
+      if (editedBoard.title == null) {
+        // if title is not initialized, it means it wasn't send, throw bad request
+        response.getWriter().println("Invalid field edit attempt");
+        response.sendError(BAD_REQUEST);
+        return;
+      }
       // update entity fields
       board.title = editedBoard.title;
       ofy().save().entity(board).now();

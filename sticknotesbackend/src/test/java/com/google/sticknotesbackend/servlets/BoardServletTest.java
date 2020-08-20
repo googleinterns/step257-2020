@@ -8,6 +8,10 @@ import static org.mockito.Mockito.when;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.cloud.NoCredentials;
+import com.google.cloud.ServiceOptions;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
@@ -15,6 +19,7 @@ import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.Closeable;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -35,6 +40,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(JUnit4.class)
 public class BoardServletTest {
   private final int CREATED = 204;
+  private final int BAD_REQUEST = 400;
   // Set up a helper so that the ApiProxy returns a valid environment for local testing.
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(), new LocalDatastoreServiceTestConfig());
@@ -48,7 +54,14 @@ public class BoardServletTest {
   @BeforeClass
   public static void setUpBeforeClass() {
     // necessary setup to make Obejctify work
-    ObjectifyService.init(new ObjectifyFactory());
+    DatastoreOptions options = DatastoreOptions.newBuilder()
+            .setProjectId("dummy")
+            .setHost("localhost:8081")
+            .setCredentials(NoCredentials.getInstance())
+            .setRetrySettings(ServiceOptions.getNoRetrySettings())
+            .build();
+    Datastore datastore = options.getService();
+    ObjectifyService.init(new ObjectifyFactory(datastore));
     ObjectifyService.register(Whiteboard.class);
     ObjectifyService.register(User.class);
   }
@@ -122,6 +135,56 @@ public class BoardServletTest {
     // check if datastore entity really updated
     Whiteboard storedBoard = ofy().load().type(Whiteboard.class).id(board.id).now();
     assertThat(storedBoard.title.equals(newBoardTitle));
+  }
+
+  @Test
+  public void testBoardRetrieveFailsWithUnexistingId() throws IOException {
+    // create board entity
+    Whiteboard board = getMockBoard();
+    // when the board is saved, get the auto generated id and assign to board field
+    board.id = ofy().save().entity(board).now().getId();
+    // call get with board.id + 1
+    // mock request get parameter
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id + 1));
+    
+    boardServlet.doGet(mockRequest, mockResponse);
+    // check that bad request error was generated
+    verify(mockResponse).sendError(BAD_REQUEST);
+  }
+
+  @Test
+  public void testBoardEditFailsWithUnexistingId() throws IOException {
+    // create board entity
+    Whiteboard board = getMockBoard();
+    // when the board is saved, get the auto generated id and assign to board field
+    board.id = ofy().save().entity(board).now().getId();
+    // call get with board.id + 1
+    // mock request get parameter
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id + 1));
+    
+    boardServlet.doPatch(mockRequest, mockResponse);
+    // check that bad request error was generated
+    verify(mockResponse).sendError(BAD_REQUEST);
+  }
+
+  @Test
+  public void testBoardEditFailsWithInvalidPayload() throws Exception {
+    String newBoardTitle = "New board title";
+    // create board firstly
+    Whiteboard board = getMockBoard();
+    // when the board is saved, get the auto generated id and assign to board field
+    board.id = ofy().save().entity(board).now().getId();
+    // mock request get parameter
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id));
+    // mock request payload
+    JsonObject jsonObject = new JsonObject();
+    // set unexisting property "newTitle"
+    jsonObject.addProperty("newtTitle", newBoardTitle);
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+    
+    boardServlet.doPatch(mockRequest, mockResponse);
+    // check that bad request error was generated
+    verify(mockResponse).sendError(BAD_REQUEST);
   }
 
   // helper method that constructs a testing object of Whiteboard
