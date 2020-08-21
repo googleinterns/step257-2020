@@ -175,16 +175,16 @@ public class UserListServletTest extends NotesboardTestBase {
     }   
    */
 
-  @Test
-  public void testAddUserToBoard() throws IOException{
-    JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("userId", "key6");
-    jsonObject.addProperty("role", "admin");
-    jsonObject.addProperty("boardId", boardId1.toString());
+  // @Test
+  // public void testAddUserToBoard() throws IOException{
+  //   JsonObject jsonObject = new JsonObject();
+  //   jsonObject.addProperty("userId", "key6");
+  //   jsonObject.addProperty("role", "admin");
+  //   jsonObject.addProperty("boardId", boardId1.toString());
 
-    when(mockRequest.getParameter("id")).thenReturn(boardId1.toString());
-    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+  //   when(mockRequest.getParameter("id")).thenReturn(boardId1.toString());
+  //   when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
 
-    userListServlet.doPost(mockRequest, mockResponse);
-  }
+  //   userListServlet.doPost(mockRequest, mockResponse);
+  // }
 }

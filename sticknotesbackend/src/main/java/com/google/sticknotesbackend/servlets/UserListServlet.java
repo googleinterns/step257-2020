@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
+import com.googlecode.objectify.Key;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 
@@ -36,7 +37,7 @@ public class UserListServlet extends HttpServlet {
     if (boardId != null) {
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
       if (board != null) {
-        List<UserBoardRole> boardUsers = ofy().load().type(UserBoardRole.class).filter("board", board).list();
+        List<UserBoardRole> boardUsers = ofy().load().type(UserBoardRole.class).filter("board", boardId).list();
         Gson userBoardRoleParser = getBoardGsonParser();
 
         String responseJson = userBoardRoleParser.toJson(boardUsers);
@@ -53,6 +54,22 @@ public class UserListServlet extends HttpServlet {
       response.sendError(BAD_REQUEST);
       return;
     }
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String boardIdParam = request.getParameter("id");
+    Long boardId = null;
+    try {
+      boardId = Long.valueOf(boardIdParam);
+    } catch (NumberFormatException e) {
+      e.printStackTrace();
+    }
+
+    Gson gson = getBoardGsonParser();
+    UserBoardRole board = gson.fromJson(request.getReader(), UserBoardRole.class);
+
+    System.out.println(gson.toJson(board));
   }
 
   public Gson getBoardGsonParser() {
