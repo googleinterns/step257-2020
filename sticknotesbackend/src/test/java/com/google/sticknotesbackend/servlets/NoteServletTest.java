@@ -2,6 +2,7 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.googlecode.objectify.ObjectifyService.ofy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.Gson;
@@ -77,5 +78,6 @@ public class NoteServletTest extends NotesboardTestBase {
     // verify that no note with this id is in the datastore
     Note deletedNote = ofy().load().type(Note.class).id(note.id).now();
     assertThat(deletedNote == null);
+    verify(mockResponse).setStatus(NO_CONTENT);
   }
 }

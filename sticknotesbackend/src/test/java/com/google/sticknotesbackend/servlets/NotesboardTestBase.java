@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 public abstract class NotesboardTestBase {
   protected final int CREATED = 201;
   protected final int BAD_REQUEST = 400;
+  protected final int NO_CONTENT = 204;
   // Set up a helper so that the ApiProxy returns a valid environment for local testing.
   protected final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(), new LocalDatastoreServiceTestConfig());
