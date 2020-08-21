@@ -15,7 +15,7 @@ export class NewBoardComponent implements OnInit {
   public sendingData = false;
   public submitButton: string;
   private mode: State;
-  private boardKey: string;
+  private boardId: string;
   public newBoardForm = new FormGroup({
     boardTitle: new FormControl('', [
       Validators.required,
@@ -31,7 +31,7 @@ export class NewBoardComponent implements OnInit {
     // if component in edit mode, prepopulate form data
     if (this.data && this.data.currentTitle) {
       this.newBoardForm.controls.boardTitle.setValue(this.data.currentTitle);
-      this.boardKey = this.data.boardKey;
+      this.boardId = this.data.boardId;
       this.submitButton = 'Update';
       this.mode = State.EDIT;
     } else {
@@ -48,7 +48,7 @@ export class NewBoardComponent implements OnInit {
       this.sendingData = true;
       this.boardApiService.createBoard(boardTitle).subscribe(newBoard => {
         this.dialogRef.close();
-        this.router.navigateByUrl(`board/${newBoard.key}`);
+        this.router.navigateByUrl(`board/${newBoard.id}`);
       });
     }
   }
@@ -58,7 +58,7 @@ export class NewBoardComponent implements OnInit {
     if (this.newBoardForm.valid) {
       const boardTitle = this.newBoardForm.controls.boardTitle.value;
       this.sendingData = true;
-      this.boardApiService.updateBoardTitle(this.boardKey, boardTitle).subscribe(updatedBoard => {
+      this.boardApiService.updateBoardTitle(this.boardId, boardTitle).subscribe(updatedBoard => {
         this.dialogRef.close(boardTitle);
       });
     }

@@ -11,12 +11,12 @@ export interface User {
 
 export interface UserBoardRole {
   user: User;
-  boardKey: string;
+  boardId: string;
   role: UserRole;
 }
 
 export interface Board {
-  key: string;
+  id: string;
   notes: Note[];
   users: UserBoardRole[];
   creationDate: string;
@@ -29,7 +29,7 @@ export interface Board {
 
 export interface NotePopupData {
   mode: State;
-  noteData: {position: Vector2, boardKey: string} | Note;
+  noteData: {position: Vector2, boardId: string} | Note;
 }
 
 export interface CreateNoteApiData {
@@ -38,17 +38,17 @@ export interface CreateNoteApiData {
   color: string;
   x: number;
   y: number;
-  boardKey: string;
+  boardId: string;
 }
 
 export interface Note extends CreateNoteApiData {
-  key: string;
+  id: string;
   creationDate: string;
   creator: string;
 }
 
 export interface SidenavBoardData {
-  key: string;
+  id: string;
   creationDate: string;
   title: string;
   backgroundImg: string | null;

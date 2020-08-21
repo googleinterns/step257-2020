@@ -1,4 +1,4 @@
-<div class="flex-container">
+<div class="flex-container" *ngIf="board">
   <h3>{{boardTitle}}</h3>
   <div class="board-wrapper" [style]="getBoardWrapperStyle()">
     <div class="board" [style]="getBoardWidth()">

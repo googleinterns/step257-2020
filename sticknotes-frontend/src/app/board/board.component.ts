@@ -25,23 +25,23 @@ export class BoardComponent implements OnInit {
   public readonly NOTE_HEIGHT = 250;
 
   constructor(private boardApiService: BoardApiService,
-              private dialog: MatDialog, 
-              private activatedRoute: ActivatedRoute,
-              private notesApiService: NotesApiService) {
+    private dialog: MatDialog,
+    private activatedRoute: ActivatedRoute,
+    private notesApiService: NotesApiService) {
   }
 
   ngOnInit(): void {
     // load board
     this.activatedRoute.paramMap.subscribe(params => {
-      const boardKey = params.get('id'); // get board id from route param
+      const boardId = params.get('id'); // get board id from route param
       // load board with the key
-      this.boardApiService.getBoard(boardKey).subscribe(board => {
+      this.boardApiService.getBoard(boardId).subscribe(board => {
         this.board = board;
         this.boardTitle = board.title;
         this.updateBoardAbstractGrid();
         // pass essential board's data to the sidenav
         const sidenavData: SidenavBoardData = {
-          key: board.key,
+          id: board.id,
           title: board.title,
           creationDate: board.creationDate,
           backgroundImg: board.backgroundImg
@@ -89,11 +89,14 @@ export class BoardComponent implements OnInit {
         }
       }
     }
-    this.board.notes.forEach(note => {
-      const i = Math.floor(note.y / this.NOTE_HEIGHT);
-      const j = Math.floor(note.x / this.NOTE_WIDTH);
-      this.boardGrid[i][j] = 1;
-    });
+
+    if (this.board.notes) {
+      this.board.notes.forEach(note => {
+        const i = Math.floor(note.y / this.NOTE_HEIGHT);
+        const j = Math.floor(note.x / this.NOTE_WIDTH);
+        this.boardGrid[i][j] = 1;
+      });
+    }
   }
 
   // returns the closes available position to the given x and y
@@ -157,7 +160,7 @@ export class BoardComponent implements OnInit {
   // opens new-note component in a dialog and passes the position where the note has to be created
   public openNewNoteDialog(x: number, y: number): void {
     const dialogRef = this.dialog.open(NewNoteComponent, {
-      data: { mode: State.CREATE, noteData: {position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardKey: this.board.key }}
+      data: { mode: State.CREATE, noteData: { position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardId: this.board.id } }
     });
     dialogRef.afterClosed().subscribe(note => {
       // receive a new note here and add it to the board
@@ -172,13 +175,13 @@ export class BoardComponent implements OnInit {
 
   public openEditNoteDialog(note: Note): void {
     const dialogRef = this.dialog.open(NewNoteComponent, {
-      data: {mode: State.EDIT, noteData: note}
+      data: { mode: State.EDIT, noteData: note }
     });
     dialogRef.afterClosed().subscribe(newNote => {
       // receive an updated note here and update it in the board
       // data maybe undefined
       if (newNote) {
-        const updateNote = this.board.notes.find(n => n.key === newNote.key);
+        const updateNote = this.board.notes.find(n => n.id === newNote.id);
         if (updateNote) {
           updateNote.content = newNote.content;
           updateNote.color = newNote.color;
@@ -190,10 +193,10 @@ export class BoardComponent implements OnInit {
   public deleteNote(note: Note): void {
     const reallyWantToDelete = confirm('Delete this note?');
     if (reallyWantToDelete) {
-      const noteKey = note.key;
+      const noteId = note.id;
       const indexOfNote = this.board.notes.indexOf(note);
       if (indexOfNote !== -1) {
-        this.notesApiService.deleteNote(noteKey).subscribe(() => {
+        this.notesApiService.deleteNote(noteId).subscribe(() => {
           this.board.notes.splice(indexOfNote, 1);
           // set 0 to the position of the note
           this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
@@ -201,7 +204,7 @@ export class BoardComponent implements OnInit {
       }
     }
   }
-  
+
   public getBoardWidth() {
     if (this.board) {
       return `width:${this.NOTE_WIDTH * this.board.cols}px;height:${this.NOTE_HEIGHT * this.board.rows}px`;
