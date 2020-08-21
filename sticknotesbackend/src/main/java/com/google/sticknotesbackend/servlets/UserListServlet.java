@@ -1,14 +1,12 @@
 package com.google.sticknotesbackend.servlets;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
-import com.googlecode.objectify.Key;
-import com.googlecode.objectify.Ref;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 
@@ -25,6 +21,7 @@ import com.google.sticknotesbackend.models.Whiteboard;
 public class UserListServlet extends HttpServlet {
   protected final int CREATED = 201;
   protected final int BAD_REQUEST = 400;
+  protected final int OK = 200;
 
   //with a given id it returns list of users of the board 
   @Override
@@ -43,13 +40,18 @@ public class UserListServlet extends HttpServlet {
         Gson userBoardRoleParser = getBoardGsonParser();
         
         String responseJson = userBoardRoleParser.toJson(boardUsers);
-        System.out.println(responseJson);
+        response.setStatus(OK);
+        response.setContentType("application/json");
         response.getWriter().println(responseJson);
       } else{
         response.getWriter().println("Board with this id doesn't exist");
         response.sendError(BAD_REQUEST);
         return;
       }
+    } else{
+      response.getWriter().println("Board id was not provided");
+      response.sendError(BAD_REQUEST);
+      return;
     }
   }
 

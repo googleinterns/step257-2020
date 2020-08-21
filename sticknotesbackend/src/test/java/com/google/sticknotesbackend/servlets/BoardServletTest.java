@@ -5,15 +5,6 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// <<<<<<< HEAD
-// =======
-// import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-// import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
-// import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-// import com.google.cloud.NoCredentials;
-// import com.google.cloud.ServiceOptions;
-// import com.google.cloud.datastore.DatastoreOptions;
-// >>>>>>> 2e21b05... service returning list of users
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.ObjectifyService;
@@ -28,12 +19,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-// <<<<<<< HEAD
-// =======
-// import org.mockito.Mock;
-// import org.mockito.MockitoAnnotations;
-// import com.google.cloud.datastore.Datastore;
-// >>>>>>> 2e21b05... service returning list of users
 
 /**
  * Unit tests for BoardServlet.
@@ -46,19 +31,7 @@ public class BoardServletTest extends NotesboardTestBase {
   public static void setUpBeforeClass() {
     // call objectify initialization
     NotesboardTestBase.initializeObjectify();
-// =======
-//     DatastoreOptions options = DatastoreOptions.newBuilder()
-//             .setProjectId("notesboard")
-//             .setHost("localhost:8081")
-//             .setCredentials(NoCredentials.getInstance())
-//             .setRetrySettings(ServiceOptions.getNoRetrySettings())
-//             .build();
-//     Datastore datastore = options.getService();
-//     // Reset the Factory so that all translators work properly.
-//     ObjectifyService.init(new ObjectifyFactory(datastore));
-//     ObjectifyService.register(Whiteboard.class);
-//     ObjectifyService.register(User.class);
-// >>>>>>> 2e21b05... service returning list of users
+    
   }
 
   @Before
