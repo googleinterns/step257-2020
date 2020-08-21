@@ -13,9 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -23,12 +21,6 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class EditBoardServletTest extends NotesboardTestBase {
   private EditBoardServlet editBoardServlet;
-
-  @BeforeClass
-  public static void setUpBeforeClass() {
-    // call objectify initialization
-    NotesboardTestBase.initializeObjectify();
-  }
 
   @Before
   public void setUp() throws Exception {
@@ -45,11 +37,6 @@ public class EditBoardServletTest extends NotesboardTestBase {
     editBoardServlet = new EditBoardServlet();
   }
 
-  @After
-  public void tearDown() {
-    super.tearDown();
-  }
-
   @Test
   public void testBoardEditSuccessWithValidPayload() throws Exception {
     String newBoardTitle = "New board title";
@@ -64,7 +51,7 @@ public class EditBoardServletTest extends NotesboardTestBase {
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
 
     editBoardServlet.doPost(mockRequest, mockResponse);
-    String responseString = mockResponse.getWriter().toString();
+    String responseString = responseWriter.toString();
     // check if new board title is in the response
     assertThat(responseString.contains(newBoardTitle));
     // check if datastore entity really updated

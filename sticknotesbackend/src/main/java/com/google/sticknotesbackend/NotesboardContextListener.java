@@ -1,6 +1,7 @@
 package com.google.sticknotesbackend;
 
 import com.google.cloud.datastore.DatastoreOptions;
+import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.ObjectifyFactory;
@@ -21,6 +22,7 @@ public class NotesboardContextListener implements ServletContextListener {
     }
     ObjectifyService.register(Whiteboard.class);
     ObjectifyService.register(User.class);
+    ObjectifyService.register(Note.class);
   }
 
   @Override

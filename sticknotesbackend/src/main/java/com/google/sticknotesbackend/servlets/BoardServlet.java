@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
  * Implements the following endpoints:
  * POST - create a board
  * GET with id - retrieve a board
- * PATCH with id - edit a board
  */
 @WebServlet("api/board/")
 public class BoardServlet extends BoardAbstractServlet {

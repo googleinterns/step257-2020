@@ -15,6 +15,8 @@ import com.googlecode.objectify.util.Closeable;
 import java.io.StringWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.junit.After;
+import org.junit.BeforeClass;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -30,6 +32,7 @@ public abstract class NotesboardTestBase {
   @Mock protected HttpServletResponse mockResponse;
   protected StringWriter responseWriter;
 
+  @BeforeClass
   public static void initializeObjectify() {
     // necessary setup to make Obejctify work
     DatastoreOptions options = DatastoreOptions.newBuilder()
@@ -50,6 +53,7 @@ public abstract class NotesboardTestBase {
     session = ObjectifyService.begin();
   }
 
+  @After
   public void tearDown() {
     session.close();
     helper.tearDown();

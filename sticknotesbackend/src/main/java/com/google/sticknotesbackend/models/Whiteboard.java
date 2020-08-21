@@ -4,6 +4,7 @@ import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Load;
+import java.util.ArrayList;
 
 @Entity
 public class Whiteboard {
@@ -14,6 +15,7 @@ public class Whiteboard {
   public int rows;
   public int cols;
   public String backgroundImg;
+  public ArrayList<Ref<Note>> notes = new ArrayList<Ref<Note>>();
 
   public Whiteboard() {}
 
