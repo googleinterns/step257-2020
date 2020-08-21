@@ -8,10 +8,17 @@ cd sticknotes-frontend
 ng serve
 ```
 
-To run backend locally, execute
+To run backend locally, run datastore emulator firstly using 
+`gcloud beta emulators datastore start --host-port=localhost:8484`.
+Next execute
 ```
 cd sticknotesbackend
 ./run.sh
 ```
 
-To run tests, launch datastore emulator with `gcloud beta emulators datastore start`
+To run tests, launch datastore emulator with `gcloud beta emulators datastore start --host-port=localhost:8484`.
+Next execute 
+```
+cd sticknotesbackend
+mvn test
+```
