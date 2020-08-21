@@ -19,6 +19,10 @@ export class BoardApiService {
   }
 
   public updateBoardTitle(boardId: string, boardTitle: string): Observable<Board> {
-    return this.http.patch<Board>(`api/boards/?id=${boardId}`, { title: boardTitle });
+    const payload = {
+      id: boardId,
+      title: boardTitle
+    };
+    return this.http.post<Board>('api/edit-board/', payload);
   }
 }
