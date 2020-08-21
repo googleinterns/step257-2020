@@ -193,13 +193,13 @@ export class BoardComponent implements OnInit {
   public deleteNote(note: Note): void {
     const reallyWantToDelete = confirm('Delete this note?');
     if (reallyWantToDelete) {
-      const noteId = note.id;
       const indexOfNote = this.board.notes.indexOf(note);
       if (indexOfNote !== -1) {
-        this.notesApiService.deleteNote(noteId).subscribe(() => {
-          this.board.notes.splice(indexOfNote, 1);
+        this.notesApiService.deleteNote(note.id).subscribe(() => {
           // set 0 to the position of the note
           this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
+          // remove note from local array
+          this.board.notes.splice(indexOfNote, 1);
         });
       }
     }
