@@ -31,6 +31,7 @@ public class BoardServletTest extends NotesboardTestBase {
   public static void setUpBeforeClass() {
     // call objectify initialization
     NotesboardTestBase.initializeObjectify();
+    
   }
 
   @Before
