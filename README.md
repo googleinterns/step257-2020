@@ -16,7 +16,7 @@ cd sticknotesbackend
 ./run.sh
 ```
 
-To run tests, launch datastore emulator with `gcloud beta emulators datastore start --host-port=localhost:8484`.
+To run tests, launch datastore emulator with `gcloud beta emulators datastore start --host-port=localhost:8484 --no-store-on-disk`.
 Next execute 
 ```
 cd sticknotesbackend
