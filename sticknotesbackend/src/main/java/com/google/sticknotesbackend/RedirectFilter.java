@@ -19,16 +19,17 @@ public class RedirectFilter implements Filter {
     ServletContext context = config.getServletContext();
     HttpServletRequest httpRequest = (HttpServletRequest)request;
     // if request is not to API, forward it to 'index.html', otherwise do nothing
-    if (!isApiUrl(httpRequest.getRequestURL().toString())) {
+    if (!isApiUri(httpRequest.getRequestURI().toString())) {
       // request to angular, forward it to the index.html
       RequestDispatcher dispatcher = context.getRequestDispatcher("/index.html");
       dispatcher.forward(request, response);
+    } else {
+      chain.doFilter(request, response);
     }
-    chain.doFilter(request, response);
   }
 
-  private boolean isApiUrl(String url) {
-    return url.startsWith("api") || url.startsWith("/api");
+  private boolean isApiUri(String uri) {
+    return uri.startsWith("api") || uri.startsWith("/api") || uri.startsWith("/_ah/admin") || uri.startsWith("_ah/admin");
   }
 
   @Override
@@ -37,5 +38,7 @@ public class RedirectFilter implements Filter {
   }
 
   @Override
-  public void destroy() {}
+  public void destroy() {
+    config = null;
+  }
 }

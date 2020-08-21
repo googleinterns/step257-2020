@@ -8,16 +8,17 @@ cd sticknotes-frontend
 ng serve
 ```
 
-To run backend locally, execute
+To run backend locally, run datastore emulator firstly using 
+`gcloud beta emulators datastore start --host-port=localhost:8484`.
+Next execute
 ```
 cd sticknotesbackend
-mvn package appengine:run
+./run.sh
 ```
 
-To run tests, you need to setup `gcloud` project:
-
-* 1. Set gcloud project id `gcloud config set project notesboard`
-* 2. Authenticate in `gcloud` command line tool `gcloud beta auth application-default login`
-* 3. Run datastore emulator `gcloud beta emulators datastore start`
-
-Steps 1-2 need to be completed only once, step 3 must be executed each time before running tests
+To run tests, launch datastore emulator with `gcloud beta emulators datastore start --host-port=localhost:8484 --no-store-on-disk`.
+Next execute 
+```
+cd sticknotesbackend
+mvn test
+```

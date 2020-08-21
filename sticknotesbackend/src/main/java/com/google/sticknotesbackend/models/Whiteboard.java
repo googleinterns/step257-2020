@@ -9,7 +9,7 @@ import com.googlecode.objectify.annotation.Load;
 public class Whiteboard {
   public @Id Long id;
   public Long creationDate; //it's a timestamp
-  public @Load Ref<User> creator;
+  private @Load Ref<User> creator;
   public String title;
   public int rows;
   public int cols;
@@ -26,6 +26,7 @@ public class Whiteboard {
   }
 
   public void setCreator(User user){
+    // for now create a user, later retrieve key of the existing user from datastore
     this.creator = Ref.create(user);
   }
 }
