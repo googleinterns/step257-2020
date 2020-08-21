@@ -43,9 +43,6 @@ public class EditBoardServlet extends BoardAbstractServlet {
     }
     // update entity fields
     board.title = editedBoard.title;
-    System.out.println("Board updated ... ");
-    System.out.println(board.id);
-    System.out.println(board.title);
     ofy().save().entity(board).now();
     // return updated board
     response.getWriter().println(gson.toJson(board));
