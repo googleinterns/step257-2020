@@ -23,32 +23,32 @@ public class UserListServlet extends HttpServlet {
   protected final int BAD_REQUEST = 400;
   protected final int OK = 200;
 
-  //with a given id it returns list of users of the board 
+  // with a given id it returns list of users of the board
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String boardIdParam = request.getParameter("id");
     Long boardId = null;
-    try{
+    try {
       boardId = Long.valueOf(boardIdParam);
-    }catch(NumberFormatException e){
+    } catch (NumberFormatException e) {
       e.printStackTrace();
     }
-    if(boardId != null) {
+    if (boardId != null) {
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
-      if(board != null){
+      if (board != null) {
         List<UserBoardRole> boardUsers = ofy().load().type(UserBoardRole.class).filter("board", board).list();
         Gson userBoardRoleParser = getBoardGsonParser();
-        
+
         String responseJson = userBoardRoleParser.toJson(boardUsers);
         response.setStatus(OK);
         response.setContentType("application/json");
         response.getWriter().println(responseJson);
-      } else{
+      } else {
         response.getWriter().println("Board with this id doesn't exist");
         response.sendError(BAD_REQUEST);
         return;
       }
-    } else{
+    } else {
       response.getWriter().println("Board id was not provided");
       response.sendError(BAD_REQUEST);
       return;

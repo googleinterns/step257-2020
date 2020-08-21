@@ -25,7 +25,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class UserListServletTest extends NotesboardTestBase {
-  
+
   private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
   protected Closeable session;
@@ -41,20 +41,18 @@ public class UserListServletTest extends NotesboardTestBase {
     NotesboardTestBase.initializeObjectify();
   }
 
-
-
   @Before
   public void setUp() throws Exception {
     super.setUp();
 
     this.session = ObjectifyService.begin();
     this.helper.setUp();
-    try{
+    try {
       datastoreHelper.reset();
-    }catch(IOException e){
+    } catch (IOException e) {
       e.printStackTrace();
     }
-    //filling datastore with board and few users
+    // filling datastore with board and few users
     User user1 = new User("key1", "user1", "user1@google.com");
     User user2 = new User("key2", "user2", "user2@google.com");
     User user3 = new User("key3", "user3", "user3@google.com");
@@ -62,7 +60,6 @@ public class UserListServletTest extends NotesboardTestBase {
 
     Whiteboard board1 = new Whiteboard("title1");
     Whiteboard board2 = new Whiteboard("title2");
-
 
     ofy().save().entity(user1).now();
     ofy().save().entity(user2).now();
@@ -111,20 +108,17 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doGet(mockRequest, mockResponse);
 
-    
+    String expectedResponseJsonString = "["
+        + "{\"boardId\":1,\"role\":\"admin\",\"user\":{\"key\":\"key1\",\"nickname\":\"user1\",\"email\":\"user1@google.com\"}},"
+        + "{\"boardId\":1,\"role\":\"admin\",\"user\":{\"key\":\"key2\",\"nickname\":\"user2\",\"email\":\"user2@google.com\"}},"
+        + "{\"boardId\":1,\"role\":\"user\",\"user\":{\"key\":\"key3\",\"nickname\":\"user3\",\"email\":\"user3@google.com\"}},"
+        + "{\"boardId\":1,\"role\":\"user\",\"user\":{\"key\":\"key4\",\"nickname\":\"user4\",\"email\":\"user4@google.com\"}}"
+        + "]";
 
-    String expectedResponseJsonString = 
-    "["
-    +"{\"boardId\":1,\"role\":\"admin\",\"user\":{\"key\":\"key1\",\"nickname\":\"user1\",\"email\":\"user1@google.com\"}},"
-    +"{\"boardId\":1,\"role\":\"admin\",\"user\":{\"key\":\"key2\",\"nickname\":\"user2\",\"email\":\"user2@google.com\"}},"
-    +"{\"boardId\":1,\"role\":\"user\",\"user\":{\"key\":\"key3\",\"nickname\":\"user3\",\"email\":\"user3@google.com\"}},"
-    +"{\"boardId\":1,\"role\":\"user\",\"user\":{\"key\":\"key4\",\"nickname\":\"user4\",\"email\":\"user4@google.com\"}}"+
-    "]";
-
-    //veryfing response
+    // veryfing response
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
-    
+
     assertThat(responseWriter.toString().equals(expectedResponseJsonString));
   }
 
@@ -134,12 +128,11 @@ public class UserListServletTest extends NotesboardTestBase {
     when(mockRequest.getParameter("id")).thenReturn(boardId2.toString());
 
     userListServlet.doGet(mockRequest, mockResponse);
-    String expectedResponseJsonString = 
-    "["
-    +"{\"boardId\":2,\"role\":\"user\",\"user\":{\"key\":\"key3\",\"nickname\":\"user3\",\"email\":\"user3@google.com\"}},"
-    +"{\"boardId\":2,\"role\":\"user\",\"user\":{\"key\":\"key4\",\"nickname\":\"user4\",\"email\":\"user4@google.com\"}}"
-    +"]";
-    //veryfing status
+    String expectedResponseJsonString = "["
+        + "{\"boardId\":2,\"role\":\"user\",\"user\":{\"key\":\"key3\",\"nickname\":\"user3\",\"email\":\"user3@google.com\"}},"
+        + "{\"boardId\":2,\"role\":\"user\",\"user\":{\"key\":\"key4\",\"nickname\":\"user4\",\"email\":\"user4@google.com\"}}"
+        + "]";
+    // veryfing status
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(200);
     assertThat(responseWriter.toString().equals(expectedResponseJsonString));
@@ -148,13 +141,14 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testNotExistingBoard() throws IOException {
     Long boardId = boardId1 + 1;
-    if(boardId == boardId2) boardId += 1; //ensures that boardId is not equal to either boardId1 or boardId2
+    if (boardId == boardId2)
+      boardId += 1; // ensures that boardId is not equal to either boardId1 or boardId2
 
     when(mockRequest.getParameter("id")).thenReturn(boardId.toString());
 
     userListServlet.doGet(mockRequest, mockResponse);
 
-    //veryfing status
+    // veryfing status
     verify(mockResponse).sendError(BAD_REQUEST);
   }
 }

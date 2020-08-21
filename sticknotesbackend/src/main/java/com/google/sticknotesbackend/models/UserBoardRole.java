@@ -9,14 +9,19 @@ import com.googlecode.objectify.annotation.Load;
 
 @Entity
 public class UserBoardRole {
-  public static class OnlyUser {}
+  public static class OnlyUser {
+  }
 
   public @Id Long id;
   public String role;
-  @Index @Load Ref<Whiteboard> board;
+  
+  @Index
+  @Load Ref<Whiteboard> board;
+  
   @Load Ref<User> user;
 
-  public UserBoardRole() {}
+  public UserBoardRole() {
+  }
 
   public UserBoardRole(Role role, Whiteboard board, User user) {
     this.board = Ref.create(board);
@@ -24,11 +29,11 @@ public class UserBoardRole {
     this.role = role.label;
   }
 
-  public Whiteboard getBoard(){
+  public Whiteboard getBoard() {
     return board.get();
   }
 
-  public User getUser(){
+  public User getUser() {
     return user.get();
   }
 }
