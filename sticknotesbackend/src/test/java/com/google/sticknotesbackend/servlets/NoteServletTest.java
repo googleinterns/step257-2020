@@ -63,4 +63,19 @@ public class NoteServletTest extends NotesboardTestBase {
     Note savedNote = ofy().load().type(Note.class).id(note.id).now();
     assertThat(savedNote != null);
   }
+
+  @Test
+  public void testNoteDeleteSuccessWithValidBoardId() throws IOException, ServletException {
+    // create mocked note and save it
+    Note note = getMockNote();
+    // save note
+    note.id = ofy().save().entity(note).now().getId();
+    // add note id to the request
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(note.id));
+    // do delete
+    noteServlet.doDelete(mockRequest, mockResponse);
+    // verify that no note with this id is in the datastore
+    Note deletedNote = ofy().load().type(Note.class).id(note.id).now();
+    assertThat(deletedNote == null);
+  }
 }

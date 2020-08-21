@@ -7,6 +7,7 @@ import com.google.cloud.NoCredentials;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
+import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.ObjectifyFactory;
@@ -68,5 +69,10 @@ public abstract class NotesboardTestBase {
     board.rows = 4;
     board.cols = 6;
     return board;
+  }
+
+  // helper method to create a note
+  protected Note getMockNote() {
+    return new Note(new User("randomuser", "googler", "googler@google.com"), "content", "color", 1, 2);
   }
 }

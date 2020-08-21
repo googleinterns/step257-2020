@@ -58,4 +58,22 @@ public class NoteServlet extends NoteAbstractServlet {
     // set 204 created status codes
     response.setStatus(CREATED);
   }
+  /**
+   * Deletes the note with the given id
+   */
+  @Override
+  protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // get note id from the request
+    String noteIdParam = request.getParameter("id");
+    if (noteIdParam != null) {
+      Long noteId = Long.parseLong(noteIdParam);
+      // delete note
+      ofy().delete().type(Note.class).id(noteId).now();
+      // return no content
+      response.setStatus(NO_CONTENT);
+    } else {
+      response.getWriter().println("No id set");
+      response.sendError(BAD_REQUEST);
+    }
+  }
 }
