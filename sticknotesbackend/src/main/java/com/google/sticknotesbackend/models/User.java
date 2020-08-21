@@ -5,9 +5,9 @@ import com.googlecode.objectify.annotation.Id;
 
 @Entity
 public class User {
-  @Id String key; // String type to prevent autogeneration
-  String nickname;
-  String email;
+  public @Id String key; // String type to prevent autogeneration
+  public String nickname;
+  public String email;
 
   // key is passed here because we are going to obtain it from UsersApi
   public User(String key, String nickname, String email) {
@@ -16,5 +16,6 @@ public class User {
     this.email = email;
   }
 
-  public User() {}
+  public User() {
+  }
 }

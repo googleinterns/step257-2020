@@ -1,5 +1,6 @@
 package com.google.sticknotesbackend.servlets;
 
+import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -9,6 +10,7 @@ import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
+import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
@@ -22,12 +24,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public abstract class NotesboardTestBase {
+  protected final int OK = 200;
   protected final int CREATED = 201;
   protected final int BAD_REQUEST = 400;
   protected final int NO_CONTENT = 204;
   // Set up a helper so that the ApiProxy returns a valid environment for local testing.
   protected final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(), new LocalDatastoreServiceTestConfig());
+
+  protected final LocalDatastoreHelper datastoreHelper = LocalDatastoreHelper.create(8484);
+  
   protected Closeable session;
 
   @Mock protected HttpServletRequest mockRequest;
@@ -47,9 +53,10 @@ public abstract class NotesboardTestBase {
     ObjectifyService.init(new ObjectifyFactory(datastore));
     ObjectifyService.register(Whiteboard.class);
     ObjectifyService.register(User.class);
+    ObjectifyService.register(UserBoardRole.class);
   }
 
-  public void setUp() throws Exception {
+  public void setUp() throws Exception{
     MockitoAnnotations.initMocks(this);
     helper.setUp();
     session = ObjectifyService.begin();
