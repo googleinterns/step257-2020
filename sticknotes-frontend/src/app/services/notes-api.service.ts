@@ -19,7 +19,6 @@ export class NotesApiService {
   }
 
   public deleteNote(noteId: string): Observable<void> {
-    // return this.http.delete<void>(`api/notes?key=${noteId}`);
-    return of(undefined);
+    return this.http.delete<void>(`api/notes/?id=${noteId}`);
   }
 }
