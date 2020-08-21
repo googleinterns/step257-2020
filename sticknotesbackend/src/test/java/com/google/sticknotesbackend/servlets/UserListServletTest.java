@@ -32,6 +32,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
   private Long boardId1;
   private Long boardId2;
+  private Long boardId3;
 
   private UserListServlet userListServlet;
 
@@ -60,6 +61,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     Whiteboard board1 = new Whiteboard("title1");
     Whiteboard board2 = new Whiteboard("title2");
+    Whiteboard board3 = new Whiteboard("title3");
 
     ofy().save().entity(user1).now();
     ofy().save().entity(user2).now();
@@ -67,9 +69,11 @@ public class UserListServletTest extends NotesboardTestBase {
     ofy().save().entity(user4).now();
     ofy().save().entity(board1).now();
     ofy().save().entity(board2).now();
+    ofy().save().entity(board3).now();
 
     boardId1 = board1.id;
     boardId2 = board2.id;
+    boardId3 = board3.id;
 
     UserBoardRole userBoardRole1 = new UserBoardRole(Role.ADMIN, board1, user1);
     UserBoardRole userBoardRole2 = new UserBoardRole(Role.ADMIN, board1, user2);
@@ -134,15 +138,15 @@ public class UserListServletTest extends NotesboardTestBase {
         + "]";
     // veryfing status
     verify(mockResponse).setContentType("application/json");
-    verify(mockResponse).setStatus(200);
+    verify(mockResponse).setStatus(OK);
     assertThat(responseWriter.toString().equals(expectedResponseJsonString));
   }
 
   @Test
   public void testNotExistingBoard() throws IOException {
-    Long boardId = boardId1 + 1;
-    if (boardId == boardId2)
-      boardId += 1; // ensures that boardId is not equal to either boardId1 or boardId2
+    Long boardId = (long) 1;
+    while (boardId == boardId1 || boardId == boardId2 || boardId == boardId3)
+      boardId += 1;
 
     when(mockRequest.getParameter("id")).thenReturn(boardId.toString());
 
@@ -150,5 +154,19 @@ public class UserListServletTest extends NotesboardTestBase {
 
     // veryfing status
     verify(mockResponse).sendError(BAD_REQUEST);
+  }
+
+  @Test
+  public void testBoardExistsButNoUsers() throws IOException {
+    when(mockRequest.getParameter("id")).thenReturn(boardId3.toString());
+
+    userListServlet.doGet(mockRequest, mockResponse);
+
+    String expectedResponseJsonString = "[]";
+
+    // veryfing status
+    verify(mockResponse).setContentType("application/json");
+    verify(mockResponse).setStatus(OK);
+    assertThat(responseWriter.toString().equals(expectedResponseJsonString));
   }
 }
