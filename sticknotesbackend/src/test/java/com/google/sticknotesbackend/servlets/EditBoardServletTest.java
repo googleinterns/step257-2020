@@ -49,6 +49,7 @@ public class EditBoardServletTest extends NotesboardTestBase {
   public void tearDown() {
     super.tearDown();
   }
+
   @Test
   public void testBoardEditSuccessWithValidPayload() throws Exception {
     String newBoardTitle = "New board title";
@@ -56,11 +57,10 @@ public class EditBoardServletTest extends NotesboardTestBase {
     Whiteboard board = getMockBoard();
     // when the board is saved, get the auto generated id and assign to board field
     board.id = ofy().save().entity(board).now().getId();
-    // mock request get parameter
-    when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id));
     // mock request payload
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("title", newBoardTitle);
+    jsonObject.addProperty("id", board.id);
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
 
     editBoardServlet.doPost(mockRequest, mockResponse);
@@ -71,6 +71,7 @@ public class EditBoardServletTest extends NotesboardTestBase {
     Whiteboard storedBoard = ofy().load().type(Whiteboard.class).id(board.id).now();
     assertThat(storedBoard.title.equals(newBoardTitle));
   }
+
   @Test
   public void testBoardEditFailsWithUnexistingId() throws IOException {
     // create board entity
@@ -78,13 +79,16 @@ public class EditBoardServletTest extends NotesboardTestBase {
     // when the board is saved, get the auto generated id and assign to board field
     board.id = ofy().save().entity(board).now().getId();
     // call get with board.id + 1
-    // mock request get parameter
-    when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id + 1));
-
+    // mock request payload
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("title", board.title);
+    jsonObject.addProperty("id", board.id + 1);
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
     editBoardServlet.doPost(mockRequest, mockResponse);
     // check that bad request error was generated
     verify(mockResponse).sendError(BAD_REQUEST);
   }
+
   @Test
   public void testBoardEditFailsWithInvalidPayload() throws Exception {
     String newBoardTitle = "New board title";
@@ -92,12 +96,11 @@ public class EditBoardServletTest extends NotesboardTestBase {
     Whiteboard board = getMockBoard();
     // when the board is saved, get the auto generated id and assign to board field
     board.id = ofy().save().entity(board).now().getId();
-    // mock request get parameter
-    when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id));
     // mock request payload
     JsonObject jsonObject = new JsonObject();
     // set unexisting property "newTitle"
     jsonObject.addProperty("newtTitle", newBoardTitle);
+    jsonObject.addProperty("id", board.id);
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
 
     editBoardServlet.doPost(mockRequest, mockResponse);

@@ -16,37 +16,39 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("api/edit-board/")
 public class EditBoardServlet extends BoardAbstractServlet {
   // edits a board, for now only title editing is supported, returns an updated board
+  // the payload must include field "id" and a set of editable fields with updated values
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // load board with requested id from the database
-    String boardIdParam = request.getParameter("id");
-    if (boardIdParam != null) {
-      // get board that is to be edited from datastore
-      long boardId = Long.parseLong(boardIdParam);
-      Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
-      if (board == null) {
-        // if board is null, it means there is no board with such id in the datastore
-        response.getWriter().println("Board with this id doesn't exist");
-        response.sendError(BAD_REQUEST);
-        return;
-      }
-      Gson gson = getBoardGsonParser();
-      // get board object with edited fields
-      Whiteboard editedBoard = gson.fromJson(request.getReader(), Whiteboard.class);
-      if (editedBoard.title == null) {
-        // if title is not initialized, it means it wasn't send, throw bad request
-        response.getWriter().println("Invalid field edit attempt");
-        response.sendError(BAD_REQUEST);
-        return;
-      }
-      // update entity fields
-      board.title = editedBoard.title;
-      ofy().save().entity(board).now();
-      // return updated board
-      response.getWriter().println(gson.toJson(board));
-    } else {
-      response.getWriter().println("No id parameter");
+    Gson gson = getBoardGsonParser();
+    Whiteboard editedBoard = gson.fromJson(request.getReader(), Whiteboard.class);
+    if (editedBoard.id == null) {
+      // the payload for this method must have board id
+      response.getWriter().println("No id in request");
       response.sendError(BAD_REQUEST);
+      return;
     }
+    if (editedBoard.title == null) {
+      // if title is not initialized, it means it wasn't send, throw bad request
+      response.getWriter().println("Invalid field edit attempt");
+      response.sendError(BAD_REQUEST);
+      return;
+    }
+    // get board that is to be edited from datastore
+    Whiteboard board = ofy().load().type(Whiteboard.class).id(editedBoard.id).now();
+    if (board == null) {
+      // if board is null, it means there is no board with such id in the datastore
+      response.getWriter().println("No board with the given id");
+      response.sendError(BAD_REQUEST);
+      return;
+    }
+    // update entity fields
+    board.title = editedBoard.title;
+    System.out.println("Board updated ... ");
+    System.out.println(board.id);
+    System.out.println(board.title);
+    ofy().save().entity(board).now();
+    // return updated board
+    response.getWriter().println(gson.toJson(board));
   }
 }
+
