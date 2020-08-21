@@ -2,6 +2,7 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.googlecode.objectify.ObjectifyService.ofy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.Gson;
@@ -9,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Ref;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -62,5 +64,29 @@ public class NoteServletTest extends NotesboardTestBase {
     // load note with the given id from datastore
     Note savedNote = ofy().load().type(Note.class).id(note.id).now();
     assertThat(savedNote != null);
+  }
+
+  @Test
+  public void testNoteDeleteSuccessWithValidBoardId() throws IOException, ServletException {
+    // create mocked note and save it
+    Note note = getMockNote();
+    // save note
+    note.id = ofy().save().entity(note).now().getId();
+    // create mocked board and save it
+    Whiteboard board = getMockBoard();
+    board.notes.add(Ref.create(note));
+    board.id = ofy().save().entity(board).now().getId();
+    // save id of the board in the note
+    note.boardId = board.id;
+    ofy().save().entity(note).now().getId();
+
+    // add note id to the request
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(note.id));
+    // do delete
+    noteServlet.doDelete(mockRequest, mockResponse);
+    // verify that no note with this id is in the datastore
+    Note deletedNote = ofy().load().type(Note.class).id(note.id).now();
+    assertThat(deletedNote == null);
+    verify(mockResponse).setStatus(NO_CONTENT);
   }
 }

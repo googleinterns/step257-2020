@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class NoteAbstractServlet extends HttpServlet {
   protected final int CREATED = 201;
   protected final int BAD_REQUEST = 400;
+  protected final int NO_CONTENT = 204;
   protected List<String> requiredFields = new ArrayList<>();
   // generates a Gson object that uses custom NoteSerializer
   protected Gson getNoteGsonParser() {

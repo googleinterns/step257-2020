@@ -61,8 +61,4 @@ public class EditNoteServletTest extends NotesboardTestBase {
     Note savedNote = ofy().load().type(Note.class).id(note.id).now();
     assertThat(responseWriter.toString().equals(editNoteServlet.getNoteGsonParser().toJson(savedNote)));
   }
-
-  private Note getMockNote() {
-    return new Note(new User("randomuser", "googler", "googler@google.com"), "content", "color", 1, 2);
-  }
 }
