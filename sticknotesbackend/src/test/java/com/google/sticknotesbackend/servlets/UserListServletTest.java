@@ -7,17 +7,18 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
-import com.googlecode.objectify.ObjectifyService;
+import java.io.BufferedReader;
 import com.googlecode.objectify.cache.AsyncCacheFilter;
-import com.googlecode.objectify.util.Closeable;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,8 +28,6 @@ import org.junit.Test;
 public class UserListServletTest extends NotesboardTestBase {
 
   private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-
-  protected Closeable session;
 
   private Long boardId1;
   private Long boardId2;
@@ -46,8 +45,6 @@ public class UserListServletTest extends NotesboardTestBase {
   public void setUp() throws Exception {
     super.setUp();
 
-    this.session = ObjectifyService.begin();
-    this.helper.setUp();
     try {
       datastoreHelper.reset();
     } catch (IOException e) {
@@ -168,5 +165,26 @@ public class UserListServletTest extends NotesboardTestBase {
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
     assertThat(responseWriter.toString().equals(expectedResponseJsonString));
+  }
+
+  /**
+   * export interface UserBoardRole {
+      user: User;
+      boardId: string;
+      role: UserRole;
+    }   
+   */
+
+  @Test
+  public void testAddUserToBoard() throws IOException{
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("userId", "key6");
+    jsonObject.addProperty("role", "admin");
+    jsonObject.addProperty("boardId", boardId1.toString());
+
+    when(mockRequest.getParameter("id")).thenReturn(boardId1.toString());
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    userListServlet.doPost(mockRequest, mockResponse);
   }
 }
