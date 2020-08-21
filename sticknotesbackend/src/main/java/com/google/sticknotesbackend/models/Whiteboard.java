@@ -15,7 +15,7 @@ public class Whiteboard {
   public int rows;
   public int cols;
   public String backgroundImg;
-  public ArrayList<Ref<Note>> notes = new ArrayList<Ref<Note>>();
+  public @Load ArrayList<Ref<Note>> notes = new ArrayList<Ref<Note>>();
 
   public Whiteboard() {}
 

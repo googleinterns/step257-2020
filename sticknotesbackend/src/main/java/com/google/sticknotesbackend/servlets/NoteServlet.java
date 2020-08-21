@@ -67,8 +67,17 @@ public class NoteServlet extends NoteAbstractServlet {
     String noteIdParam = request.getParameter("id");
     if (noteIdParam != null) {
       Long noteId = Long.parseLong(noteIdParam);
-      // delete note
+      // get note that is going to be deleted
+      Note note = ofy().load().type(Note.class).id(noteId).now();
+      // get note board
+      Whiteboard noteBoard = ofy().load().type(Whiteboard.class).id(note.boardId).now();
+      // remove note from the list of noteBoard notes
+      noteBoard.notes.removeIf(noteRef -> noteRef.get().id == note.id);
+      // update noteBoard
+      ofy().save().entity(noteBoard).now();
+      // delete note from datastore
       ofy().delete().type(Note.class).id(noteId).now();
+      // delete note from board
       // return no content
       response.setStatus(NO_CONTENT);
     } else {
