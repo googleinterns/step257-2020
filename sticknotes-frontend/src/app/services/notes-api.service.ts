@@ -15,14 +15,14 @@ export class NotesApiService {
     // return this.http.post<Note>('api/notes/', note);
     // use mocked response for now
     const mockedNoteResponse: Note = {
-      key: 'key',
+      id: 'id',
       creationDate: this.currentTimestamp,
       creator: 'googler@google.com',
       x: note.x,
       y: note.y,
       content: note.content,
       color: note.color,
-      boardKey: note.boardKey
+      boardId: note.boardId
     };
     return of(mockedNoteResponse);
   }
@@ -33,8 +33,8 @@ export class NotesApiService {
     return of (note);
   }
 
-  public deleteNote(noteKey: string): Observable<void> {
-    // return this.http.delete<void>(`api/notes?key=${noteKey}`);
+  public deleteNote(noteId: string): Observable<void> {
+    // return this.http.delete<void>(`api/notes?key=${noteId}`);
     return of(undefined);
   }
 

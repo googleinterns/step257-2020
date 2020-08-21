@@ -14,7 +14,7 @@ import { State } from '../enums/state.enum';
 })
 export class NewNoteComponent implements OnInit {
   private position: Vector2;
-  private boardKey: string;
+  private boardId: string;
   // this component can be in 2 states: editing the existing note or creating a new one
   private mode: State;
   // this object stores the note the user edits in the moment
@@ -39,9 +39,9 @@ export class NewNoteComponent implements OnInit {
               private dialogRef: MatDialogRef<NewNoteComponent>) {
     if (data.mode === State.CREATE) {
       // creating new note
-      const noteData = data.noteData as {position: Vector2, boardKey: string};
+      const noteData = data.noteData as {position: Vector2, boardId: string};
       this.position = noteData.position;
-      this.boardKey = noteData.boardKey;
+      this.boardId = noteData.boardId;
       this.mode = State.CREATE;
       this.submitButtonText = 'Create';
     }
@@ -71,7 +71,7 @@ export class NewNoteComponent implements OnInit {
         y: this.position.y,
         content: noteContent,
         color: noteColor,
-        boardKey: this.boardKey
+        boardId: this.boardId
       };
       // service returns a new note object
       this.notesApiService.createNote(noteData).subscribe(note => {

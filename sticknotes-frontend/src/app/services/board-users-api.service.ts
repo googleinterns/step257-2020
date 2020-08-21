@@ -18,7 +18,7 @@ export class BoardUsersApiService {
         email: 'admin@google.com',
         accessibleBoards: []
       },
-      boardKey: 'boardKey',
+      boardId: 'boardId',
       role: UserRole.ADMIN
     });
     for (let i = 1; i < 3; i++) {
@@ -29,13 +29,13 @@ export class BoardUsersApiService {
           email: `user${i}@google.com`,
           accessibleBoards: []
         },
-        boardKey: 'boardKey',
+        boardId: 'boardId',
         role: UserRole.USER
       });
     }
   }
 
-  public getBoardUsers(boardKey: string): Observable<UserBoardRole[]> {
+  public getBoardUsers(boardId: string): Observable<UserBoardRole[]> {
     // return deep copy of this.users instead of reference
     return of(JSON.parse(JSON.stringify(this.users)));
   }
@@ -48,7 +48,7 @@ export class BoardUsersApiService {
         email: userEmail,
         accessibleBoards: []
       },
-      boardKey: 'boardKey',
+      boardId: 'boardId',
       role: userRole
     };
     this.users.push(user);

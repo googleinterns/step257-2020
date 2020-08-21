@@ -42,7 +42,7 @@ export class AddUserComponent implements OnInit {
 
     const mockUserWithRole: UserBoardRole  = {
       user: mockUser,
-      boardKey: 'board1',
+      boardId: 'board1',
       role: UserRole.USER
     };
 
