@@ -11,6 +11,7 @@ import com.google.cloud.datastore.DatastoreOptions;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.Closeable;
@@ -19,31 +20,32 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public abstract class NotesboardTestBase {
   protected final int OK = 200;
   protected final int CREATED = 201;
   protected final int BAD_REQUEST = 400;
-  // Set up a helper so that the ApiProxy returns a valid environment for local testing.
-  protected final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(), new LocalDatastoreServiceTestConfig());
+  // Set up a helper so that the ApiProxy returns a valid environment for local
+  // testing.
+  protected final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(),
+      new LocalDatastoreServiceTestConfig());
 
   protected final LocalDatastoreHelper datastoreHelper = LocalDatastoreHelper.create(8484);
-  
+
   protected Closeable session;
 
-  @Mock protected HttpServletRequest mockRequest;
-  @Mock protected HttpServletResponse mockResponse;
+  @Mock
+  protected HttpServletRequest mockRequest;
+  @Mock
+  protected HttpServletResponse mockResponse;
   protected StringWriter responseWriter;
 
   public static void initializeObjectify() {
     // necessary setup to make Obejctify work
-    DatastoreOptions options = DatastoreOptions.newBuilder()
-                                   .setProjectId("dummy")
-                                   .setHost("localhost:8484")
-                                   .setCredentials(NoCredentials.getInstance())
-                                   .setRetrySettings(ServiceOptions.getNoRetrySettings())
-                                   .build();
+    DatastoreOptions options = DatastoreOptions.newBuilder().setProjectId("dummy").setHost("localhost:8484")
+        .setCredentials(NoCredentials.getInstance()).setRetrySettings(ServiceOptions.getNoRetrySettings()).build();
     Datastore datastore = options.getService();
     ObjectifyService.init(new ObjectifyFactory(datastore));
     ObjectifyService.register(Whiteboard.class);
@@ -51,7 +53,7 @@ public abstract class NotesboardTestBase {
     ObjectifyService.register(UserBoardRole.class);
   }
 
-  public void setUp() throws Exception{
+  public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     helper.setUp();
     session = ObjectifyService.begin();
@@ -71,5 +73,12 @@ public abstract class NotesboardTestBase {
     board.rows = 4;
     board.cols = 6;
     return board;
+  }
+
+  public Gson getBoardGsonParser() {
+    GsonBuilder gson = new GsonBuilder();
+    gson.registerTypeAdapter(UserBoardRole.class, new UserBoardRoleSerializer());
+    Gson parser = gson.create();
+    return parser;
   }
 }
