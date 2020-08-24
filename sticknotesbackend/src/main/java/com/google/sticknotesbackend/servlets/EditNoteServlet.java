@@ -15,11 +15,17 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("api/edit-note/")
 public class EditNoteServlet extends NoteAbstractServlet {
+  /**
+   * Initializes the "requiredFields" array used for request payload validation
+   */
   @Override
   public void init() throws ServletException {
     // add id to the list of required payload params
     this.requiredFields.add("id");
   }
+  /**
+   * Edits the note with the id sent in the JSON payload
+   */
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     // create gson parser that uses custom note serializer

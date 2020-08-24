@@ -12,7 +12,6 @@ import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
-import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.Closeable;
@@ -23,9 +22,12 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
+
+/**
+ * Abstract base class for test classes. Initializes Objectify and local datastore.
+ * Provides a few method to build mocked app models
+ */
 public abstract class NotesboardTestBase {
   protected final int OK = 200;
   protected final int CREATED = 201;
@@ -45,6 +47,9 @@ public abstract class NotesboardTestBase {
   protected HttpServletResponse mockResponse;
   protected StringWriter responseWriter;
 
+  /**
+   * Creates a local datastore, local Objectify service
+   */
   @BeforeClass
   public static void initializeObjectify() {
     // necessary setup to make Obejctify work
@@ -53,11 +58,15 @@ public abstract class NotesboardTestBase {
     Datastore datastore = options.getService();
     ObjectifyService.init(new ObjectifyFactory(datastore));
     ObjectifyService.register(Whiteboard.class);
+    ObjectifyService.register(Note.class);
     ObjectifyService.register(User.class);
     ObjectifyService.register(UserBoardRole.class);
   }
 
-  public void setUp() throws Exception {
+  /**
+   * Initializes Mockito mocks, sets up datastore
+   */
+  public void setUp() throws Exception{
     MockitoAnnotations.initMocks(this);
     helper.setUp();
     session = ObjectifyService.begin();
@@ -69,7 +78,9 @@ public abstract class NotesboardTestBase {
     helper.tearDown();
   }
 
-  // helper method that constructs a testing object of Whiteboard
+  /**
+   * Helper method that constructs a testing object of Whiteboard.
+   */
   protected Whiteboard getMockBoard() {
     Whiteboard board = new Whiteboard("test");
     board.creationDate = System.currentTimeMillis();
@@ -80,13 +91,9 @@ public abstract class NotesboardTestBase {
     return board;
   }
 
-  public Gson getBoardGsonParser() {
-    GsonBuilder gson = new GsonBuilder();
-    gson.registerTypeAdapter(UserBoardRole.class, new UserBoardRoleSerializer());
-    Gson parser = gson.create();
-    return parser;
-
-  // helper method to create a note
+  /**
+   * Helper method to create a note.
+   */
   protected Note getMockNote() {
     return new Note(new User("randomuser", "googler", "googler@google.com"), "content", "color", 1, 2);
   }

@@ -19,6 +19,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("api/notes/")
 public class NoteServlet extends NoteAbstractServlet {
+  /**
+   * Initializes the "requiredFields" array used for request payload validation
+   */
   @Override
   public void init() throws ServletException {
     // set the list of required fields for this servlet that will be checked in validateRequestData method
@@ -29,7 +32,8 @@ public class NoteServlet extends NoteAbstractServlet {
     requiredFields.add("y");
   }
   /**
-   * The expected payload is
+   * Creates a Note
+   * The expected JSON payload is
     boardId: id of the board
     content: the content of the note;
     image: url / base64 (not decided yet);
@@ -55,11 +59,12 @@ public class NoteServlet extends NoteAbstractServlet {
     ofy().save().entity(board).now();
     // return the note
     response.getWriter().println(gson.toJson(note));
-    // set 204 created status codes
+    // set 204 created status code
     response.setStatus(CREATED);
   }
   /**
    * Deletes the note with the given id
+   * Id must be passed as a url param "id"
    */
   @Override
   protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -77,10 +82,9 @@ public class NoteServlet extends NoteAbstractServlet {
       ofy().save().entity(noteBoard).now();
       // delete note from datastore
       ofy().delete().type(Note.class).id(noteId).now();
-      // delete note from board
-      // return no content
       response.setStatus(NO_CONTENT);
     } else {
+      // if note id was not passed as a URL param, return 400 bad request error
       response.getWriter().println("No id set");
       response.sendError(BAD_REQUEST);
     }

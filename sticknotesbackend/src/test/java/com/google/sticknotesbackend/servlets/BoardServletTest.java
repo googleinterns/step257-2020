@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
+import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.ObjectifyService;
 import java.io.BufferedReader;
@@ -29,8 +30,6 @@ public class BoardServletTest extends NotesboardTestBase {
   public void setUp() throws Exception {
     // parent logic of setting up objectify
     super.setUp();
-    // local test logic
-    ObjectifyService.register(Whiteboard.class);
     // Set up a fake HTTP request
     when(mockRequest.getContentType()).thenReturn("application/json");
     // Set up a fake HTTP response

@@ -17,11 +17,13 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Implements the following endpoints:
  * POST - create a board
- * GET with id - retrieve a board
+ * GET with url param "id" - retrieve a board
  */
 @WebServlet("api/board/")
 public class BoardServlet extends BoardAbstractServlet {
-  // retrieves a board with the given id
+  /**
+   * Retrieves a board with the given url param "id"
+   * */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String boardIdParam = request.getParameter("id");
@@ -41,7 +43,9 @@ public class BoardServlet extends BoardAbstractServlet {
     }
   }
 
-  // creates a new board
+  /**
+   * Creates a new board. Required field is "title"
+   */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Gson gson = getBoardGsonParser();

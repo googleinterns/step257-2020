@@ -16,7 +16,10 @@ public abstract class NoteAbstractServlet extends HttpServlet {
   protected final int BAD_REQUEST = 400;
   protected final int NO_CONTENT = 204;
   protected List<String> requiredFields = new ArrayList<>();
-  // generates a Gson object that uses custom NoteSerializer
+
+  /**
+   * Generates a Gson object that uses custom NoteSerializer when serializing Note objects
+   */
   protected Gson getNoteGsonParser() {
     GsonBuilder gson = new GsonBuilder();
     gson.registerTypeAdapter(Note.class, new NoteSerializer());
@@ -24,6 +27,11 @@ public abstract class NoteAbstractServlet extends HttpServlet {
     return parser;
   }
 
+  /** 
+   * Validates Note fields using the list requiredFields. Each field declared in the required fields
+   * must be set in the passed note object. "requiredFields" is filled in the derived servlet, each derived 
+   * servlet sets its necessary fields
+  **/
   protected void validateRequestData(Note note, HttpServletResponse response) throws IOException {
     // check note has all required fields set
     for (String fieldName : requiredFields) {

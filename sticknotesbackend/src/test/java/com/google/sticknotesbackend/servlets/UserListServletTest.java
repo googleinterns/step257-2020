@@ -32,8 +32,6 @@ import org.junit.Test;
 
 public class UserListServletTest extends NotesboardTestBase {
 
-  private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-
   private Long boardId1;
   private Long boardId2;
   private Long boardId3;
@@ -54,11 +52,6 @@ public class UserListServletTest extends NotesboardTestBase {
   Whiteboard board3;
 
   private UserListServlet userListServlet;
-
-  @BeforeClass
-  public static void setUpBeforeClass() {
-    NotesboardTestBase.initializeObjectify();
-  }
 
   @Before
   public void setUp() throws Exception {
@@ -117,8 +110,6 @@ public class UserListServletTest extends NotesboardTestBase {
   @After
   public void tearDown() {
     AsyncCacheFilter.complete();
-    this.session.close();
-    this.helper.tearDown();
   }
 
   @Test
@@ -128,7 +119,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doGet(mockRequest, mockResponse);
 
-    Gson gson = getBoardGsonParser();
+    Gson gson = userListServlet.getBoardGsonParser();
     JsonArray expectedResponse = new JsonArray();
     expectedResponse.add(gson.toJsonTree(userBoardRole1));
     expectedResponse.add(gson.toJsonTree(userBoardRole2));
@@ -149,7 +140,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doGet(mockRequest, mockResponse);
 
-    Gson gson = getBoardGsonParser();
+    Gson gson = userListServlet.getBoardGsonParser();
     JsonArray expectedResponse = new JsonArray();
     expectedResponse.add(gson.toJsonTree(userBoardRole5));
     expectedResponse.add(gson.toJsonTree(userBoardRole6));
@@ -182,7 +173,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doGet(mockRequest, mockResponse);
 
-    Gson gson = getBoardGsonParser();
+    Gson gson = userListServlet.getBoardGsonParser();
     JsonArray expectedResponse = new JsonArray();
 
     // veryfing status
@@ -209,7 +200,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doPost(mockRequest, mockResponse);
 
-    Gson gson = getBoardGsonParser();
+    Gson gson = userListServlet.getBoardGsonParser();
     JsonElement expectedResponse = gson.toJsonTree(new UserBoardRole(Role.ADMIN, board1, user4), UserBoardRole.class);
     JsonElement actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);
 
