@@ -1,7 +1,6 @@
 package com.google.sticknotesbackend.models;
 
 import com.google.sticknotesbackend.enums.Role;
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -14,12 +13,15 @@ public class UserBoardRole {
   }
 
   public @Id Long id;
+
+  @Index
   public Role role;
 
   @Index
   @Load
   Ref<Whiteboard> board;
 
+  @Index
   @Load
   Ref<User> user;
 

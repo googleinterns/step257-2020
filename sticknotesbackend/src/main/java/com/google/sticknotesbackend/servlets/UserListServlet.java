@@ -2,11 +2,9 @@ package com.google.sticknotesbackend.servlets;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-import com.google.api.client.util.IOUtils;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
-import com.googlecode.objectify.Key;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
@@ -48,12 +45,10 @@ public class UserListServlet extends HttpServlet {
 
         String responseJson = userBoardRoleParser.toJson(boardUsers);
 
-        System.out.println("###############################");
-        System.out.println(responseJson);
-
         response.setStatus(OK);
         response.setContentType("application/json");
         response.getWriter().println(responseJson);
+        return;
       } else {
         response.getWriter().println("Board with this id doesn't exist");
         response.sendError(BAD_REQUEST);
@@ -111,13 +106,10 @@ public class UserListServlet extends HttpServlet {
 
     UserBoardRole userBoardRole = new UserBoardRole(role, board, user);
 
-    System.out.println("###############################");
-    System.out.println(userBoardRole.role.toString());
-
     ofy().save().entity(userBoardRole).now();
 
     response.getWriter().println(gson.toJson(userBoardRole));
-    response.sendError(OK);
+    response.setStatus(OK);
     return;
   }
 

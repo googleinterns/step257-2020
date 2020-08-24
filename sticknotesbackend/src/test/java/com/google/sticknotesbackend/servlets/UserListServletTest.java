@@ -2,27 +2,25 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 import static org.mockito.Mockito.when;
-import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.List;
 
+import com.google.gson.JsonElement;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
-import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
 
 import java.io.BufferedReader;
 import com.googlecode.objectify.cache.AsyncCacheFilter;
@@ -46,11 +44,19 @@ public class UserListServletTest extends NotesboardTestBase {
   UserBoardRole userBoardRole5;
   UserBoardRole userBoardRole6;
 
+  User user1;
+  User user2;
+  User user3;
+  User user4;
+
+  Whiteboard board1;
+  Whiteboard board2;
+  Whiteboard board3;
+
   private UserListServlet userListServlet;
 
   @BeforeClass
   public static void setUpBeforeClass() {
-
     NotesboardTestBase.initializeObjectify();
   }
 
@@ -64,14 +70,14 @@ public class UserListServletTest extends NotesboardTestBase {
       e.printStackTrace();
     }
     // filling datastore with board and few users
-    User user1 = new User("key1", "user1", "user1@google.com");
-    User user2 = new User("key2", "user2", "user2@google.com");
-    User user3 = new User("key3", "user3", "user3@google.com");
-    User user4 = new User("key4", "user4", "user4@google.com");
+    user1 = new User("key1", "user1", "user1@google.com");
+    user2 = new User("key2", "user2", "user2@google.com");
+    user3 = new User("key3", "user3", "user3@google.com");
+    user4 = new User("key4", "user4", "user4@google.com");
 
-    Whiteboard board1 = new Whiteboard("title1");
-    Whiteboard board2 = new Whiteboard("title2");
-    Whiteboard board3 = new Whiteboard("title3");
+    board1 = new Whiteboard("title1");
+    board2 = new Whiteboard("title2");
+    board3 = new Whiteboard("title3");
 
     ofy().save().entity(user1).now();
     ofy().save().entity(user2).now();
@@ -193,7 +199,7 @@ public class UserListServletTest extends NotesboardTestBase {
    */
 
   @Test
-  public void testAddUserToBoard() throws IOException {
+  public void testAddUserToBoardUserExistsBoardExists() throws IOException {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("email", "user4@google.com");
     jsonObject.addProperty("role", "admin");
@@ -202,5 +208,66 @@ public class UserListServletTest extends NotesboardTestBase {
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
 
     userListServlet.doPost(mockRequest, mockResponse);
+
+    Gson gson = getBoardGsonParser();
+    JsonElement expectedResponse = gson.toJsonTree(new UserBoardRole(Role.ADMIN, board1, user4), UserBoardRole.class);
+    JsonElement actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);
+
+    // checking response status
+    verify(mockResponse).setStatus(OK);
+    // checking response value
+    assertEquals(expectedResponse, actualResponse);
+    // checking if data correctly in the datastore
+    List<UserBoardRole> datastoreData = ofy().load().type(UserBoardRole.class).filter("board", board1)
+        .filter("user", user4).filter("role", Role.ADMIN).list();
+    assertEquals(1, datastoreData.size());
+  }
+
+  @Test
+  public void testAddUserToBoardUserExistsBoardNotExists() throws IOException {
+    Long boardId = (long) 1;
+    while (boardId == boardId1 || boardId == boardId2 || boardId == boardId3)
+      boardId += 1;
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("email", "user4@google.com");
+    jsonObject.addProperty("role", "admin");
+
+    when(mockRequest.getParameter("id")).thenReturn(boardId.toString());
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    userListServlet.doPost(mockRequest, mockResponse);
+
+    // checking response status
+    verify(mockResponse).sendError(BAD_REQUEST);
+    // checking response value
+    String actualResponse = responseWriter.getBuffer().toString();
+    String expectedResponse = "Board with a given id not found.\n";
+
+    assertEquals(expectedResponse, actualResponse);
+  }
+
+  @Test
+  public void testAddUserToBoardUserNotExistsBoardExists() throws IOException {
+    Long boardId = (long) 1;
+    while (boardId == boardId1 || boardId == boardId2 || boardId == boardId3)
+      boardId += 1;
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("email", "user6@google.com");
+    jsonObject.addProperty("role", "admin");
+
+    when(mockRequest.getParameter("id")).thenReturn(boardId.toString());
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    userListServlet.doPost(mockRequest, mockResponse);
+
+    // checking response status
+    verify(mockResponse).sendError(BAD_REQUEST);
+    // checking response value
+    String actualResponse = responseWriter.getBuffer().toString();
+    String expectedResponse = "User with a given email not found.\n";
+
+    assertEquals(expectedResponse, actualResponse);
   }
 }
