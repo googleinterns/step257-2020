@@ -23,6 +23,7 @@ import org.junit.BeforeClass;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+
 /**
  * Abstract base class for test classes. Initializes Objectify and local datastore.
  * Provides a few method to build mocked app models
@@ -37,11 +38,13 @@ public abstract class NotesboardTestBase {
       new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(), new LocalDatastoreServiceTestConfig());
 
   protected final LocalDatastoreHelper datastoreHelper = LocalDatastoreHelper.create(8484);
-  
+
   protected Closeable session;
 
-  @Mock protected HttpServletRequest mockRequest;
-  @Mock protected HttpServletResponse mockResponse;
+  @Mock
+  protected HttpServletRequest mockRequest;
+  @Mock
+  protected HttpServletResponse mockResponse;
   protected StringWriter responseWriter;
 
   /**
@@ -50,12 +53,8 @@ public abstract class NotesboardTestBase {
   @BeforeClass
   public static void initializeObjectify() {
     // necessary setup to make Obejctify work
-    DatastoreOptions options = DatastoreOptions.newBuilder()
-                                   .setProjectId("dummy")
-                                   .setHost("localhost:8484")
-                                   .setCredentials(NoCredentials.getInstance())
-                                   .setRetrySettings(ServiceOptions.getNoRetrySettings())
-                                   .build();
+    DatastoreOptions options = DatastoreOptions.newBuilder().setProjectId("dummy").setHost("localhost:8484")
+        .setCredentials(NoCredentials.getInstance()).setRetrySettings(ServiceOptions.getNoRetrySettings()).build();
     Datastore datastore = options.getService();
     ObjectifyService.init(new ObjectifyFactory(datastore));
     ObjectifyService.register(Whiteboard.class);
