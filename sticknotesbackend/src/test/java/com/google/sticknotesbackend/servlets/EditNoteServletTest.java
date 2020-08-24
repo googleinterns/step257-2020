@@ -6,9 +6,6 @@ import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.models.Note;
-import com.google.sticknotesbackend.models.User;
-import com.google.sticknotesbackend.models.Whiteboard;
-import com.googlecode.objectify.ObjectifyService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;

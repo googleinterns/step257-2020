@@ -106,10 +106,6 @@ public class UserListServlet extends HttpServlet {
     UserBoardRole userBoardRole = new UserBoardRole(role, board, user);
 
     userBoardRole.id = ofy().save().entity(userBoardRole).now().getId();
-    System.out.println("SAVING A USERBOARD ROLE");
-    System.out.println(userBoardRole.getUser().email);
-    System.out.println(userBoardRole.getBoard().title);
-    System.out.println(userBoardRole.role);
     response.getWriter().println(gson.toJson(userBoardRole));
     response.setStatus(OK);
     return;

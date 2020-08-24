@@ -51,5 +51,7 @@ export interface SidenavBoardData {
   id: string;
   creationDate: string;
   title: string;
+  rows: number;
+  cols: number;
   backgroundImg: string | null;
 }
