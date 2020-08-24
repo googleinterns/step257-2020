@@ -44,7 +44,7 @@ export interface CreateNoteApiData {
 export interface Note extends CreateNoteApiData {
   id: string;
   creationDate: string;
-  creator: string;
+  creator: User;
 }
 
 export interface SidenavBoardData {

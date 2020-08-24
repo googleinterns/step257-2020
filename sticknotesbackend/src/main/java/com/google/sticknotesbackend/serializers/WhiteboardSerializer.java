@@ -1,14 +1,18 @@
-/** 
+/**
  * Custom serializer for Whiteboard object
-*/
+ */
 package com.google.sticknotesbackend.serializers;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.googlecode.objectify.Ref;
 import java.lang.reflect.Type;
 
 /**
@@ -29,6 +33,18 @@ public class WhiteboardSerializer implements JsonSerializer<Whiteboard> {
     board.addProperty("backgroundImg", src.backgroundImg);
     // Creator is the nested element of the JSON object
     board.add("creator", new Gson().toJsonTree(src.getCreator()));
+    // add notes using NoteSerializer
+    // create a gson object with registered NoteSerializer
+    GsonBuilder gsonBuilder = new GsonBuilder();
+    gsonBuilder.registerTypeAdapter(Note.class, new NoteSerializer());
+    Gson gson = gsonBuilder.create();
+    // create gson array
+    JsonArray notesArray = new JsonArray();
+    for (Ref<Note> noteRef: src.notes) {
+      notesArray.add(gson.toJsonTree(noteRef.get()));
+    }
+    // add array as "notes" property
+    board.add("notes", notesArray);
     return board;
   }
 }
