@@ -15,8 +15,7 @@ public abstract class AppAbstractServlet extends HttpServlet {
   protected final int CREATED = 201;
   protected final int BAD_REQUEST = 400;
   protected final int NO_CONTENT = 204;
-  protected final int NOTE_HEIGHT = 250; // height of note in pixels;
-  protected final int NOTE_WIDTH = 250; // width of note in pixels;
+
   protected List<String> requiredFields = new ArrayList<>();
 
   /**
