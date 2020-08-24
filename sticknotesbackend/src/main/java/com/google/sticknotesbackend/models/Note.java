@@ -7,19 +7,15 @@ import com.googlecode.objectify.annotation.Load;
 
 @Entity
 public class Note {
-  @Id Long id;
-  String content;
-  String image;
-  Long creationDate; // timestamp here
-  int x;
-  int y;
-  String color;
+  public @Id Long id;
+  public String content;
+  public String image;
+  public Long creationDate; // timestamp here
+  public int x;
+  public int y;
+  public String color;
   @Load Ref<User> creator;
-  @Load Ref<Whiteboard> board;
-
-  public Note(User user) {
-    this.creator = Ref.create(user);
-  }
+  public Long boardId; // the id of the parent board
 
   public Note(User user, String content, String color, int x, int y) {
     this.creator = Ref.create(user);
@@ -28,12 +24,24 @@ public class Note {
     this.x = x;
     this.y = y;
   }
-
-  public Whiteboard getBoard() {
-    return board.get();
+  
+  public Note() {
+    this.x = -1;
+    this.y = -1;
   }
 
-  public void setBoard(Whiteboard board) {
-    this.board = Ref.create(board);
+  public void setCreator(User user) {
+    this.creator = Ref.create(user);
   }
+
+  public User getCreator() {
+    return this.creator.get();
+  }
+  // public Whiteboard getBoard() {
+  //   return board.get();
+  // }
+
+  // public void setBoard(Whiteboard board) {
+  //   this.board = Ref.create(board);
+  // }
 }
