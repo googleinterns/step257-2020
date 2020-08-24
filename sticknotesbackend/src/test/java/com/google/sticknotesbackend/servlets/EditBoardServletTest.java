@@ -36,6 +36,7 @@ public class EditBoardServletTest extends NotesboardTestBase {
     responseWriter = new StringWriter();
     when(mockResponse.getWriter()).thenReturn(new PrintWriter(responseWriter));
     editBoardServlet = new EditBoardServlet();
+    editBoardServlet.init();
   }
 
   @Test

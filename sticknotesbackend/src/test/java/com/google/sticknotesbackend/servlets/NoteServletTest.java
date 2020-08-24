@@ -35,6 +35,7 @@ public class NoteServletTest extends NotesboardTestBase {
     responseWriter = new StringWriter();
     when(mockResponse.getWriter()).thenReturn(new PrintWriter(responseWriter));
     noteServlet = new NoteServlet();
+    noteServlet.init();
   }
 
   @Test

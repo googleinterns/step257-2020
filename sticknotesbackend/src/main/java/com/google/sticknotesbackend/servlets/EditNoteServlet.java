@@ -2,6 +2,9 @@ package com.google.sticknotesbackend.servlets;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -28,10 +31,18 @@ public class EditNoteServlet extends NoteAbstractServlet {
    */
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // convert request payload to a json object and validate it
+    JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    try {
+      validateRequestData(jsonPayload, response);
+    } catch (PayloadValidationException ex) {
+      // if exception was thrown, send error message to client
+      badRequest(ex.getMessage(), response);
+      return;
+    }
     // create gson parser that uses custom note serializer
     Gson gson = getNoteGsonParser();
-    Note editedNote = gson.fromJson(request.getReader(), Note.class);
-    validateRequestData(editedNote, response);
+    Note editedNote = gson.fromJson(jsonPayload, Note.class);
     // load requested note from the datastore
     Note note = ofy().load().type(Note.class).id(editedNote.id).now();
     if (note == null) {

@@ -1,30 +1,29 @@
 package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
-import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.List;
-
-import com.google.gson.JsonElement;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
-
-import java.io.BufferedReader;
+import com.googlecode.objectify.Result;
 import com.googlecode.objectify.cache.AsyncCacheFilter;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -88,7 +87,6 @@ public class UserListServletTest extends NotesboardTestBase {
     userBoardRole2 = new UserBoardRole(Role.ADMIN, board1, user2);
     userBoardRole3 = new UserBoardRole(Role.USER, board1, user3);
     userBoardRole4 = new UserBoardRole(Role.USER, board1, user4);
-
     userBoardRole5 = new UserBoardRole(Role.USER, board2, user3);
     userBoardRole6 = new UserBoardRole(Role.USER, board2, user4);
 
@@ -209,9 +207,9 @@ public class UserListServletTest extends NotesboardTestBase {
     // checking response value
     assertEquals(expectedResponse, actualResponse);
     // checking if data correctly in the datastore
-    List<UserBoardRole> datastoreData = ofy().load().type(UserBoardRole.class).filter("board", board1)
-        .filter("user", user4).filter("role", Role.ADMIN).list();
-    assertEquals(1, datastoreData.size());
+    Result<UserBoardRole> datastoreData = ofy().load().type(UserBoardRole.class).filter("board", board1)
+        .filter("user", user4).filter("role", Role.ADMIN).first();
+    assertNotEquals(datastoreData.now(), null);
   }
 
   @Test

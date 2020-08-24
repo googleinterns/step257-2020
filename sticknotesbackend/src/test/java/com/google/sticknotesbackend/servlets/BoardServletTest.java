@@ -36,6 +36,7 @@ public class BoardServletTest extends NotesboardTestBase {
     responseWriter = new StringWriter();
     when(mockResponse.getWriter()).thenReturn(new PrintWriter(responseWriter));
     boardServlet = new BoardServlet();
+    boardServlet.init();
   }
 
   @Test
@@ -78,5 +79,19 @@ public class BoardServletTest extends NotesboardTestBase {
     boardServlet.doGet(mockRequest, mockResponse);
     // check that bad request error was generated
     verify(mockResponse).sendError(BAD_REQUEST);
+  }
+
+  @Test
+  public void testBoardCreateFailsWithInvalidPayload() throws Exception {
+    // create mocked request
+    JsonObject jsonObject = new JsonObject();
+    // add unexisting property
+    jsonObject.addProperty("boardtitle", "Board title");
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    boardServlet.doPost(mockRequest, mockResponse);
+    // verify response status
+    verify(mockResponse).sendError(BAD_REQUEST);
+    assertThat(mockResponse.getWriter().toString().equals("title field must be set"));
   }
 }

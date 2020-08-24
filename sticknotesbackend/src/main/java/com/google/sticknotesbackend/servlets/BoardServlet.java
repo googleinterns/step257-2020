@@ -7,9 +7,15 @@ package com.google.sticknotesbackend.servlets;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.googlecode.objectify.cmd.Query;
 import java.io.IOException;
+import java.util.List;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +27,14 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("api/board/")
 public class BoardServlet extends BoardAbstractServlet {
+  /**
+   * Initializes the "requiredFields" array used for request payload validation
+   */
+  @Override
+  public void init() throws ServletException {
+    // add id to the list of required payload params
+    this.requiredFields.add("title");
+  }
   /**
    * Retrieves a board with the given url param "id"
    * */
@@ -48,8 +62,18 @@ public class BoardServlet extends BoardAbstractServlet {
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // convert request payload to a json object and validate it
+    JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    try {
+      validateRequestData(jsonPayload, response);
+    } catch (PayloadValidationException ex) {
+      // if exception was thrown, send error message to client
+      badRequest(ex.getMessage(), response);
+      return;
+    }
+    // construct a gson that uses custom Whiteboard serializer
     Gson gson = getBoardGsonParser();
-    Whiteboard board = gson.fromJson(request.getReader(), Whiteboard.class);
+    Whiteboard board = gson.fromJson(jsonPayload, Whiteboard.class);
     board.creationDate = System.currentTimeMillis();
     // for now I create a dummy user entity, later user entity will be retrieved from datastore
     board.setCreator(new User("randomid", "googler@google.com", "nickname"));

@@ -15,6 +15,7 @@ public class UserBoardRole {
   public @Id Long id;
 
   @Index
+  @Load
   public Role role;
 
   @Index
