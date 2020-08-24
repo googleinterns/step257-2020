@@ -13,12 +13,17 @@ public class UserBoardRole {
   }
 
   public @Id Long id;
-  public String role;
-  
+
   @Index
-  @Load Ref<Whiteboard> board;
-  
-  @Load Ref<User> user;
+  public Role role;
+
+  @Index
+  @Load
+  Ref<Whiteboard> board;
+
+  @Index
+  @Load
+  Ref<User> user;
 
   public UserBoardRole() {
   }
@@ -26,7 +31,7 @@ public class UserBoardRole {
   public UserBoardRole(Role role, Whiteboard board, User user) {
     this.board = Ref.create(board);
     this.user = Ref.create(user);
-    this.role = role.label;
+    this.role = role;
   }
 
   public Whiteboard getBoard() {
