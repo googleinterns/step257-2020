@@ -15,11 +15,6 @@ export interface UserBoardRole {
   role: UserRole;
 }
 
-export interface UserBoardRoleAPI {
-  userEmail: string;
-  role: UserRole;
-}
-
 export interface Board {
   id: string;
   notes: Note[];
