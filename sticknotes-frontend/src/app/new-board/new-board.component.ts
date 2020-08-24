@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { noSpacesValidator } from '../utility/util';
+import { onlySpacesValidator } from '../utility/util';
 import { BoardApiService } from '../services/board-api.service';
 import { State } from '../enums/state.enum';
 
@@ -12,21 +12,29 @@ import { State } from '../enums/state.enum';
   styleUrls: ['./new-board.component.css']
 })
 export class NewBoardComponent implements OnInit {
+  // flag used to disable submit button when the component in the process of sending data
   public sendingData = false;
   public submitButton: string;
   private mode: State;
   private boardId: string;
+  // A form group used in the .html, currently has only board title, which is the only required field to create a new board
   public newBoardForm = new FormGroup({
     boardTitle: new FormControl('', [
+      // boardTitle field uses two validators
+      // checks that field is not empty
       Validators.required,
-      noSpacesValidator
+      // checks if field has anything else from spaces only
+      onlySpacesValidator
     ])
   });
   constructor(private router: Router,
-              private dialogRef: MatDialogRef<NewBoardComponent>,
-              private boardApiService: BoardApiService,
-              @Inject(MAT_DIALOG_DATA) private data: any) { }
+    private dialogRef: MatDialogRef<NewBoardComponent>,
+    private boardApiService: BoardApiService,
+    @Inject(MAT_DIALOG_DATA) private data: any) { }
 
+  /**
+   * Initializes the local component data
+   */
   ngOnInit(): void {
     // if component in edit mode, prepopulate form data
     if (this.data && this.data.currentTitle) {
@@ -40,7 +48,9 @@ export class NewBoardComponent implements OnInit {
     }
   }
 
-  // creates a new board with the given name
+  /**
+   * Creates a new board with the given name.
+   */
   private createNewBoard(): void {
     if (this.newBoardForm.valid) {
       // to create a board we only need a title
@@ -53,7 +63,9 @@ export class NewBoardComponent implements OnInit {
     }
   }
 
-  // updates board title, later it will handle background image updates as well
+  /** 
+   * Updates board title, later it will handle background image updates as well.
+   */
   private updateBoard(): void {
     if (this.newBoardForm.valid) {
       const boardTitle = this.newBoardForm.controls.boardTitle.value;
@@ -64,6 +76,10 @@ export class NewBoardComponent implements OnInit {
     }
   }
 
+  /**
+   * Called when user clicks "submit" button. Depending on the current state of the component, may either
+   * update an existing board or create new one.
+   */
   public handleSubmit(): void {
     if (this.mode === State.EDIT) {
       this.updateBoard();

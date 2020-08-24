@@ -23,7 +23,9 @@ export class BoardContainerComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  // toggles the side menu, changes the icon name accordingly to the state
+  /**
+   * Opens/closes the side menu, changes the icon accordingly to the state
+   */
   public toggleMenu(drawer: MatDrawer): void {
     drawer.toggle();
     if (this.iconName === 'menu') {
@@ -33,15 +35,25 @@ export class BoardContainerComponent implements OnInit {
     }
   }
 
+  /**
+   * Navigates user to the main menu
+   */
   public backToBoards(): void {
     this.router.navigateByUrl('/boards');
   }
 
+  /**
+   * Listens for the @Output Board of the board.component.ts
+   */
   public receiveBoardData(sidenavBoardData: SidenavBoardData): void {
     // when board data is emitted, add info about the board to the sidenav
     this.sidenavBoardData = sidenavBoardData;
   }
 
+  /**
+   * Opens edit board dialog by opening the NewBoardComponent in "edit" mode
+   * When editing is done, receives the edited board and updates the board data
+   */
   public openEditBoardDialog() {
     const dialogRef = this.dialog.open(NewBoardComponent, {
       width: '500px',
@@ -53,6 +65,9 @@ export class BoardContainerComponent implements OnInit {
     });
   }
 
+  /**
+   * Converts a timestamp received from server to the TS Date object
+   */
   public getBoardCreatedDate(): Date {
     if (this.sidenavBoardData) {
       return new Date(Number(this.sidenavBoardData.creationDate));
