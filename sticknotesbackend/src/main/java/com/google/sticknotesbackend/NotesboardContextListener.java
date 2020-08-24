@@ -11,6 +11,9 @@ import javax.servlet.ServletContextListener;
 
 public class NotesboardContextListener implements ServletContextListener {
 
+  /**
+   * Initializes Objectify. Registers app models.
+   */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     // for local development we need another config of objectify, to run locally there must be variable RUNMODE=local set

@@ -15,8 +15,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("api/edit-board/")
 public class EditBoardServlet extends BoardAbstractServlet {
-  // edits a board, for now only title editing is supported, returns an updated board
-  // the payload must include field "id" and a set of editable fields with updated values
+  /**
+   * Edits a board, for now only title editing is supported, returns an updated board.
+   * The JSON payload must include field "id" and a set of editable fields with updated values.
+   */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Gson gson = getBoardGsonParser();

@@ -8,8 +8,15 @@ import com.google.gson.JsonSerializer;
 import com.google.sticknotesbackend.models.Note;
 import java.lang.reflect.Type;
 
+/**
+ * Custom serializer to provide more flexible object serialization, for example to use method's results as
+ * serializer fields
+ */
 public class NoteSerializer implements JsonSerializer<Note> {
 
+  /**
+   * Custom Note serialization
+   */
   @Override
   public JsonElement serialize(Note src, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject note = new JsonObject();

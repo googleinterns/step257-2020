@@ -13,7 +13,9 @@ public abstract class BoardAbstractServlet extends HttpServlet {
   protected final int CREATED = 201;
   protected final int BAD_REQUEST = 400;
 
-  // generates a Gson object that uses custom WhiteboardSerializer
+  /**
+   * Generates a Gson object that uses custom WhiteboardSerializer when serializing Whiteboard objects.
+   */
   public Gson getBoardGsonParser() {
     GsonBuilder gson = new GsonBuilder();
     gson.registerTypeAdapter(Whiteboard.class, new WhiteboardSerializer());

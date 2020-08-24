@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.models.Note;
+import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
@@ -20,6 +21,9 @@ import javax.servlet.ServletException;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Unit tests for NoteServlet
+ */
 public class NoteServletTest extends NotesboardTestBase {
   private NoteServlet noteServlet;
 
@@ -27,9 +31,6 @@ public class NoteServletTest extends NotesboardTestBase {
   public void setUp() throws Exception {
     // parent logic of setting up objectify
     super.setUp();
-    // local test logic
-    ObjectifyService.register(Note.class);
-    ObjectifyService.register(Whiteboard.class);
     // Set up a fake HTTP request
     when(mockRequest.getContentType()).thenReturn("application/json");
     // Set up a fake HTTP response

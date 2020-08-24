@@ -23,6 +23,10 @@ import org.junit.BeforeClass;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+/**
+ * Abstract base class for test classes. Initializes Objectify and local datastore.
+ * Provides a few method to build mocked app models
+ */
 public abstract class NotesboardTestBase {
   protected final int OK = 200;
   protected final int CREATED = 201;
@@ -40,6 +44,9 @@ public abstract class NotesboardTestBase {
   @Mock protected HttpServletResponse mockResponse;
   protected StringWriter responseWriter;
 
+  /**
+   * Creates a local datastore, local Objectify service
+   */
   @BeforeClass
   public static void initializeObjectify() {
     // necessary setup to make Obejctify work
@@ -52,10 +59,14 @@ public abstract class NotesboardTestBase {
     Datastore datastore = options.getService();
     ObjectifyService.init(new ObjectifyFactory(datastore));
     ObjectifyService.register(Whiteboard.class);
+    ObjectifyService.register(Note.class);
     ObjectifyService.register(User.class);
     ObjectifyService.register(UserBoardRole.class);
   }
 
+  /**
+   * Initializes Mockito mocks, sets up datastore
+   */
   public void setUp() throws Exception{
     MockitoAnnotations.initMocks(this);
     helper.setUp();
@@ -68,7 +79,9 @@ public abstract class NotesboardTestBase {
     helper.tearDown();
   }
 
-  // helper method that constructs a testing object of Whiteboard
+  /**
+   * Helper method that constructs a testing object of Whiteboard.
+   */
   protected Whiteboard getMockBoard() {
     Whiteboard board = new Whiteboard("test");
     board.creationDate = System.currentTimeMillis();
@@ -79,7 +92,9 @@ public abstract class NotesboardTestBase {
     return board;
   }
 
-  // helper method to create a note
+  /**
+   * Helper method to create a note.
+   */
   protected Note getMockNote() {
     return new Note(new User("randomuser", "googler", "googler@google.com"), "content", "color", 1, 2);
   }
