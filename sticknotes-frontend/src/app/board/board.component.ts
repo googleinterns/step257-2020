@@ -44,7 +44,9 @@ export class BoardComponent implements OnInit {
           id: board.id,
           title: board.title,
           creationDate: board.creationDate,
-          backgroundImg: board.backgroundImg
+          backgroundImg: board.backgroundImg,
+          rows: board.rows,
+          cols: board.cols
         };
         this.boardLoaded.emit(sidenavData);
       });
@@ -64,14 +66,14 @@ export class BoardComponent implements OnInit {
     elementRef.style.setProperty('z-index', '3');
     const curTranslate = getTranslateValues(elementRef);
     // free currently taken note position
-    this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
+    this.boardGrid[note.y][note.x] = 0;
     // get closest free point
-    const closestPoint = this.getClosestFreeSlot(note, note.x + curTranslate.x, note.y + curTranslate.y);
+    const closestPoint = this.getClosestFreeSlot(note, (note.x * this.NOTE_WIDTH) + curTranslate.x, (note.y * this.NOTE_HEIGHT) + curTranslate.y);
     // set the new position of the note on the board
     this.boardGrid[closestPoint.y][closestPoint.x] = 1;
     // apply new transformation
-    note.x = closestPoint.x * this.NOTE_WIDTH;
-    note.y = closestPoint.y * this.NOTE_HEIGHT;
+    note.x = closestPoint.x;
+    note.y = closestPoint.y;
     cdkDragEnd.source._dragRef.reset();
     elementRef.style.transform = '';
     // update note data
@@ -149,7 +151,7 @@ export class BoardComponent implements OnInit {
 
   // generates a correct style to position the note
   public getNoteStyle(note: Note): string {
-    return `left:${note.x}px;top:${note.y}px`;
+    return `left:${note.x * this.NOTE_WIDTH}px;top:${note.y * this.NOTE_HEIGHT}px`;
   }
 
   // generates a correct style to position the slot
@@ -160,7 +162,7 @@ export class BoardComponent implements OnInit {
   // opens new-note component in a dialog and passes the position where the note has to be created
   public openNewNoteDialog(x: number, y: number): void {
     const dialogRef = this.dialog.open(NewNoteComponent, {
-      data: { mode: State.CREATE, noteData: { position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardId: this.board.id } }
+      data: { mode: State.CREATE, noteData: { position: new Vector2(x, y), boardId: this.board.id } }
     });
     dialogRef.afterClosed().subscribe(note => {
       // receive a new note here and add it to the board
@@ -168,7 +170,7 @@ export class BoardComponent implements OnInit {
       if (note) {
         this.board.notes.push(note);
         // update grid
-        this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 1;
+        this.boardGrid[note.y][note.x] = 1;
       }
     });
   }

@@ -6,9 +6,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
-import com.google.sticknotesbackend.models.User;
+import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
-import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Ref;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -57,7 +57,7 @@ public class EditBoardServletTest extends NotesboardTestBase {
     assertThat(responseString.contains(newBoardTitle));
     // check if datastore entity really updated
     Whiteboard storedBoard = ofy().load().type(Whiteboard.class).id(board.id).now();
-    assertThat(storedBoard.title.equals(newBoardTitle));
+    assertThat(storedBoard.title).isEqualTo(newBoardTitle);
   }
 
   @Test
@@ -78,17 +78,52 @@ public class EditBoardServletTest extends NotesboardTestBase {
   }
 
   @Test
-  public void testBoardEditFailsWithInvalidPayload() throws Exception {
-    String newBoardTitle = "New board title";
+  public void testBoardResizeSuccessWithValidRowsAndColsValues() throws Exception {
     // create board firstly
     Whiteboard board = getMockBoard();
     // when the board is saved, get the auto generated id and assign to board field
     board.id = ofy().save().entity(board).now().getId();
+    // add some notes
+    Note note = getMockNote();
+    // save the note
+    note.id = ofy().save().entity(note).now().getId();
+    // add the note to the board object
+    board.notes.add(Ref.create(note));
+    ofy().save().entity(board).now();
     // mock request payload
     JsonObject jsonObject = new JsonObject();
     // set unexisting property "newTitle"
-    jsonObject.addProperty("newtTitle", newBoardTitle);
     jsonObject.addProperty("id", board.id);
+    jsonObject.addProperty("rows", 5);
+    jsonObject.addProperty("cols", 5);
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    editBoardServlet.doPost(mockRequest, mockResponse);
+    // check that ofy really stored values 5,5
+    board = ofy().load().type(Whiteboard.class).id(board.id).now();
+    assertThat(board.rows).isEqualTo(5);
+    assertThat(board.cols).isEqualTo(5);
+  }
+
+  @Test
+  public void testBoardResizeFailsAsNotesGetDeleted() throws Exception {
+    // create board firstly
+    Whiteboard board = getMockBoard();
+    // when the board is saved, get the auto generated id and assign to board field
+    board.id = ofy().save().entity(board).now().getId();
+    // add some notes on the 4th row
+    Note note = getMockNote();
+    note.y = 4; // note is on the 4th row
+    // save the note
+    note.id = ofy().save().entity(note).now().getId();
+    // add the note to the board object
+    board.notes.add(Ref.create(note));
+    ofy().save().entity(board).now();
+    // mock request payload
+    JsonObject jsonObject = new JsonObject();
+    // set unexisting property "newTitle"
+    jsonObject.addProperty("id", board.id);
+    jsonObject.addProperty("rows", 3);
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
 
     editBoardServlet.doPost(mockRequest, mockResponse);

@@ -64,14 +64,12 @@ public class UserListServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String boardIdParam = request.getParameter("id");
-    Long boardId = null;
-    try {
-      boardId = Long.valueOf(boardIdParam);
-    } catch (NumberFormatException e) {
+    if (boardIdParam == null) {
       response.getWriter().println("Error while reading request param.");
       response.sendError(BAD_REQUEST);
       return;
     }
+    Long boardId = Long.parseLong(boardIdParam);
 
     Gson gson = getBoardGsonParser();
     JsonObject body = new JsonParser().parse(request.getReader()).getAsJsonObject();
@@ -103,11 +101,11 @@ public class UserListServlet extends HttpServlet {
       response.sendError(BAD_REQUEST);
       return;
     }
-
+    
+    
     UserBoardRole userBoardRole = new UserBoardRole(role, board, user);
 
-    ofy().save().entity(userBoardRole).now();
-
+    userBoardRole.id = ofy().save().entity(userBoardRole).now().getId();
     response.getWriter().println(gson.toJson(userBoardRole));
     response.setStatus(OK);
     return;

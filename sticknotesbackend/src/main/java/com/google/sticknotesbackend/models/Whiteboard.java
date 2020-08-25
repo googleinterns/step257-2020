@@ -18,6 +18,8 @@ public class Whiteboard {
   public @Load ArrayList<Ref<Note>> notes = new ArrayList<Ref<Note>>();
 
   public Whiteboard() {
+    this.rows = -1;
+    this.cols = -1;
   }
 
   public Whiteboard(String title) {

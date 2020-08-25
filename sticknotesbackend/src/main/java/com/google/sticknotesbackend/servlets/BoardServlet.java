@@ -7,9 +7,15 @@ package com.google.sticknotesbackend.servlets;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.googlecode.objectify.cmd.Query;
 import java.io.IOException;
+import java.util.List;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +42,7 @@ public class BoardServlet extends BoardAbstractServlet {
         return;
       }
       Gson gson = getBoardGsonParser();
-      response.getWriter().println(gson.toJson(board));
+      response.getWriter().print(gson.toJson(board));
     } else {
       response.getWriter().println("No id parameter");
       response.sendError(BAD_REQUEST);
@@ -48,8 +54,19 @@ public class BoardServlet extends BoardAbstractServlet {
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // convert request payload to a json object and validate it
+    JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    try {
+      String[] requiredFields = {"title"};
+      validateRequestData(jsonPayload, response, requiredFields);
+    } catch (PayloadValidationException ex) {
+      // if exception was thrown, send error message to client
+      badRequest(ex.getMessage(), response);
+      return;
+    }
+    // construct a gson that uses custom Whiteboard serializer
     Gson gson = getBoardGsonParser();
-    Whiteboard board = gson.fromJson(request.getReader(), Whiteboard.class);
+    Whiteboard board = gson.fromJson(jsonPayload, Whiteboard.class);
     board.creationDate = System.currentTimeMillis();
     // for now I create a dummy user entity, later user entity will be retrieved from datastore
     board.setCreator(new User("randomid", "googler@google.com", "nickname"));
@@ -58,7 +75,7 @@ public class BoardServlet extends BoardAbstractServlet {
     // when the board is saved, get the auto generated id and assign to the board field
     board.id = ofy().save().entity(board).now().getId();
     // return JSON of the new created board
-    response.getWriter().println(gson.toJson(board));
+    response.getWriter().print(gson.toJson(board));
     // set 204 created status codes
     response.setStatus(CREATED);
   }

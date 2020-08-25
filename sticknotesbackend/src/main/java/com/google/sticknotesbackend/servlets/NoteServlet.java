@@ -2,6 +2,9 @@ package com.google.sticknotesbackend.servlets;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
@@ -20,18 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("api/notes/")
 public class NoteServlet extends NoteAbstractServlet {
   /**
-   * Initializes the "requiredFields" array used for request payload validation
-   */
-  @Override
-  public void init() throws ServletException {
-    // set the list of required fields for this servlet that will be checked in validateRequestData method
-    requiredFields.add("content");
-    requiredFields.add("boardId");
-    requiredFields.add("color");
-    requiredFields.add("x");
-    requiredFields.add("y");
-  }
-  /**
    * Creates a Note
    * The expected JSON payload is
     boardId: id of the board
@@ -43,10 +34,19 @@ public class NoteServlet extends NoteAbstractServlet {
    */
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // convert request payload to a json object and validate it
+    JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    try {
+      String[] requiredFields = {"content", "boardId", "color", "x", "y"};
+      validateRequestData(jsonPayload, response, requiredFields);
+    } catch (PayloadValidationException ex) {
+      // if exception was thrown, send error message to client
+      badRequest(ex.getMessage(), response);
+      return;
+    }
     // create gson parser that uses custom note serializer
     Gson gson = getNoteGsonParser();
-    Note note = gson.fromJson(request.getReader(), Note.class);
-    validateRequestData(note, response);
+    Note note = gson.fromJson(jsonPayload, Note.class);
     // fill the remaining note data
     note.setCreator(new User("randomkey", "googler", "googler@google.com"));
     note.creationDate = System.currentTimeMillis();
@@ -58,7 +58,7 @@ public class NoteServlet extends NoteAbstractServlet {
     board.notes.add(Ref.create(note));
     ofy().save().entity(board).now();
     // return the note
-    response.getWriter().println(gson.toJson(note));
+    response.getWriter().print(gson.toJson(note));
     // set 204 created status code
     response.setStatus(CREATED);
   }
