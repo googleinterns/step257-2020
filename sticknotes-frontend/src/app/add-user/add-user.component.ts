@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { UserRole } from '../enums/user-role.enum';
-import { UserBoardRole, User } from '../interfaces';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BoardUsersApiService } from '../services/board-users-api.service';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -33,19 +32,6 @@ export class AddUserComponent implements OnInit {
   }
 
   addUser(): void {
-    const mockUser: User = {
-      key: 'key123',
-      nickname: 'ola',
-      email: 'ola@google.com',
-      accessibleBoards: []
-    };
-
-    const mockUserWithRole: UserBoardRole  = {
-      user: mockUser,
-      boardId: 'board1',
-      role: UserRole.USER
-    };
-
     if (this.addUserForm.valid) {
       this.boardUsersService
           .addBoardUser(this.addUserForm.controls.userEmail.value, this.addUserForm.controls.role.value)
