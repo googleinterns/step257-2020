@@ -26,6 +26,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { HttpClientModule } from '@angular/common/http';
 import { MomentModule } from 'ngx-moment';
 import { AddUserComponent } from './add-user/add-user.component';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { AddUserComponent } from './add-user/add-user.component';
     MatGridListModule,
     MatRadioModule,
     HttpClientModule,
-    MomentModule
+    MomentModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

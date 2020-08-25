@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Board } from '../interfaces';
+import { Board, Note } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -24,5 +24,9 @@ export class BoardApiService {
       title: boardTitle
     };
     return this.http.post<Board>('api/edit-board/', payload);
+  }
+
+  public translateNotesOfBoard(boardId: string, destinationLanguage: string): Observable<Note[]> {
+    return this.http.get<Note[]>(`api/board/notes/?id=${boardId}&lc=${destinationLanguage}`);
   }
 }
