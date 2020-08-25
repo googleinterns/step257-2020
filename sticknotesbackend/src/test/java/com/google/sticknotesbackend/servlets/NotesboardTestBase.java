@@ -13,17 +13,12 @@ import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
-import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.Closeable;
 import java.io.StringWriter;
 import java.util.List;
-import com.google.gson.JsonObject;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -109,13 +104,7 @@ public abstract class NotesboardTestBase {
     board.cols = 6;
     return board;
   }
-  
-  public Gson getBoardGsonParser() {
-    GsonBuilder gson = new GsonBuilder();
-    gson.registerTypeAdapter(UserBoardRole.class, new UserBoardRoleSerializer());
-    Gson parser = gson.create();
-    return parser;
-  }
+
 /** 
 * Helper method to create a note.
 */

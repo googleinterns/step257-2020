@@ -2,7 +2,6 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
@@ -23,9 +22,7 @@ import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import java.io.BufferedReader;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class UserListServletTest extends NotesboardTestBase {
@@ -93,11 +90,6 @@ public class UserListServletTest extends NotesboardTestBase {
     when(mockResponse.getWriter()).thenReturn(new PrintWriter(responseWriter));
 
     ofy().clear();
-  }
-
-  @After
-  public void tearDown() {
-    super.tearDown();
   }
 
   @Test
@@ -180,7 +172,7 @@ public class UserListServletTest extends NotesboardTestBase {
     userListServlet.doPost(mockRequest, mockResponse);
 
 
-    Gson gson = getBoardGsonParser();
+    Gson gson = userListServlet.getBoardGsonParser();
 
     // checking response status
     verify(mockResponse).setStatus(OK);
