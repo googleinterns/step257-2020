@@ -1,6 +1,7 @@
 package com.google.sticknotesbackend.servlets;
 
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
+import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -12,10 +13,18 @@ import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.Closeable;
 import java.io.StringWriter;
+import java.util.List;
+import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
@@ -33,9 +42,10 @@ public abstract class NotesboardTestBase {
   protected final int CREATED = 201;
   protected final int BAD_REQUEST = 400;
   protected final int NO_CONTENT = 204;
-  // Set up a helper so that the ApiProxy returns a valid environment for local testing.
-  protected final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(), new LocalDatastoreServiceTestConfig());
+  // Set up a helper so that the ApiProxy returns a valid environment for local
+  // testing.
+  protected final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(),
+      new LocalDatastoreServiceTestConfig());
 
   protected final LocalDatastoreHelper datastoreHelper = LocalDatastoreHelper.create(8484);
 
@@ -66,7 +76,16 @@ public abstract class NotesboardTestBase {
   /**
    * Initializes Mockito mocks, sets up datastore
    */
-  public void setUp() throws Exception{
+  protected void clearDatastore() {
+    List<Key<Whiteboard>> keysBoard = ofy().load().type(Whiteboard.class).keys().list();
+    ofy().delete().keys(keysBoard).now();
+    List<Key<User>> keysUser = ofy().load().type(User.class).keys().list();
+    ofy().delete().keys(keysUser).now();
+    List<Key<UserBoardRole>> keysBoardRole = ofy().load().type(UserBoardRole.class).keys().list();
+    ofy().delete().keys(keysBoardRole).now();
+  }
+
+  public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     helper.setUp();
     session = ObjectifyService.begin();
@@ -90,10 +109,16 @@ public abstract class NotesboardTestBase {
     board.cols = 6;
     return board;
   }
-
-  /**
-   * Helper method to create a note.
-   */
+  
+  public Gson getBoardGsonParser() {
+    GsonBuilder gson = new GsonBuilder();
+    gson.registerTypeAdapter(UserBoardRole.class, new UserBoardRoleSerializer());
+    Gson parser = gson.create();
+    return parser;
+  }
+/** 
+* Helper method to create a note.
+*/
   protected Note getMockNote() {
     return new Note(new User("randomuser", "googler", "googler@google.com"), "content", "color", 1, 2);
   }

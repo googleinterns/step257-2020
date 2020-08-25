@@ -101,14 +101,22 @@ public class UserListServlet extends HttpServlet {
       response.sendError(BAD_REQUEST);
       return;
     }
-    
-    
-    UserBoardRole userBoardRole = new UserBoardRole(role, board, user);
 
-    userBoardRole.id = ofy().save().entity(userBoardRole).now().getId();
-    response.getWriter().println(gson.toJson(userBoardRole));
-    response.setStatus(OK);
-    return;
+    UserBoardRole datastoreData = ofy().load().type(UserBoardRole.class).filter("board", board).filter("user", user)
+        .first().now();
+    if (datastoreData != null) {
+      response.getWriter().println("User already in the list.");
+      response.sendError(BAD_REQUEST);
+      return;
+    } else {
+      UserBoardRole userBoardRole = new UserBoardRole(role, board, user);
+
+      ofy().save().entity(userBoardRole).now();
+
+      response.getWriter().println(gson.toJson(userBoardRole));
+      response.setStatus(OK);
+      return;
+    }
   }
 
   public Gson getBoardGsonParser() {
