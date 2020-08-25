@@ -4,9 +4,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
-import { SidenavBoardData } from '../interfaces';
+import { SidenavBoardData, BoardUpdateData, Board } from '../interfaces';
 import { NewBoardComponent } from '../new-board/new-board.component';
 import { MatDialog } from '@angular/material/dialog';
+import { BoardEditComponent } from '../board-edit/board-edit.component';
 
 @Component({
   selector: 'app-board-container',
@@ -17,7 +18,7 @@ export class BoardContainerComponent implements OnInit {
 
   public iconName = 'menu';
   public sidenavBoardData: SidenavBoardData = null;
-  public newTitle: string = null;
+  public updatedBoardData: BoardUpdateData = null;
   constructor(private router: Router, private dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -43,14 +44,19 @@ export class BoardContainerComponent implements OnInit {
   }
 
   public openEditBoardDialog() {
-    const dialogRef = this.dialog.open(NewBoardComponent, {
+    const dialogRef = this.dialog.open(BoardEditComponent, {
       width: '500px',
-      data: { currentTitle: this.sidenavBoardData.title, boardId: this.sidenavBoardData.id }
+      data: this.sidenavBoardData as BoardUpdateData
     });
-    dialogRef.afterClosed().subscribe(updatedBoardTitle => {
-      if (updatedBoardTitle) {
-        this.sidenavBoardData.title = updatedBoardTitle;
-        this.newTitle = updatedBoardTitle;
+    dialogRef.afterClosed().subscribe((data: BoardUpdateData) => {
+      // if board was edited
+      if (data) {
+        // update local fields
+        this.sidenavBoardData.title = data.title;
+        this.sidenavBoardData.cols = data.cols;
+        this.sidenavBoardData.rows = data.rows;
+        // send update to the board component
+        this.updatedBoardData = data;
       }
     });
   }

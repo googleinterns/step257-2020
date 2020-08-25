@@ -1,1 +1,27 @@
-<p>board-edit works!</p>
+<div class="edit-board-form">
+  <form [formGroup]="editBoardForm">
+    <mat-form-field>
+      <mat-label>Board title</mat-label>
+      <input matInput formControlName="boardTitle">
+      <mat-error *ngIf="!this.editBoardForm.controls.boardTitle.valid">
+        Board title must have at least one non-space character
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Columns</mat-label>
+      <input matInput type="number" formControlName="cols">
+      <!-- Putting random number here for now -->
+      <mat-error *ngIf="!this.editBoardForm.controls.cols.valid">
+        Columns value must be in range 1 - 20 
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Rows</mat-label>
+      <input matInput type="number" formControlName="rows">
+      <mat-error *ngIf="!this.editBoardForm.controls.cols.valid">
+        Rows value must be in range 1 - 20 
+      </mat-error>
+    </mat-form-field>
+  </form>
+  <button mat-raised-button color="primary" (click)="updateBoard()" [disabled]="sendingData">Update</button>
+</div>

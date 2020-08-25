@@ -27,6 +27,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MomentModule } from 'ngx-moment';
 import { AddUserComponent } from './add-user/add-user.component';
 import { BoardEditComponent } from './board-edit/board-edit.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { BoardEditComponent } from './board-edit/board-edit.component';
     MatGridListModule,
     MatRadioModule,
     HttpClientModule,
-    MomentModule
+    MomentModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]
