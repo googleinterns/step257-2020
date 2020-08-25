@@ -21,7 +21,7 @@ import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 
-@WebServlet("api/board/users")
+@WebServlet("api/board/users/")
 public class UserListServlet extends AppAbstractServlet {
   protected final int CREATED = 201;
   protected final int BAD_REQUEST = 400;

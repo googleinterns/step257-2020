@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Inject } from '@angular/core';
 import { UserRole } from '../enums/user-role.enum';
 import { UserBoardRole, User } from '../interfaces';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BoardUsersApiService } from '../services/board-users-api.service';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-add-user',
@@ -11,6 +12,8 @@ import { MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./add-user.component.css']
 })
 export class AddUserComponent implements OnInit {
+
+  @Input() boardId: string;
 
   public get userRole(): typeof UserRole {
     return UserRole;
@@ -27,28 +30,32 @@ export class AddUserComponent implements OnInit {
   });
 
   constructor(private boardUsersService: BoardUsersApiService,
-              private dialogRef: MatDialogRef<AddUserComponent>) { }
+              private dialogRef: MatDialogRef<AddUserComponent>,
+              @Inject(MAT_DIALOG_DATA) data) {
+                this.boardId = data.boardId;
+               }
 
   ngOnInit(): void {
   }
 
   addUser(): void {
-    const mockUser: User = {
-      key: 'key123',
-      nickname: 'ola',
-      email: 'ola@google.com',
-      accessibleBoards: []
-    };
+    // const mockUser: User = {
+    //   key: 'key123',
+    //   nickname: 'ola',
+    //   email: 'ola@google.com',
+    //   accessibleBoards: []
+    // };
 
-    const mockUserWithRole: UserBoardRole  = {
-      user: mockUser,
-      boardId: 'board1',
-      role: UserRole.USER
-    };
+    // const mockUserWithRole: UserBoardRole  = {
+    //   user: mockUser,
+    //   boardId: 'board1',
+    //   role: UserRole.USER
+    // };
 
     if (this.addUserForm.valid) {
+      // load board
       this.boardUsersService
-          .addBoardUser(this.addUserForm.controls.userEmail.value, this.addUserForm.controls.role.value)
+          .addBoardUser(this.boardId, this.addUserForm.controls.userEmail.value, this.addUserForm.controls.role.value)
           .subscribe(user => {
             this.dialogRef.close(user);
       }, err => {

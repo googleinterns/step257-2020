@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { BoardUsersApiService } from '../services/board-users-api.service';
-import { UserBoardRole, User } from '../interfaces';
+import { UserBoardRole, User, SidenavBoardData } from '../interfaces';
 import { Observable, of, forkJoin, from } from 'rxjs';
 import { UserRole } from '../enums/user-role.enum';
 import { take } from 'rxjs/operators';
@@ -15,9 +15,10 @@ import { AddUserComponent } from '../add-user/add-user.component';
 })
 export class UserListComponent implements OnInit {
 
-  public adminView = false;
+  public adminView = true;
   public usersWithRole: UserBoardRole[] = [];
   public currentUser: User;
+  @Input('boardId') public boardId: string;
 
   constructor(private userService: UserService,
               private boardUsersService: BoardUsersApiService,
@@ -34,7 +35,7 @@ export class UserListComponent implements OnInit {
       this.usersWithRole = users;
       const index = users.findIndex(userWithRole => user.key === userWithRole.user.key && userWithRole.role === UserRole.ADMIN);
       if (index === -1) {
-        this.adminView = false;
+        this.adminView = true;
       }else{
         this.adminView = true;
       }
@@ -42,7 +43,7 @@ export class UserListComponent implements OnInit {
   }
 
   openAddUserDialog(): void {
-    const dialogRef = this.dialog.open(AddUserComponent);
+    const dialogRef = this.dialog.open(AddUserComponent, { data: {boardId: this.boardId}});
     dialogRef.afterClosed().subscribe(user => {
       if (user) {
         this.usersWithRole.push(user);
