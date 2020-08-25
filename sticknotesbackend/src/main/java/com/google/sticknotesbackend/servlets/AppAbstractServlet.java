@@ -16,14 +16,12 @@ public abstract class AppAbstractServlet extends HttpServlet {
   protected final int BAD_REQUEST = 400;
   protected final int NO_CONTENT = 204;
 
-  protected List<String> requiredFields = new ArrayList<>();
-
   /**
    * Validates JsonObject fields using the list requiredFields. Each field declared in the required fields
    * must be set in the passed JsonObject. "requiredFields" is filled in the derived servlet, each derived
    * servlet sets its necessary fields
    **/
-  protected void validateRequestData(JsonObject payload, HttpServletResponse response)
+  protected void validateRequestData(JsonObject payload, HttpServletResponse response, String[] requiredFields)
       throws PayloadValidationException {
     // check note has all required fields set
     for (String fieldName : requiredFields) {

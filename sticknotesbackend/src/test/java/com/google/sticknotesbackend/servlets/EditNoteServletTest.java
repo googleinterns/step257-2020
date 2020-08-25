@@ -31,7 +31,6 @@ public class EditNoteServletTest extends NotesboardTestBase {
     responseWriter = new StringWriter();
     when(mockResponse.getWriter()).thenReturn(new PrintWriter(responseWriter));
     editNoteServlet = new EditNoteServlet();
-    editNoteServlet.init();
   }
 
   @Test

@@ -28,14 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("api/board/")
 public class BoardServlet extends BoardAbstractServlet {
   /**
-   * Initializes the "requiredFields" array used for request payload validation
-   */
-  @Override
-  public void init() throws ServletException {
-    // add id to the list of required payload params
-    this.requiredFields.add("title");
-  }
-  /**
    * Retrieves a board with the given url param "id"
    * */
   @Override
@@ -65,7 +57,8 @@ public class BoardServlet extends BoardAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      validateRequestData(jsonPayload, response);
+      String[] requiredFields = {"title"};
+      validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
       badRequest(ex.getMessage(), response);

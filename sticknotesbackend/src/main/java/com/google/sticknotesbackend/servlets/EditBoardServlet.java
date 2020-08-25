@@ -23,14 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("api/edit-board/")
 public class EditBoardServlet extends BoardAbstractServlet {
   /**
-   * Initializes the "requiredFields" array used for request payload validation
-   */
-  @Override
-  public void init() throws ServletException {
-    // add id to the list of required payload params
-    this.requiredFields.add("id");
-  }
-  /**
    * Edits a board, for now only title editing is supported, returns an updated board.
    * The JSON payload must include field "id" and a set of editable fields with updated values.
    */
@@ -39,7 +31,8 @@ public class EditBoardServlet extends BoardAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      validateRequestData(jsonPayload, response);
+      String[] requiredFields = {"id"};
+      validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
       badRequest(ex.getMessage(), response);

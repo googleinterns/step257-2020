@@ -23,18 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("api/notes/")
 public class NoteServlet extends NoteAbstractServlet {
   /**
-   * Initializes the "requiredFields" array used for request payload validation
-   */
-  @Override
-  public void init() throws ServletException {
-    // set the list of required fields for this servlet that will be checked in validateRequestData method
-    requiredFields.add("content");
-    requiredFields.add("boardId");
-    requiredFields.add("color");
-    requiredFields.add("x");
-    requiredFields.add("y");
-  }
-  /**
    * Creates a Note
    * The expected JSON payload is
     boardId: id of the board
@@ -49,7 +37,8 @@ public class NoteServlet extends NoteAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      validateRequestData(jsonPayload, response);
+      String[] requiredFields = {"content", "boardId", "color", "x", "y"};
+      validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
       badRequest(ex.getMessage(), response);
