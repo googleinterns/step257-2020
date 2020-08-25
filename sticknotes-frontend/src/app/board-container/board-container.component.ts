@@ -45,11 +45,13 @@ export class BoardContainerComponent implements OnInit {
   public openEditBoardDialog() {
     const dialogRef = this.dialog.open(NewBoardComponent, {
       width: '500px',
-      data: {currentTitle: this.sidenavBoardData.title, boardId: this.sidenavBoardData.id}
+      data: { currentTitle: this.sidenavBoardData.title, boardId: this.sidenavBoardData.id }
     });
     dialogRef.afterClosed().subscribe(updatedBoardTitle => {
-      this.sidenavBoardData.title = updatedBoardTitle;
-      this.newTitle = updatedBoardTitle;
+      if (updatedBoardTitle) {
+        this.sidenavBoardData.title = updatedBoardTitle;
+        this.newTitle = updatedBoardTitle;
+      }
     });
   }
 

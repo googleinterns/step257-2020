@@ -26,6 +26,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { HttpClientModule } from '@angular/common/http';
 import { MomentModule } from 'ngx-moment';
 import { AddUserComponent } from './add-user/add-user.component';
+import { BoardEditComponent } from './board-edit/board-edit.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { AddUserComponent } from './add-user/add-user.component';
     BoardsListComponent,
     NewNoteComponent,
     RangeLoopPipe,
-    AddUserComponent
+    AddUserComponent,
+    BoardEditComponent
   ],
   imports: [
     BrowserModule,
