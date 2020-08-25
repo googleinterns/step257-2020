@@ -42,8 +42,6 @@ public abstract class NotesboardTestBase {
   protected final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(),
       new LocalDatastoreServiceTestConfig());
 
-  protected final LocalDatastoreHelper datastoreHelper = LocalDatastoreHelper.create(8484);
-
   protected Closeable session;
 
   @Mock
