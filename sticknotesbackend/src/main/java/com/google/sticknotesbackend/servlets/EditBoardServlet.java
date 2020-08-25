@@ -9,8 +9,6 @@ import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
 import java.io.IOException;
-import java.util.ArrayList;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
