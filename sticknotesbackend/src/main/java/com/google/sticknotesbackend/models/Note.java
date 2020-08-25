@@ -37,11 +37,4 @@ public class Note {
   public User getCreator() {
     return this.creator.get();
   }
-  // public Whiteboard getBoard() {
-  //   return board.get();
-  // }
-
-  // public void setBoard(Whiteboard board) {
-  //   this.board = Ref.create(board);
-  // }
 }
