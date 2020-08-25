@@ -52,10 +52,10 @@ public class EditNoteServletTest extends NotesboardTestBase {
     // do request
     editNoteServlet.doPost(mockRequest, mockResponse);
     // check that response has updated fields
-    assertThat(responseWriter.toString().contains("dummy content"));
-    assertThat(responseWriter.toString().contains("#000000"));
+    assertThat(responseWriter.toString()).contains("dummy content");
+    assertThat(responseWriter.toString()).contains("#000000");
     // check that note from response is equal to note in the datastore
     Note savedNote = ofy().load().type(Note.class).id(note.id).now();
-    assertThat(responseWriter.toString().equals(editNoteServlet.getNoteGsonParser().toJson(savedNote)));
+    assertThat(responseWriter.toString()).isEqualTo(editNoteServlet.getNoteGsonParser().toJson(savedNote));
   }
 }

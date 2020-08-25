@@ -69,7 +69,7 @@ public class NoteServlet extends NoteAbstractServlet {
     board.notes.add(Ref.create(note));
     ofy().save().entity(board).now();
     // return the note
-    response.getWriter().println(gson.toJson(note));
+    response.getWriter().print(gson.toJson(note));
     // set 204 created status code
     response.setStatus(CREATED);
   }

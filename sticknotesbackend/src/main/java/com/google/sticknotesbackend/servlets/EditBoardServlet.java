@@ -89,6 +89,6 @@ public class EditBoardServlet extends BoardAbstractServlet {
     }
     ofy().save().entity(board).now();
     // return updated board
-    response.getWriter().println(gson.toJson(board));
+    response.getWriter().print(gson.toJson(board));
   }
 }

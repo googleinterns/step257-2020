@@ -50,7 +50,7 @@ public class BoardServlet extends BoardAbstractServlet {
         return;
       }
       Gson gson = getBoardGsonParser();
-      response.getWriter().println(gson.toJson(board));
+      response.getWriter().print(gson.toJson(board));
     } else {
       response.getWriter().println("No id parameter");
       response.sendError(BAD_REQUEST);
@@ -82,7 +82,7 @@ public class BoardServlet extends BoardAbstractServlet {
     // when the board is saved, get the auto generated id and assign to the board field
     board.id = ofy().save().entity(board).now().getId();
     // return JSON of the new created board
-    response.getWriter().println(gson.toJson(board));
+    response.getWriter().print(gson.toJson(board));
     // set 204 created status codes
     response.setStatus(CREATED);
   }

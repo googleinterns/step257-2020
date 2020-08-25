@@ -58,12 +58,12 @@ public class NoteServletTest extends NotesboardTestBase {
     // check that note with the id from response is saved in the datastore
     // read Json from response to a Note object
     // check that response has id
-    assertThat(responseWriter.toString().contains("id"));
+    assertThat(responseWriter.toString()).contains("id");
     // if id is there, check if the note with this id is really saved
     Note note = new Gson().fromJson(responseWriter.toString(), Note.class);
     // load note with the given id from datastore
     Note savedNote = ofy().load().type(Note.class).id(note.id).now();
-    assertThat(savedNote != null);
+    assertThat(savedNote).isNotNull();
   }
 
   @Test
@@ -86,7 +86,7 @@ public class NoteServletTest extends NotesboardTestBase {
     noteServlet.doDelete(mockRequest, mockResponse);
     // verify that no note with this id is in the datastore
     Note deletedNote = ofy().load().type(Note.class).id(note.id).now();
-    assertThat(deletedNote == null);
+    assertThat(deletedNote).isNull();
     verify(mockResponse).setStatus(NO_CONTENT);
   }
 }

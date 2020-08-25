@@ -71,6 +71,6 @@ public class EditNoteServlet extends NoteAbstractServlet {
     // save note
     ofy().save().entity(note).now();
     // return updated note in the response
-    response.getWriter().println(gson.toJson(note));
+    response.getWriter().print(gson.toJson(note));
   }
 }

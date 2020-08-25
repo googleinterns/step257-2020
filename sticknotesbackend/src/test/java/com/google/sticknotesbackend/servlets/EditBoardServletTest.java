@@ -7,9 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.models.Note;
-import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
-import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,7 +58,7 @@ public class EditBoardServletTest extends NotesboardTestBase {
     assertThat(responseString.contains(newBoardTitle));
     // check if datastore entity really updated
     Whiteboard storedBoard = ofy().load().type(Whiteboard.class).id(board.id).now();
-    assertThat(storedBoard.title.equals(newBoardTitle));
+    assertThat(storedBoard.title).isEqualTo(newBoardTitle);
   }
 
   @Test
@@ -104,8 +102,8 @@ public class EditBoardServletTest extends NotesboardTestBase {
     editBoardServlet.doPost(mockRequest, mockResponse);
     // check that ofy really stored values 5,5
     board = ofy().load().type(Whiteboard.class).id(board.id).now();
-    assertThat(board.rows == 5);
-    assertThat(board.cols == 5);
+    assertThat(board.rows).isEqualTo(5);
+    assertThat(board.cols).isEqualTo(5);
   }
 
   @Test
