@@ -104,6 +104,7 @@ public class UserListServlet extends HttpServlet {
 
     UserBoardRole datastoreData = ofy().load().type(UserBoardRole.class).filter("board", board).filter("user", user)
         .first().now();
+
     if (datastoreData != null) {
       response.getWriter().println("User already in the list.");
       response.sendError(BAD_REQUEST);
@@ -117,6 +118,30 @@ public class UserListServlet extends HttpServlet {
       response.setStatus(OK);
       return;
     }
+  }
+
+  @Override
+  public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String boardRoleIdParam = request.getParameter("id");
+    Long boardRoleId = null;
+    try {
+      boardRoleId = Long.valueOf(boardRoleIdParam);
+    } catch (NumberFormatException e) {
+      response.getWriter().println("Error while reading request param.");
+      response.sendError(BAD_REQUEST);
+      return;
+    }
+
+    UserBoardRole boardRole = ofy().load().type(UserBoardRole.class).id(boardRoleId).now();
+    if (boardRole == null) {
+      response.getWriter().println("Role with a given id not found.");
+      response.sendError(BAD_REQUEST);
+      return;
+    }
+
+    ofy().delete().entity(boardRole).now();
+    response.setStatus(OK);
+    return;
   }
 
   public Gson getBoardGsonParser() {

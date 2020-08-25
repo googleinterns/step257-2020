@@ -3,6 +3,8 @@ package com.google.sticknotesbackend.servlets;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -179,13 +181,9 @@ public class UserListServletTest extends NotesboardTestBase {
 
 
     Gson gson = getBoardGsonParser();
-    JsonElement expectedResponse = gson.toJsonTree(new UserBoardRole(Role.ADMIN, board2, user1), UserBoardRole.class);
-    JsonElement actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);
 
     // checking response status
     verify(mockResponse).setStatus(OK);
-    // checking response value
-    assertEquals(expectedResponse, actualResponse);
 
     // checking if data correctly in the datastore
 
@@ -193,7 +191,12 @@ public class UserListServletTest extends NotesboardTestBase {
     UserBoardRole datastoreData = ofy().load().type(UserBoardRole.class).filter("board", board2).filter("user", user1)
         .filter("role", Role.ADMIN).first().now();
 
-    assertNotEquals(null, datastoreData);
+    assertNotNull(datastoreData);
+
+    // checking response value
+    JsonElement expectedResponse = gson.toJsonTree(datastoreData, UserBoardRole.class);
+    JsonElement actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);
+    assertEquals(expectedResponse, actualResponse);
   }
 
   @Test
@@ -275,6 +278,35 @@ public class UserListServletTest extends NotesboardTestBase {
     // checking response value
     String actualResponse = responseWriter.getBuffer().toString();
     String expectedResponse = "User with a given email not found.\n";
+
+    assertEquals(expectedResponse, actualResponse);
+  }
+
+  @Test
+  public void testDeleteRoleExists() throws IOException {
+    when(mockRequest.getParameter("id")).thenReturn(userBoardRole1.id.toString());
+
+    userListServlet.doDelete(mockRequest, mockResponse);
+
+    // checking response status
+    verify(mockResponse).setStatus(OK);
+
+    UserBoardRole datastoreData = ofy().load().type(UserBoardRole.class).id(userBoardRole1.id).now();
+
+    assertNull(datastoreData);
+  }
+
+  @Test
+  public void testDeleteRoleNotExists() throws IOException {
+    Long roleId = (long) -1;
+    when(mockRequest.getParameter("id")).thenReturn(roleId.toString());
+
+    userListServlet.doDelete(mockRequest, mockResponse);
+    // checking response status
+    verify(mockResponse).sendError(BAD_REQUEST);
+    // checking response value
+    String actualResponse = responseWriter.getBuffer().toString();
+    String expectedResponse = "Role with a given id not found.\n";
 
     assertEquals(expectedResponse, actualResponse);
   }
