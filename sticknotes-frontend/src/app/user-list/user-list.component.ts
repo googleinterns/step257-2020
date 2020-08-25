@@ -28,7 +28,7 @@ export class UserListComponent implements OnInit {
     forkJoin(
     [
       this.userService.getUser().pipe(take(1)),
-      this.boardUsersService.getBoardUsers('boardKey')
+      this.boardUsersService.getBoardUsers(this.boardId)
     ]
     ).subscribe(([user, users]) => {
       this.currentUser = user;

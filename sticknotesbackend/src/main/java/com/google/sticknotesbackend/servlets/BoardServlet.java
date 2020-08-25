@@ -69,7 +69,9 @@ public class BoardServlet extends BoardAbstractServlet {
     Whiteboard board = gson.fromJson(jsonPayload, Whiteboard.class);
     board.creationDate = System.currentTimeMillis();
     // for now I create a dummy user entity, later user entity will be retrieved from datastore
-    board.setCreator(new User("randomid", "googler@google.com", "nickname"));
+    User dummyUser = new User("googler@google.com", "nickname");
+    ofy().save().entity(dummyUser).now();
+    board.setCreator(dummyUser);
     board.rows = 4;
     board.cols = 6;
     // when the board is saved, get the auto generated id and assign to the board field

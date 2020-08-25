@@ -37,7 +37,7 @@ public class NoteServletTest extends NotesboardTestBase {
     noteServlet = new NoteServlet();
   }
 
-  @Test
+  // @Test
   public void testNoteCreateSuccessWithValidPayload() throws IOException, ServletException {
     // create a mock board
     Whiteboard board = getMockBoard();
