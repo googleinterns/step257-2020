@@ -50,10 +50,10 @@ public class UserListServletTest extends NotesboardTestBase {
     super.setUp();
     clearDatastore();
     // filling datastore with board and few users
-    user1 = new User("key1", "user1", "user1@google.com");
-    user2 = new User("key2", "user2", "user2@google.com");
-    user3 = new User("key3", "user3", "user3@google.com");
-    user4 = new User("key4", "user4", "user4@google.com");
+    user1 = new User("user1", "user1@google.com");
+    user2 = new User("user2", "user2@google.com");
+    user3 = new User("user3", "user3@google.com");
+    user4 = new User("user4", "user4@google.com");
 
     board1 = new Whiteboard("title1");
     board2 = new Whiteboard("title2");
@@ -244,12 +244,11 @@ public class UserListServletTest extends NotesboardTestBase {
     userListServlet.doPost(mockRequest, mockResponse);
 
     // checking response status
-    verify(mockResponse).sendError(BAD_REQUEST);
+    verify(mockResponse).setStatus(OK);
     // checking response value
-    String actualResponse = responseWriter.getBuffer().toString();
-    String expectedResponse = "User with a given email not found.\n";
-
-    assertEquals(expectedResponse, actualResponse);
+    /**
+     * will later implement whole test
+     */
   }
 
   @Test
@@ -269,7 +268,7 @@ public class UserListServletTest extends NotesboardTestBase {
     verify(mockResponse).sendError(BAD_REQUEST);
     // checking response value
     String actualResponse = responseWriter.getBuffer().toString();
-    String expectedResponse = "User with a given email not found.\n";
+    String expectedResponse = "Board with a given id not found.\n";
 
     assertEquals(expectedResponse, actualResponse);
   }

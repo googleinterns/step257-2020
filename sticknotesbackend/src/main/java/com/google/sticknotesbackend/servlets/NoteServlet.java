@@ -48,7 +48,9 @@ public class NoteServlet extends NoteAbstractServlet {
     Gson gson = getNoteGsonParser();
     Note note = gson.fromJson(jsonPayload, Note.class);
     // fill the remaining note data
-    note.setCreator(new User("randomkey", "googler", "googler@google.com"));
+    User dummyUser = new User("googler@google.com", "nickname");
+    ofy().save().entity(dummyUser).now();
+    note.setCreator(dummyUser);
     note.creationDate = System.currentTimeMillis();
     // save the note and set id
     note.id = ofy().save().entity(note).now().getId();

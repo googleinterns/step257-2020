@@ -21,7 +21,7 @@ import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 
-@WebServlet("api/board/users")
+@WebServlet("api/board/users/")
 public class UserListServlet extends AppAbstractServlet {
   protected final int CREATED = 201;
   protected final int BAD_REQUEST = 400;
@@ -83,16 +83,16 @@ public class UserListServlet extends AppAbstractServlet {
       return;
     }
 
-    User user = ofy().load().type(User.class).filter("email", email).first().now();
-    if (user == null) {
-      badRequest("User with a given email not found.", response);
-      return;
-    }
-
     Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
     if (board == null) {
       badRequest("Board with a given id not found.", response);
       return;
+    }
+
+    User user = ofy().load().type(User.class).filter("email", email).first().now();
+    if (user == null) {
+      user = new User(email, "---");
+      ofy().save().entity(user).now();
     }
 
     UserBoardRole roleFromDatastore = ofy().load().type(UserBoardRole.class).filter("board", board).filter("user", user)

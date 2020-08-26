@@ -16,7 +16,7 @@
           </mat-card-content>
         </mat-card>
       </div>
-      <app-user-list></app-user-list>
+      <app-user-list *ngIf="sidenavBoardData" [boardId]=sidenavBoardData.id></app-user-list>
     </div>
   </mat-drawer>
   <div class="board-container">

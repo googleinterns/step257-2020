@@ -34,6 +34,7 @@ export class BoardComponent implements OnInit {
     // load board
     this.activatedRoute.paramMap.subscribe(params => {
       const boardId = params.get('id'); // get board id from route param
+      console.log(boardId)
       // load board with the key
       this.boardApiService.getBoard(boardId).subscribe(board => {
         this.board = board;

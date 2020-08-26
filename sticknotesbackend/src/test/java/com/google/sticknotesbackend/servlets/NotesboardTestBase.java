@@ -97,7 +97,9 @@ public abstract class NotesboardTestBase {
     Whiteboard board = new Whiteboard("test");
     board.creationDate = System.currentTimeMillis();
     // create dummy user and set this user as a creator of the board
-    board.setCreator(new User("randomid", "googler@google.com", "nickname"));
+    User dummyUser = new User("googler@google.com", "nickname");
+    ofy().save().entity(dummyUser).now();
+    board.setCreator(dummyUser);
     board.rows = 4;
     board.cols = 6;
     return board;
@@ -107,6 +109,8 @@ public abstract class NotesboardTestBase {
 * Helper method to create a note.
 */
   protected Note getMockNote() {
-    return new Note(new User("randomuser", "googler", "googler@google.com"), "content", "color", 1, 2);
+    User dummyUser = new User("googler@google.com", "nickname");
+    ofy().save().entity(dummyUser).now();
+    return new Note(dummyUser, "content", "color", 1, 2);
   }
 }
