@@ -12,7 +12,7 @@ export class UserService {
 
   constructor() {
     const user: User = {
-      key: 'key0',
+      id: 'key0',
       nickname: 'user0',
       email: 'user0@google.com',
       accessibleBoards: []

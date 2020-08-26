@@ -6,6 +6,7 @@ import { noSpacesValidator } from '../utility/util';
 import { CreateNoteApiData, Note, NotePopupData } from '../interfaces';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-new-note',
@@ -36,7 +37,8 @@ export class NewNoteComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) private data: NotePopupData,
     private notesApiService: NotesApiService,
-    private dialogRef: MatDialogRef<NewNoteComponent>) {
+    private dialogRef: MatDialogRef<NewNoteComponent>,
+    private snackBar: MatSnackBar) {
     if (data.mode === State.CREATE) {
       // creating new note
       const noteData = data.noteData as { position: Vector2, boardId: string };
@@ -79,7 +81,9 @@ export class NewNoteComponent implements OnInit {
         this.dialogRef.close(note);
       }, err => {
         // something went wrong
-        alert('Error occurred');
+        this.snackBar.open("Server error occurred while creating a note", "Ok", {
+          duration: 2000,
+        });
         this.dialogRef.close();
       });
     }
@@ -96,7 +100,9 @@ export class NewNoteComponent implements OnInit {
       this.notesApiService.updateNote(this.editableNote).subscribe(note => {
         this.dialogRef.close(note);
       }, err => {
-        alert('Error occurred');
+        this.snackBar.open("Server error occurred while updating a note", "Ok", {
+          duration: 2000,
+        });
         this.dialogRef.close();
       });
     }
