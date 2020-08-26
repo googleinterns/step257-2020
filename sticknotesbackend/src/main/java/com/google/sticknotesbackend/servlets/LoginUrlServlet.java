@@ -15,7 +15,7 @@ public class LoginUrlServlet extends AppAbstractServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
     if (!userService.isUserLoggedIn()) {
-      String loginUrl = userService.createLogoutURL("/");
+      String loginUrl = userService.createLoginURL("/boards");
       response.setStatus(OK);
       response.setContentType("text/html");
       response.getWriter().println(loginUrl);
