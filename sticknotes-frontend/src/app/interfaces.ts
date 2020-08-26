@@ -49,18 +49,14 @@ export interface Note extends CreateNoteApiData {
 
 /**
  * Except for "id", editable fields of the board
+ * Used to store updated data of the board when user edits the board and to display the board
+ * data in the sidenav
  */
-export interface BoardUpdateData {
-  id: string;
+export interface BoardData {
+  readonly id: string;
+  readonly creationDate: string;
   title: string;
   rows: number;
   cols: number;
-}
-
-/**
- * Data used or displayed in the sidenav menu
- */
-export interface SidenavBoardData extends BoardUpdateData {
-  creationDate: string;
   backgroundImg: string | null;
 }

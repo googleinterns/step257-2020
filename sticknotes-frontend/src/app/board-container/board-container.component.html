@@ -2,7 +2,7 @@
   <mat-drawer #drawer mode="side">
     <div class="side-menu">
       <button mat-raised-button color="primary" (click)="backToBoards()">Back to boards</button>
-      <div class="board-info" *ngIf="sidenavBoardData">
+      <div class="board-info" *ngIf="boardData">
         <mat-card class="mat-elevation-z12">
           <mat-card-title>Board info
             <button mat-icon-button (click)="openEditBoardDialog()">
@@ -11,9 +11,9 @@
           </mat-card-title>
           <mat-card-content>
             <div class="flex-container">
-              <h3>{{sidenavBoardData.title}}</h3>
+              <h3>{{boardData.title}}</h3>
             </div>
-            <h3>{{sidenavBoardData.rows}} X {{sidenavBoardData.cols}} board</h3>
+            <h3>{{boardData.rows}} X {{boardData.cols}} board</h3>
             <h3>Created {{getBoardCreatedDate() | amCalendar}}</h3>
           </mat-card-content>
         </mat-card>
@@ -25,6 +25,6 @@
     <button mat-icon-button (click)="toggleMenu(drawer)" class="toggle-button">
       <mat-icon>{{iconName}}</mat-icon>
     </button>
-    <app-board [boardUpdatedData]="updatedBoardData" (boardLoaded)="receiveBoardData($event)"></app-board>
+    <app-board [boardUpdatedData]="boardData" (boardLoaded)="receiveBoardData($event)"></app-board>
   </div>
 </mat-drawer-container>
