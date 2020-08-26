@@ -6,7 +6,8 @@ import com.googlecode.objectify.annotation.Index;
 
 @Entity
 public class User {
-  public @Id Long id; 
+  public @Id Long id;
+  public @Index String userId; 
   public String nickname;
   public @Index String email;
 
