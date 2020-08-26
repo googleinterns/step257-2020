@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Board, Note } from '../interfaces';
+import { Board, BoardData, Note } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +18,8 @@ export class BoardApiService {
     return this.http.post<Board>('api/board/', { title: boardTitle });
   }
 
-  public updateBoardTitle(boardId: string, boardTitle: string): Observable<Board> {
-    const payload = {
-      id: boardId,
-      title: boardTitle
-    };
-    return this.http.post<Board>('api/edit-board/', payload);
+  public updateBoard(data: BoardData): Observable<void> {
+    return this.http.post<void>('api/edit-board/', data);
   }
 
   /**

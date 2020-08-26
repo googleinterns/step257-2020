@@ -1,0 +1,9 @@
+.edit-board-form {
+  width: 450px;
+  height: 240px;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 10px;
+}

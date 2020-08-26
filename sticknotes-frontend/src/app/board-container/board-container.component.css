@@ -41,4 +41,8 @@ mat-card-content {
   width: 250px;
 }
 
-
+mat-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
