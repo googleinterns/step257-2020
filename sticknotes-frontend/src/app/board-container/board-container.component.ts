@@ -8,8 +8,9 @@ import { BoardData } from '../interfaces';
 import { MatDialog } from '@angular/material/dialog';
 import { BoardEditComponent } from '../board-edit/board-edit.component';
 import { Note } from '../interfaces';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { BoardApiService } from '../services/board-api.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-board-container',
@@ -20,7 +21,7 @@ export class BoardContainerComponent implements OnInit {
   public iconName = 'menu';
   // used to receive data from the board and to send updates to the board component
   public boardData: BoardData = null;
-  public translateFormControl = new FormControl('', []);
+  public translateFormControl = new FormControl('', [Validators.required]);
   public translatedNotes: Note[] = null;
   // languages to which notes can be translated
   public translateLanguages = [
@@ -30,9 +31,9 @@ export class BoardContainerComponent implements OnInit {
     { value: "hr", viewValue: "Hrvatski" },
     { value: "zn", viewValue: "中文" },
     { value: "en", viewValue: "English" },
-    { value: "te", viewValue: "తెలుగు"}
+    { value: "te", viewValue: "తెలుగు" }
   ];
-  constructor(private router: Router, private dialog: MatDialog, private boardApiService: BoardApiService) { }
+  constructor(private router: Router, private dialog: MatDialog, private boardApiService: BoardApiService, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     // sort languages
@@ -95,6 +96,11 @@ export class BoardContainerComponent implements OnInit {
       const targetLanguage = this.translateFormControl.value;
       this.boardApiService.translateNotesOfBoard(this.boardData.id, targetLanguage).subscribe(notes => {
         this.translatedNotes = notes;
+      }, err => {
+        // display error snackbar for 2 seconds
+        this.snackBar.open("Server error occurred when translating notes", "Ok", {
+          duration: 2000,
+        });
       })
     }
   }
