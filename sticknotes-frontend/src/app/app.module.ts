@@ -24,8 +24,9 @@ import { NewNoteComponent } from './new-note/new-note.component';
 import { RangeLoopPipe } from './pipes';
 import { MatRadioModule } from '@angular/material/radio';
 import { HttpClientModule } from '@angular/common/http';
-// import { MomentModule } from 'ngx-moment';
+import { MomentModule } from 'ngx-moment';
 import { AddUserComponent } from './add-user/add-user.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { AddUserComponent } from './add-user/add-user.component';
     MatGridListModule,
     MatRadioModule,
     HttpClientModule,
-    // MomentModule
+    MatSnackBarModule,
+    MomentModule
   ],
   providers: [],
   bootstrap: [AppComponent]

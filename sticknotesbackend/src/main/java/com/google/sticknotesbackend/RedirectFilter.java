@@ -12,18 +12,20 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Angular requests must be forwarded to index.html. This filter provides custom logic of forwarding app requests
+ * Angular requests must be forwarded to index.html. This filter provides custom
+ * logic of forwarding app requests
  */
 public class RedirectFilter implements Filter {
   private FilterConfig config = null;
 
   /**
-   * Filters the incoming requests and forwards it to "index.html" if the request is Angular route redirect.
+   * Filters the incoming requests and forwards it to "index.html" if the request
+   * is Angular route redirect.
    */
   public void doFilter(final ServletRequest request, final ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
     ServletContext context = config.getServletContext();
-    HttpServletRequest httpRequest = (HttpServletRequest)request;
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
     // if request is not to API, forward it to 'index.html', otherwise do nothing
     if (!isApiUri(httpRequest.getRequestURI().toString())) {
       // request to angular, forward it to the index.html
@@ -38,7 +40,8 @@ public class RedirectFilter implements Filter {
    * Checks if requests is to API or Angular by checking the request's URI.
    */
   private boolean isApiUri(String uri) {
-    return uri.startsWith("api") || uri.startsWith("/api") || uri.startsWith("/_ah/admin") || uri.startsWith("_ah/admin");
+    return uri.startsWith("api") || uri.startsWith("/api") || uri.startsWith("/_ah/admin")
+        || uri.startsWith("_ah/admin");
   }
 
   @Override

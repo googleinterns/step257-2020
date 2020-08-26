@@ -11,7 +11,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,25 +22,16 @@ import com.google.sticknotesbackend.models.Whiteboard;
 
 @WebServlet("api/board/users/")
 public class UserListServlet extends AppAbstractServlet {
-  protected final int CREATED = 201;
-  protected final int BAD_REQUEST = 400;
-  protected final int OK = 200;
-
   // with a given id it returns list of users of the board
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String boardIdParam = request.getParameter("id");
-    Long boardId = null;
-    try {
-      boardId = Long.valueOf(boardIdParam);
-    } catch (NumberFormatException e) {
-      e.printStackTrace();
-    }
-    if (boardId != null) {
+    if (boardIdParam != null) {
+      Long boardId = Long.valueOf(boardIdParam);
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
       if (board != null) {
         List<UserBoardRole> boardUsers = ofy().load().type(UserBoardRole.class).filter("board", board).list();
-        Gson userBoardRoleParser = getBoardGsonParser();
+        Gson userBoardRoleParser = getBoardRoleGsonParser();
 
         String responseJson = userBoardRoleParser.toJson(boardUsers);
 
@@ -49,14 +39,12 @@ public class UserListServlet extends AppAbstractServlet {
         response.setContentType("application/json");
         response.getWriter().println(responseJson);
         return;
-      } else {
-        badRequest("Board with this id doesn't exist", response);
-        return;
       }
-    } else {
-      badRequest("Board id was not provided", response);
+      badRequest("Board with this id doesn't exist", response);
       return;
     }
+    badRequest("Error while reading request param.", response);
+    return;
   }
 
   @Override
@@ -66,9 +54,10 @@ public class UserListServlet extends AppAbstractServlet {
       badRequest("Error while reading request param.", response);
       return;
     }
+
     Long boardId = Long.parseLong(boardIdParam);
 
-    Gson gson = getBoardGsonParser();
+    Gson gson = getBoardRoleGsonParser();
     JsonObject body = new JsonParser().parse(request.getReader()).getAsJsonObject();
     if (!body.has("email") || !body.has("role")) {
       badRequest("Request has to contain 'email' and 'role' property", response);
@@ -91,7 +80,8 @@ public class UserListServlet extends AppAbstractServlet {
 
     User user = ofy().load().type(User.class).filter("email", email).first().now();
     if (user == null) {
-      user = new User(email, "---");
+      System.out.println("Adding new user!");
+      user = new User("---", email);
       ofy().save().entity(user).now();
     }
 
@@ -101,27 +91,25 @@ public class UserListServlet extends AppAbstractServlet {
     if (roleFromDatastore != null) {
       badRequest("User already in the list.", response);
       return;
-    } else {
-      UserBoardRole userBoardRole = new UserBoardRole(role, board, user);
-
-      ofy().save().entity(userBoardRole).now();
-
-      response.getWriter().println(gson.toJson(userBoardRole));
-      response.setStatus(OK);
-      return;
     }
+    UserBoardRole userBoardRole = new UserBoardRole(role, board, user);
+
+    ofy().save().entity(userBoardRole).now();
+
+    response.getWriter().println(gson.toJson(userBoardRole));
+    response.setStatus(OK);
+    return;
   }
 
   @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String boardRoleIdParam = request.getParameter("id");
-    Long boardRoleId = null;
-    try {
-      boardRoleId = Long.valueOf(boardRoleIdParam);
-    } catch (NumberFormatException e) {
+    if (boardRoleIdParam == null) {
       badRequest("Error while reading request param.", response);
       return;
     }
+
+    Long boardRoleId = Long.valueOf(boardRoleIdParam);
 
     UserBoardRole boardRole = ofy().load().type(UserBoardRole.class).id(boardRoleId).now();
     if (boardRole == null) {
@@ -134,7 +122,7 @@ public class UserListServlet extends AppAbstractServlet {
     return;
   }
 
-  public Gson getBoardGsonParser() {
+  public Gson getBoardRoleGsonParser() {
     GsonBuilder gson = new GsonBuilder();
     gson.registerTypeAdapter(UserBoardRole.class, new UserBoardRoleSerializer());
     Gson parser = gson.create();

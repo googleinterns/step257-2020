@@ -7,6 +7,7 @@ import { UserRole } from '../enums/user-role.enum';
 import { take } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUserComponent } from '../add-user/add-user.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-user-list',
@@ -22,7 +23,8 @@ export class UserListComponent implements OnInit {
 
   constructor(private userService: UserService,
               private boardUsersService: BoardUsersApiService,
-              private dialog: MatDialog) { }
+              private dialog: MatDialog,
+              private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     forkJoin(
@@ -35,7 +37,7 @@ export class UserListComponent implements OnInit {
       this.usersWithRole = users;
       const index = users.findIndex(userWithRole => user.key === userWithRole.user.key && userWithRole.role === UserRole.ADMIN);
       if (index === -1) {
-        this.adminView = true;
+        this.adminView = false;
       }else{
         this.adminView = true;
       }
@@ -51,12 +53,19 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  removeUser(user: UserBoardRole): void {
-    this.boardUsersService.removeUser(user.user.key).subscribe( (userKey) => {
-      const userIndex = this.usersWithRole.findIndex(userWithRole => userWithRole.user.key === userKey);
-      if (userIndex >= 0 && userIndex < this.usersWithRole.length){
-        this.usersWithRole.splice(userIndex, 1);
+  removeUser(userBoardRole: UserBoardRole): void {
+    this.boardUsersService.removeUser(userBoardRole.id).subscribe(()=>{
+      this.snackBar.open("User removed successfully.", "Ok", {
+        duration: 2000,
+      });
+      const indexOfRole = this.usersWithRole.indexOf(userBoardRole);
+      if(indexOfRole >= 0 && indexOfRole < this.usersWithRole.length){
+        this.usersWithRole.splice(indexOfRole, 1);
       }
+    }, err => {
+      this.snackBar.open("Error occurred while removing user.", "Ok", {
+        duration: 2000,
+      });
     });
   }
 }

@@ -49,6 +49,7 @@ public class UserListServletTest extends NotesboardTestBase {
   public void setUp() throws Exception {
     super.setUp();
     clearDatastore();
+    ofy().clear(); //clearing Objectify cache
     // filling datastore with board and few users
     user1 = new User("user1", "user1@google.com");
     user2 = new User("user2", "user2@google.com");
@@ -82,14 +83,14 @@ public class UserListServletTest extends NotesboardTestBase {
     ofy().save().entity(userBoardRole5).now();
     ofy().save().entity(userBoardRole6).now();
 
+    ofy().clear(); //after loading data to datastore clearing cache once again
+
     userListServlet = new UserListServlet();
 
     when(mockRequest.getContentType()).thenReturn("application/json");
     // Set up a fake HTTP response
     responseWriter = new StringWriter();
     when(mockResponse.getWriter()).thenReturn(new PrintWriter(responseWriter));
-
-    ofy().clear();
   }
 
   @Test
@@ -98,12 +99,14 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doGet(mockRequest, mockResponse);
 
-    Gson gson = userListServlet.getBoardGsonParser();
+    //preparing expected response based on dataset initialized in datastore
+    Gson gson = userListServlet.getBoardRoleGsonParser();
     JsonArray expectedResponse = new JsonArray();
     expectedResponse.add(gson.toJsonTree(userBoardRole1));
     expectedResponse.add(gson.toJsonTree(userBoardRole2));
     expectedResponse.add(gson.toJsonTree(userBoardRole3));
     expectedResponse.add(gson.toJsonTree(userBoardRole4));
+    
     // veryfing response
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
@@ -118,7 +121,8 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doGet(mockRequest, mockResponse);
 
-    Gson gson = userListServlet.getBoardGsonParser();
+    //preparing expected response based on dataset initialized in datastore
+    Gson gson = userListServlet.getBoardRoleGsonParser();
     JsonArray expectedResponse = new JsonArray();
     expectedResponse.add(gson.toJsonTree(userBoardRole5));
     expectedResponse.add(gson.toJsonTree(userBoardRole6));
@@ -149,7 +153,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doGet(mockRequest, mockResponse);
 
-    Gson gson = userListServlet.getBoardGsonParser();
+    Gson gson = userListServlet.getBoardRoleGsonParser();
     JsonArray expectedResponse = new JsonArray();
 
     // veryfing status
@@ -172,13 +176,12 @@ public class UserListServletTest extends NotesboardTestBase {
     userListServlet.doPost(mockRequest, mockResponse);
 
 
-    Gson gson = userListServlet.getBoardGsonParser();
+    Gson gson = userListServlet.getBoardRoleGsonParser();
 
     // checking response status
     verify(mockResponse).setStatus(OK);
 
     // checking if data correctly in the datastore
-
     ofy().clear();
     UserBoardRole datastoreData = ofy().load().type(UserBoardRole.class).filter("board", board2).filter("user", user1)
         .filter("role", Role.ADMIN).first().now();

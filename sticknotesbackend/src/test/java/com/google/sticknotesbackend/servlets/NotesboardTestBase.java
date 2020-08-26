@@ -27,10 +27,9 @@ import org.junit.BeforeClass;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-
 /**
- * Abstract base class for test classes. Initializes Objectify and local datastore.
- * Provides a few method to build mocked app models
+ * Abstract base class for test classes. Initializes Objectify and local
+ * datastore. Provides a few method to build mocked app models
  */
 public abstract class NotesboardTestBase {
   protected final int OK = 200;
@@ -105,9 +104,9 @@ public abstract class NotesboardTestBase {
     return board;
   }
 
-/** 
-* Helper method to create a note.
-*/
+  /**
+   * Helper method to create a note.
+   */
   protected Note getMockNote() {
     User dummyUser = new User("googler@google.com", "nickname");
     ofy().save().entity(dummyUser).now();
