@@ -18,8 +18,12 @@
   font-size: 30px;
 }
 
-.board-info {
+.board-info, .notes-translate {
   margin-top: 20px;
+}
+
+.notes-translate {
+  margin-bottom: 20px;
 }
 
 .flex-container {

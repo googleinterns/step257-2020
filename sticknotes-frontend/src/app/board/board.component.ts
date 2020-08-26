@@ -19,6 +19,16 @@ export class BoardComponent implements OnInit {
 
   @Output() boardLoaded = new EventEmitter<SidenavBoardData>(true);
   @Input() boardTitle: string = null;
+
+  /**
+   * Input property used by board-container to send translated notes
+   */
+  @Input()
+  set translatedNotes(notes: Note[]) {
+    if (notes) {
+      this.board.notes = notes;
+    }
+  }
   private boardGrid: number[][];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
