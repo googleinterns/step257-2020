@@ -28,6 +28,7 @@ import { MomentModule } from 'ngx-moment';
 import { AddUserComponent } from './add-user/add-user.component';
 import { BoardEditComponent } from './board-edit/board-edit.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatRadioModule,
     HttpClientModule,
     MomentModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

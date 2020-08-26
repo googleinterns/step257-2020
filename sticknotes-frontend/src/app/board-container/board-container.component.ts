@@ -7,6 +7,9 @@ import { Router } from '@angular/router';
 import { BoardData } from '../interfaces';
 import { MatDialog } from '@angular/material/dialog';
 import { BoardEditComponent } from '../board-edit/board-edit.component';
+import { Note } from '../interfaces';
+import { FormControl } from '@angular/forms';
+import { BoardApiService } from '../services/board-api.service';
 
 @Component({
   selector: 'app-board-container',
@@ -14,15 +17,34 @@ import { BoardEditComponent } from '../board-edit/board-edit.component';
   styleUrls: ['./board-container.component.css']
 })
 export class BoardContainerComponent implements OnInit {
-
   public iconName = 'menu';
-  // used to receive data from the board
-  // public sidenavBoardData: SidenavBoardData = null;
-  // used to send updates to the board component
+  // used to receive data from the board and to send updates to the board component
   public boardData: BoardData = null;
-  constructor(private router: Router, private dialog: MatDialog) { }
+  public translateFormControl = new FormControl('', []);
+  public translatedNotes: Note[] = null;
+  // languages to which notes can be translated
+  public translateLanguages = [
+    { value: "ua", viewValue: "Українська" },
+    { value: "pl", viewValue: "Polski" },
+    { value: "ro", viewValue: "Română" },
+    { value: "hr", viewValue: "Hrvatski" },
+    { value: "zn", viewValue: "中文" },
+    { value: "en", viewValue: "English" },
+    { value: "te", viewValue: "తెలుగు"}
+  ];
+  constructor(private router: Router, private dialog: MatDialog, private boardApiService: BoardApiService) { }
 
   ngOnInit(): void {
+    // sort languages
+    this.translateLanguages.sort((a, b) => {
+      if (a.value > b.value) {
+        return 1;
+      }
+      if (a.value < b.value) {
+        return -1;
+      }
+      return 0;
+    });
   }
 
   // toggles the side menu, changes the icon name accordingly to the state
@@ -61,6 +83,19 @@ export class BoardContainerComponent implements OnInit {
   public getBoardCreatedDate(): Date {
     if (this.boardData) {
       return new Date(Number(this.boardData.creationDate));
+    }
+  }
+  /**
+   * Requests server to translate board notes to a language specified in "translateFormControl".
+   * Sends updated data to the board-component
+   */
+  public translateNotes(): void {
+    if (this.translateFormControl.valid) {
+      // get the target language
+      const targetLanguage = this.translateFormControl.value;
+      this.boardApiService.translateNotesOfBoard(this.boardData.id, targetLanguage).subscribe(notes => {
+        this.translatedNotes = notes;
+      })
     }
   }
 }

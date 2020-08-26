@@ -34,6 +34,15 @@ export class BoardComponent implements OnInit {
       this.updateBoardAbstractGrid();
     }
   }
+  /**
+   * Input property used by board-container to send translated notes
+   */
+  @Input()
+  set translatedNotes(notes: Note[]) {
+    if (notes) {
+      this.board.notes = notes;
+    }
+  }
   private boardGrid: number[][];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
