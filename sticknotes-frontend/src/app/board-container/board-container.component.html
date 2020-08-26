@@ -23,9 +23,9 @@
         <mat-card class="mat-elevation-z12">
           <mat-card-title>Notes language</mat-card-title>
           <mat-card-content>
-            <mat-form-field [formControl]="translateFormControl" ngDefaultControl>
+            <mat-form-field>
               <mat-label>Translate notes to</mat-label>
-              <mat-select (selectionChange)="translateNotes()">
+              <mat-select [formControl]="translateFormControl" (selectionChange)="translateNotes()">
                 <mat-option *ngFor="let language of translateLanguages" [value]="language.value">
                   {{language.viewValue}}
                 </mat-option>
