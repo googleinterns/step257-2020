@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, of, Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { User } from '../interfaces';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -10,17 +12,20 @@ export class UserService {
 
   private userSubject: BehaviorSubject<User> = new BehaviorSubject(null);
 
-  constructor() {
-    const user: User = {
-      id: 'key0',
-      nickname: 'user0',
-      email: 'user0@google.com',
-      accessibleBoards: []
-    };
-    of(user).subscribe(fetchedUser => {
+  constructor(private http: HttpClient) {
+    this.fetch();
+  }
+
+  private fetch(): Observable<User> {
+    return this.http.get('api/user/').pipe(map((fetchedUser: User) => {
       this.authenticated.next(true);
       this.userSubject.next(fetchedUser);
-    });
+      return this.userSubject.value;
+    }), catchError((err, caught) => {
+      this.authenticated.next(false);
+      this.userSubject.next(null);
+      return this.userSubject.asObservable();
+    }));
   }
 
   isAuthenticated(): Observable<boolean> {
@@ -28,10 +33,21 @@ export class UserService {
   }
 
   getUser(): Observable<User> {
+    if (this.userSubject.value == null) {
+      return this.fetch();
+    }
     return this.userSubject.asObservable();
   }
 
   removeUser(): void {
     this.userSubject.next(null);
+  }
+
+  getLoginUrl(): Observable<string> {
+    return this.http.get<string>('api/login-url/');
+  }
+
+  getLogoutUrl(): Observable<string> {
+    return this.http.get<string>('api/logout-url/');
   }
 }

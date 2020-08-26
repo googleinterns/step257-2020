@@ -1,6 +1,6 @@
 <div class="welcome-container">
   <h1 class="welcome-text">Welcome to <br> Notesboard</h1>
-  <button routerLink="/boards" class="login-button" mat-button>
+  <button *ngIf="loginUrl" class="login-button" mat-button (click)="goToUrl()">
     <img src="../../assets/google_signin_button/btn_google_signin.png">
   </button>
 </div>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { User, UserBoardRole } from '../interfaces';
+import { UserBoardRole } from '../interfaces';
 import { UserRole } from '../enums/user-role.enum';
 import { HttpClient } from '@angular/common/http';
 
