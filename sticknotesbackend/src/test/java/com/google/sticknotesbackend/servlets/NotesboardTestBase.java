@@ -1,14 +1,16 @@
 package com.google.sticknotesbackend.servlets;
 
-import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import static com.googlecode.objectify.ObjectifyService.ofy;
+
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.cloud.NoCredentials;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
@@ -18,8 +20,8 @@ import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.Closeable;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
@@ -34,19 +36,20 @@ import org.mockito.MockitoAnnotations;
 public abstract class NotesboardTestBase {
   protected final int OK = 200;
   protected final int CREATED = 201;
-  protected final int BAD_REQUEST = 400;
   protected final int NO_CONTENT = 204;
+  protected final int BAD_REQUEST = 400;
+  protected final int UNAUTHORIZED = 401;
+  protected final int FORBIDDEN = 403;
+
   // Set up a helper so that the ApiProxy returns a valid environment for local
   // testing.
-  protected final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalMemcacheServiceTestConfig(),
-      new LocalDatastoreServiceTestConfig());
+  protected final LocalServiceTestHelper helper = new LocalServiceTestHelper(
+      new LocalMemcacheServiceTestConfig(), new LocalDatastoreServiceTestConfig(), new LocalUserServiceTestConfig());
 
   protected Closeable session;
 
-  @Mock
-  protected HttpServletRequest mockRequest;
-  @Mock
-  protected HttpServletResponse mockResponse;
+  @Mock protected HttpServletRequest mockRequest;
+  @Mock protected HttpServletResponse mockResponse;
   protected StringWriter responseWriter;
 
   /**
@@ -55,8 +58,12 @@ public abstract class NotesboardTestBase {
   @BeforeClass
   public static void initializeObjectify() {
     // necessary setup to make Obejctify work
-    DatastoreOptions options = DatastoreOptions.newBuilder().setProjectId("dummy").setHost("localhost:8484")
-        .setCredentials(NoCredentials.getInstance()).setRetrySettings(ServiceOptions.getNoRetrySettings()).build();
+    DatastoreOptions options = DatastoreOptions.newBuilder()
+                                   .setProjectId("dummy")
+                                   .setHost("localhost:8484")
+                                   .setCredentials(NoCredentials.getInstance())
+                                   .setRetrySettings(ServiceOptions.getNoRetrySettings())
+                                   .build();
     Datastore datastore = options.getService();
     ObjectifyService.init(new ObjectifyFactory(datastore));
     ObjectifyService.register(Whiteboard.class);
@@ -111,5 +118,20 @@ public abstract class NotesboardTestBase {
     User dummyUser = new User("googler@google.com", "nickname");
     ofy().save().entity(dummyUser).now();
     return new Note(dummyUser, "content", "color", 1, 2);
+  }
+
+  /**
+   * Logs in given user for a test
+   * User object passed here must have googleAccId property set
+   */
+  protected void logIn(User user) {
+    // log the user in
+    helper.setEnvIsLoggedIn(true);
+    helper.setEnvEmail(user.email);
+    helper.setEnvAuthDomain("google.com");
+    HashMap<String, Object> envAttr = new HashMap<String, Object>();
+    envAttr.put("com.google.appengine.api.users.UserService.user_id_key", user.googleAccId);
+    helper.setEnvAttributes(envAttr);
+    helper.setUp();
   }
 }

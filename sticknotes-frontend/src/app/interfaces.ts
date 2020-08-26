@@ -62,3 +62,8 @@ export interface BoardData {
   cols: number;
   backgroundImg: string | null;
 }
+
+export interface BoardPreview {
+  readonly id: string;
+  readonly title: string;
+}

@@ -20,7 +20,7 @@ public class UserServlet extends AppAbstractServlet {
     // if user is looged in than we update/or save for the first time email,
     // username and user id
     if (userService.isUserLoggedIn()) {
-      User currentUser = ofy().load().type(User.class).filterKey("userId", userService.getCurrentUser().getUserId())
+      User currentUser = ofy().load().type(User.class).filterKey("googleAccId", userService.getCurrentUser().getUserId())
           .first().now();
       currentUser.email = userService.getCurrentUser().getUserId();
       currentUser.nickname = userService.getCurrentUser().getNickname();
@@ -33,6 +33,6 @@ public class UserServlet extends AppAbstractServlet {
       response.getWriter().println(gson.toJson(currentUser));
       return;
     }
-    unauthenticated(response);
+    unauthorized(response);
   }
 }
