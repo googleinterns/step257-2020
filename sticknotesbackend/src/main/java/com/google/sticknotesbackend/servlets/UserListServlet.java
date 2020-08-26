@@ -80,7 +80,6 @@ public class UserListServlet extends AppAbstractServlet {
 
     User user = ofy().load().type(User.class).filter("email", email).first().now();
     if (user == null) {
-      System.out.println("Adding new user!");
       user = new User("---", email);
       ofy().save().entity(user).now();
     }

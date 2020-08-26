@@ -1,8 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { BoardUsersApiService } from '../services/board-users-api.service';
-import { UserBoardRole, User, SidenavBoardData } from '../interfaces';
-import { Observable, of, forkJoin, from } from 'rxjs';
+import { UserBoardRole, User } from '../interfaces';
+import { forkJoin } from 'rxjs';
 import { UserRole } from '../enums/user-role.enum';
 import { take } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
