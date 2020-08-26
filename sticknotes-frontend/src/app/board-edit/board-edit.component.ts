@@ -66,6 +66,7 @@ export class BoardEditComponent implements OnInit {
         });
       }, err => {
         // if error occurred, display Material Snackbar with error message for 2 seconds
+        this.dialogRef.close();
         this.snackBar.open("Error occurred while updating the board", "Ok", {
           duration: 2000,
         });
