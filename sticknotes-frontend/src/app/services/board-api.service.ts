@@ -26,7 +26,10 @@ export class BoardApiService {
     return this.http.post<Board>('api/edit-board/', payload);
   }
 
-  public translateNotesOfBoard(boardId: string, destinationLanguage: string): Observable<Note[]> {
-    return this.http.get<Note[]>(`api/board/notes/?id=${boardId}&lc=${destinationLanguage}`);
+  /**
+   * Executes a request to translate notes of the board with id = boardId to language with targetLanguageCode
+   */
+  public translateNotesOfBoard(boardId: string, targetLanguageCode: string): Observable<Note[]> {
+    return this.http.get<Note[]>(`api/board/notes/?id=${boardId}&lc=${targetLanguageCode}`);
   }
 }

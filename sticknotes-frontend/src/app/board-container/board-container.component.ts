@@ -88,9 +88,9 @@ export class BoardContainerComponent implements OnInit {
    */
   public translateNotes(): void {
     if (this.translateFormControl.valid) {
-      // get the destination language
-      const translateTo = this.translateFormControl.value;
-      this.boardApiService.translateNotesOfBoard(this.sidenavBoardData.id, translateTo).subscribe(notes => {
+      // get the target language
+      const targetLanguage = this.translateFormControl.value;
+      this.boardApiService.translateNotesOfBoard(this.sidenavBoardData.id, targetLanguage).subscribe(notes => {
         this.translatedNotes = notes;
       })
     }
