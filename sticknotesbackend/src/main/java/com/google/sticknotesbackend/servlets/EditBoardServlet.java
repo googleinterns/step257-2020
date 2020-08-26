@@ -9,8 +9,6 @@ import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
 import java.io.IOException;
-import java.util.ArrayList;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -80,8 +78,8 @@ public class EditBoardServlet extends BoardAbstractServlet {
         }
       }
     }
+    // save the board
     ofy().save().entity(board).now();
-    // return updated board
-    response.getWriter().print(gson.toJson(board));
+    // servlet default will return 200
   }
 }

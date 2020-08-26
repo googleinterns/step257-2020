@@ -1,12 +1,12 @@
 /**
  * A main view of the app, container that holds the board
  */
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
-import { SidenavBoardData } from '../interfaces';
-import { NewBoardComponent } from '../new-board/new-board.component';
+import { BoardData } from '../interfaces';
 import { MatDialog } from '@angular/material/dialog';
+import { BoardEditComponent } from '../board-edit/board-edit.component';
 
 @Component({
   selector: 'app-board-container',
@@ -16,8 +16,10 @@ import { MatDialog } from '@angular/material/dialog';
 export class BoardContainerComponent implements OnInit {
 
   public iconName = 'menu';
-  public sidenavBoardData: SidenavBoardData = null;
-  public newTitle: string = null;
+  // used to receive data from the board
+  // public sidenavBoardData: SidenavBoardData = null;
+  // used to send updates to the board component
+  public boardData: BoardData = null;
   constructor(private router: Router, private dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -37,25 +39,28 @@ export class BoardContainerComponent implements OnInit {
     this.router.navigateByUrl('/boards');
   }
 
-  public receiveBoardData(sidenavBoardData: SidenavBoardData): void {
+  public receiveBoardData(boardData: BoardData): void {
     // when board data is emitted, add info about the board to the sidenav
-    this.sidenavBoardData = sidenavBoardData;
+    this.boardData = boardData;
   }
 
   public openEditBoardDialog() {
-    const dialogRef = this.dialog.open(NewBoardComponent, {
+    const dialogRef = this.dialog.open(BoardEditComponent, {
       width: '500px',
-      data: {currentTitle: this.sidenavBoardData.title, boardId: this.sidenavBoardData.id}
+      data: this.boardData
     });
-    dialogRef.afterClosed().subscribe(updatedBoardTitle => {
-      this.sidenavBoardData.title = updatedBoardTitle;
-      this.newTitle = updatedBoardTitle;
+    dialogRef.afterClosed().subscribe((data: BoardData) => {
+      // if board was edited
+      if (data) {
+        // update local fields
+        this.boardData = data;
+      }
     });
   }
 
   public getBoardCreatedDate(): Date {
-    if (this.sidenavBoardData) {
-      return new Date(Number(this.sidenavBoardData.creationDate));
+    if (this.boardData) {
+      return new Date(Number(this.boardData.creationDate));
     }
   }
 }
