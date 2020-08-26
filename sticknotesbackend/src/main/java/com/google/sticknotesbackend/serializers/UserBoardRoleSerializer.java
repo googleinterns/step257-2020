@@ -24,6 +24,7 @@ public class UserBoardRoleSerializer implements JsonSerializer<UserBoardRole> {
      * interface on frontend: export interface UserBoardRole { user: User; boardKey:
      * string; role: UserRole; }
      */
+    userBoardRole.addProperty("id", src.id);
     userBoardRole.addProperty("boardId", src.getBoard().id);
     userBoardRole.addProperty("role", src.role.toString());
     userBoardRole.add("user", new Gson().toJsonTree(src.getUser()));

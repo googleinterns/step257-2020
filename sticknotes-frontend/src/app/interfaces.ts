@@ -10,6 +10,7 @@ export interface User {
 }
 
 export interface UserBoardRole {
+  id: string;
   user: User;
   boardId: string;
   role: UserRole;

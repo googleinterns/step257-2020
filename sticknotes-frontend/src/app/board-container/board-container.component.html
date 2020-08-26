@@ -18,7 +18,7 @@
           </mat-card-content>
         </mat-card>
       </div>
-      <app-user-list></app-user-list>
+      <app-user-list *ngIf="boardData" [boardId]=boardData.id></app-user-list>
       <div class="notes-translate">
         <mat-card class="mat-elevation-z12">
           <mat-card-title>Notes language</mat-card-title>
