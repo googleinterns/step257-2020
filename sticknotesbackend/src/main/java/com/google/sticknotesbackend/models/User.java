@@ -6,11 +6,11 @@ import com.googlecode.objectify.annotation.Index;
 
 @Entity
 public class User {
-  public @Id Long key; 
+  public @Id Long id; 
   public String nickname;
   public @Index String email;
 
-  public User(String nickname, String email) {
+  public User(String email, String nickname) {
     this.nickname = nickname;
     this.email = email;
   }

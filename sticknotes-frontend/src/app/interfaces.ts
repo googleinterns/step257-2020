@@ -3,7 +3,7 @@ import { State } from './enums/state.enum';
 import { UserRole } from './enums/user-role.enum';
 
 export interface User {
-  key: string;
+  id: string;
   nickname: string;
   email: string;
   accessibleBoards: Board[];
@@ -56,6 +56,7 @@ export interface Note extends CreateNoteApiData {
 export interface BoardData {
   readonly id: string;
   readonly creationDate: string;
+  readonly creator: User;
   title: string;
   rows: number;
   cols: number;

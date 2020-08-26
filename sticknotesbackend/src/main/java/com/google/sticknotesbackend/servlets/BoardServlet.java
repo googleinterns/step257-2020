@@ -68,7 +68,7 @@ public class BoardServlet extends BoardAbstractServlet {
     board.creationDate = System.currentTimeMillis();
     // for now I create a dummy user entity, later user entity will be retrieved
     // from datastore
-    User dummyUser = new User("nickname", "googler@google.com");
+    User dummyUser = new User("googler@google.com", "nickname");
     ofy().save().entity(dummyUser).now();
     board.setCreator(dummyUser);
     board.rows = 4;

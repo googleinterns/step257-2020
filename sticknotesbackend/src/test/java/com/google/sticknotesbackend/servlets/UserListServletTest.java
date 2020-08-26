@@ -51,10 +51,10 @@ public class UserListServletTest extends NotesboardTestBase {
     clearDatastore();
     ofy().clear(); //clearing Objectify cache
     // filling datastore with board and few users
-    user1 = new User("user1", "user1@google.com");
-    user2 = new User("user2", "user2@google.com");
-    user3 = new User("user3", "user3@google.com");
-    user4 = new User("user4", "user4@google.com");
+    user1 = new User("user1@google.com", "user1");
+    user2 = new User("user2@google.com", "user2");
+    user3 = new User("user3@google.com", "user3");
+    user4 = new User("user4@google.com", "user4");
 
     board1 = new Whiteboard("title1");
     board2 = new Whiteboard("title2");

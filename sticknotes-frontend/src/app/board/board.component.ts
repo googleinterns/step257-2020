@@ -58,7 +58,6 @@ export class BoardComponent implements OnInit {
     // load board
     this.activatedRoute.paramMap.subscribe(params => {
       const boardId = params.get('id'); // get board id from route param
-      console.log(boardId)
       // load board with the key
       this.boardApiService.getBoard(boardId).subscribe(board => {
         this.board = board;
@@ -70,7 +69,8 @@ export class BoardComponent implements OnInit {
           creationDate: board.creationDate,
           backgroundImg: board.backgroundImg,
           rows: board.rows,
-          cols: board.cols
+          cols: board.cols,
+          creator: board.creator
         };
         this.boardLoaded.emit(sidenavData);
       });
