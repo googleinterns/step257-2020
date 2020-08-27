@@ -14,9 +14,22 @@
       <mat-radio-button *ngFor="let item of 4 | rangeLoop, let i = index" [value]="(i + 1).toString()"><span
           class="circle" [style]="'background-color:' + getColorHexValue((i + 1).toString())"></span></mat-radio-button>
     </mat-radio-group>
-    <mat-form-field>
-      <input formControlName="file" type="file" name="file">
-    </mat-form-field>
+    <!-- If the component is in the edit mode, if editableNote has image field it is displayed and can be delete from image -->
+    <ng-container *ngIf="editableNote && editableNote.image; else newNote">
+      <mat-label>Image attached</mat-label>
+      <img [src]="editableNote.image" class="note-image">
+      <button (click)="removeImage()" mat-raised-button>Remove image</button>
+      <mat-form-field>
+        <ngx-mat-file-input formControlName="file" placeholder="Attach image" [accept]="'.png,.jpg,.jpeg'"></ngx-mat-file-input>
+        <mat-icon matSuffix>folder</mat-icon>
+      </mat-form-field>
+    </ng-container>
+    <ng-template #newNote>
+      <mat-form-field>
+        <ngx-mat-file-input formControlName="file" placeholder="Attach image" [accept]="'.png,.jpg,.jpeg'"></ngx-mat-file-input>
+        <mat-icon matSuffix>folder</mat-icon>
+      </mat-form-field>
+    </ng-template>
   </form>
   <button mat-raised-button color="primary" (click)="handleSubmit()"
     [disabled]="sendingData">{{submitButtonText}}</button>

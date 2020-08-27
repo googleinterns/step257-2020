@@ -4,6 +4,7 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -43,6 +44,8 @@ public class ImageUploadServlet extends HttpServlet {
     storage.create(blobInfo, bytes);
     // generate a link to the file
     String linkToFile = "https://storage.cloud.google.com/" + bucketName + "/" + fileName; 
-    response.getWriter().print(linkToFile);
+    JsonObject responseJson = new JsonObject();
+    responseJson.addProperty("fileUrl", linkToFile);
+    response.getWriter().print(responseJson.toString());
   }
 }
