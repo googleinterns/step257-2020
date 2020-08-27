@@ -54,7 +54,7 @@ public abstract class AppAbstractServlet extends HttpServlet {
    /**
    * Send a 403 forbidden response
    */
-  protected void notAllowed(HttpServletResponse response) throws IOException {
+  protected void forbidden(HttpServletResponse response) throws IOException {
     response.getWriter().println("User is not allowed to use this resource.");
     response.sendError(FORBIDDEN);
   }

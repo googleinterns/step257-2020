@@ -4,16 +4,15 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
-
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
@@ -25,6 +24,12 @@ public class UserListServlet extends AppAbstractServlet {
   // with a given id it returns list of users of the board
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // authorization check
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      unauthorized(response);
+      return;
+    }
     String boardIdParam = request.getParameter("id");
     if (boardIdParam != null) {
       Long boardId = Long.valueOf(boardIdParam);
@@ -49,6 +54,13 @@ public class UserListServlet extends AppAbstractServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // authorization check
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      unauthorized(response);
+      return;
+    }
+
     String boardIdParam = request.getParameter("id");
     if (boardIdParam == null) {
       badRequest("Error while reading request param.", response);
@@ -68,7 +80,7 @@ public class UserListServlet extends AppAbstractServlet {
     try {
       role = Role.valueOf(body.get("role").getAsString().toUpperCase());
     } catch (IllegalArgumentException e) {
-      badRequest("Role has to be admin or user", response);
+      badRequest("Role has to be one of: admin, user, owner", response);
       return;
     }
 
@@ -82,6 +94,11 @@ public class UserListServlet extends AppAbstractServlet {
     if (user == null) {
       user = new User(email, "---");
       ofy().save().entity(user).now();
+    }
+
+    if (!canAddOrRemove(role, board)) {
+      forbidden(response);
+      return;
     }
 
     UserBoardRole roleFromDatastore = ofy().load().type(UserBoardRole.class).filter("board", board).filter("user", user)
@@ -102,6 +119,13 @@ public class UserListServlet extends AppAbstractServlet {
 
   @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // authorization check
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      unauthorized(response);
+      return;
+    }
+
     String boardRoleIdParam = request.getParameter("id");
     if (boardRoleIdParam == null) {
       badRequest("Error while reading request param.", response);
@@ -116,9 +140,42 @@ public class UserListServlet extends AppAbstractServlet {
       return;
     }
 
+    if (!canAddOrRemove(boardRole.role, boardRole.getBoard())) {
+      forbidden(response);
+      return;
+    }
+
     ofy().delete().entity(boardRole).now();
     response.setStatus(OK);
     return;
+  }
+
+  // permission for adding/removing are the same
+  private boolean canAddOrRemove(Role role, Whiteboard board) {
+    UserService userService = UserServiceFactory.getUserService();
+    String googleAccId = userService.getCurrentUser().getUserId();
+    User userTakingAction = ofy().load().type(User.class).filter("googleAccId", googleAccId).first().now();
+
+    if (userTakingAction == null)
+      return false;
+
+    UserBoardRole roleOnTheBoard = ofy().load().type(UserBoardRole.class).filter("board", board)
+        .filter("user", userTakingAction).first().now();
+
+    if (roleOnTheBoard == null)
+      return false;
+
+    // when successfully fetched user and his role we can check his permissions
+    // if user is only USER we return false
+    if (roleOnTheBoard.role == Role.USER)
+      return false;
+    // if user is ADMIN and he tries to add someone more than USER return false
+    if (roleOnTheBoard.role == Role.ADMIN && role != Role.USER)
+      return false;
+    // if we havent returned by this point it means that either user is OWNER or
+    // ADMIN that wants to add USER
+    // in both of this situations user is allowed so return true
+    return true;
   }
 
   public Gson getBoardRoleGsonParser() {

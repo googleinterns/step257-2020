@@ -56,7 +56,26 @@ public class BoardServletTest extends NotesboardTestBase {
   }
 
   @Test
+  public void testBoardCreateNotAuthorized() throws Exception {
+    boardServlet.doPost(mockRequest, mockResponse);
+    // verify response status
+    verify(mockResponse).sendError(UNAUTHORIZED);
+  }
+
+  @Test
+  public void testBoardRetrieveNotAuthorized() throws Exception {
+    boardServlet.doGet(mockRequest, mockResponse);
+    // verify response status
+    verify(mockResponse).sendError(UNAUTHORIZED);
+  }
+
+  @Test
   public void testBoardRetrieveSuccessWithValidBoardId() throws Exception {
+     // creating mock user and log-in
+     User user = new User("googler@google.com", "nick");
+     user.googleAccId = "10";
+     ofy().save().entity(user).now();
+     logIn(user);
     // create board firstly
     Whiteboard board = getMockBoard();
     // when the board is saved, get the auto generated id and assign to board field
@@ -71,6 +90,11 @@ public class BoardServletTest extends NotesboardTestBase {
 
   @Test
   public void testBoardRetrieveFailsWithUnexistingId() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
     // create board entity
     Whiteboard board = getMockBoard();
     // when the board is saved, get the auto generated id and assign to board field

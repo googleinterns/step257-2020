@@ -94,7 +94,20 @@ public class UserListServletTest extends NotesboardTestBase {
   }
 
   @Test
+  public void getBoardNotAuthorized() throws IOException {
+    userListServlet.doGet(mockRequest, mockResponse);
+    // verify response status
+    verify(mockResponse).sendError(UNAUTHORIZED);
+  }
+
+  @Test
   public void testBoard1Key() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
     when(mockRequest.getParameter("id")).thenReturn(board1.id.toString());
 
     userListServlet.doGet(mockRequest, mockResponse);
@@ -117,6 +130,12 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testBoard2Key() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
     when(mockRequest.getParameter("id")).thenReturn(board2.id.toString());
 
     userListServlet.doGet(mockRequest, mockResponse);
@@ -137,6 +156,12 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testNotExistingBoard() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
     Long boardId = (long) -1;
 
     when(mockRequest.getParameter("id")).thenReturn(boardId.toString());
@@ -149,6 +174,12 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testBoardExistsButNoUsers() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
     when(mockRequest.getParameter("id")).thenReturn(board3.id.toString());
 
     userListServlet.doGet(mockRequest, mockResponse);
@@ -165,7 +196,142 @@ public class UserListServletTest extends NotesboardTestBase {
   }
 
   @Test
-  public void testAddUserToBoardUserExistsBoardExists() throws IOException {
+  public void testAddUserNotAllowedUserAddsUser() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //add user as USER of the board to not allow adding other USER user
+    UserBoardRole userRole = new UserBoardRole(Role.USER, board2, user);
+    ofy().save().entity(userRole);
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("email", user1.email);
+    jsonObject.addProperty("role", "user");
+
+    when(mockRequest.getParameter("id")).thenReturn(board2.id.toString());
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    userListServlet.doPost(mockRequest, mockResponse);
+
+    // verify response status
+    verify(mockResponse).sendError(FORBIDDEN);
+  }
+
+  @Test
+  public void testAddUserNotAllowedUserAddsAdmin() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //add user as USER of the board to not allow adding other ADMIN user
+    UserBoardRole userRole = new UserBoardRole(Role.USER, board2, user);
+    ofy().save().entity(userRole);
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("email", user1.email);
+    jsonObject.addProperty("role", "admin");
+
+    when(mockRequest.getParameter("id")).thenReturn(board2.id.toString());
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    userListServlet.doPost(mockRequest, mockResponse);
+
+    // verify response status
+    verify(mockResponse).sendError(FORBIDDEN);
+  }
+
+  @Test
+  public void testAddUserNotAllowedUserAddsOwner() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //add user as USER of the board to not allow adding other OWNER user
+    UserBoardRole userRole = new UserBoardRole(Role.USER, board2, user);
+    ofy().save().entity(userRole);
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("email", user1.email);
+    jsonObject.addProperty("role", "owner");
+
+    when(mockRequest.getParameter("id")).thenReturn(board2.id.toString());
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    userListServlet.doPost(mockRequest, mockResponse);
+
+    // verify response status
+    verify(mockResponse).sendError(FORBIDDEN);
+  }
+
+  @Test
+  public void testAddUserNotAllowedAdminAddsAdmin() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //add user as ADMIN of the board to not allow adding other ADMIN user
+    UserBoardRole ownerRole = new UserBoardRole(Role.ADMIN, board2, user);
+    ofy().save().entity(ownerRole);
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("email", user1.email);
+    jsonObject.addProperty("role", "admin");
+
+    when(mockRequest.getParameter("id")).thenReturn(board2.id.toString());
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    userListServlet.doPost(mockRequest, mockResponse);
+
+    // verify response status
+    verify(mockResponse).sendError(FORBIDDEN);
+  }
+
+  @Test
+  public void testAddUserNotAllowedAdminAddsOwner() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //add user as ADMIN of the board to not allow adding other OWNER user
+    UserBoardRole ownerRole = new UserBoardRole(Role.ADMIN, board2, user);
+    ofy().save().entity(ownerRole);
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("email", user1.email);
+    jsonObject.addProperty("role", "owner");
+
+    when(mockRequest.getParameter("id")).thenReturn(board2.id.toString());
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    userListServlet.doPost(mockRequest, mockResponse);
+
+    // verify response status
+    verify(mockResponse).sendError(FORBIDDEN);
+  }
+
+  @Test
+  public void testOwnerAddUserToBoardUserExistsBoardExists() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //we need to add user as OWNER of the board to allow adding other ADMIN user
+    UserBoardRole ownerRole = new UserBoardRole(Role.OWNER, board2, user);
+    ofy().save().entity(ownerRole);
+
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("email", user1.email);
     jsonObject.addProperty("role", "admin");
@@ -195,7 +361,57 @@ public class UserListServletTest extends NotesboardTestBase {
   }
 
   @Test
+  public void testAdminAddUserToBoardUserExistsBoardExists() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //we need to add user as OWNER of the board to allow adding other ADMIN user
+    UserBoardRole ownerRole = new UserBoardRole(Role.ADMIN, board2, user);
+    ofy().save().entity(ownerRole);
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("email", user1.email);
+    jsonObject.addProperty("role", "user");
+
+    when(mockRequest.getParameter("id")).thenReturn(board2.id.toString());
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+
+    userListServlet.doPost(mockRequest, mockResponse);
+
+
+    Gson gson = userListServlet.getBoardRoleGsonParser();
+
+    // checking response status
+    verify(mockResponse).setStatus(OK);
+
+    // checking if data correctly in the datastore
+    ofy().clear();
+    UserBoardRole datastoreData = ofy().load().type(UserBoardRole.class).filter("board", board2).filter("user", user1)
+        .filter("role", Role.USER).first().now();
+
+    assertNotNull(datastoreData);
+
+    // checking response value
+    JsonElement expectedResponse = gson.toJsonTree(datastoreData, UserBoardRole.class);
+    JsonElement actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);
+    assertEquals(expectedResponse, actualResponse);
+  }
+
+  @Test
   public void testAddUserToBoardUserAlreadyInTheBoardList() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+    
+    //we need to add user as OWNER of the board to allow adding other ADMIN user
+    UserBoardRole ownerRole = new UserBoardRole(Role.OWNER, board1, user);
+    ofy().save().entity(ownerRole);
+
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("email", user1.email);
     jsonObject.addProperty("role", "admin");
@@ -216,6 +432,16 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testAddUserToBoardUserExistsBoardNotExists() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //we need to add user as OWNER of the board to allow adding other ADMIN user
+    UserBoardRole ownerRole = new UserBoardRole(Role.OWNER, board1, user);
+    ofy().save().entity(ownerRole);
+
     Long boardId = (long) -1;
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("email", user4.email);
@@ -237,6 +463,16 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testAddUserToBoardUserNotExistsBoardExists() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //we need to add user as OWNER of the board to allow adding other ADMIN user
+    UserBoardRole ownerRole = new UserBoardRole(Role.OWNER, board1, user);
+    ofy().save().entity(ownerRole);
+
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("email", "user6@google.com");
     jsonObject.addProperty("role", "admin");
@@ -256,6 +492,12 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testAddUserToBoardUserNotExistsBoardNotExists() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
     Long boardId = (long) -1;
 
     JsonObject jsonObject = new JsonObject();
@@ -278,6 +520,16 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testDeleteRoleExists() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //we need to add user as OWNER of the board to allow adding other ADMIN user
+    UserBoardRole ownerRole = new UserBoardRole(Role.OWNER, board1, user);
+    ofy().save().entity(ownerRole);
+
     when(mockRequest.getParameter("id")).thenReturn(userBoardRole1.id.toString());
 
     userListServlet.doDelete(mockRequest, mockResponse);
@@ -292,6 +544,16 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testDeleteRoleNotExists() throws IOException {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
+    //we need to add user as OWNER of the board to allow adding other ADMIN user
+    UserBoardRole ownerRole = new UserBoardRole(Role.OWNER, board1, user);
+    ofy().save().entity(ownerRole);
+
     Long roleId = (long) -1;
     when(mockRequest.getParameter("id")).thenReturn(roleId.toString());
 

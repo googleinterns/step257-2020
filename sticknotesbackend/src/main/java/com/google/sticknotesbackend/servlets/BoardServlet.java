@@ -32,6 +32,12 @@ public class BoardServlet extends BoardAbstractServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    //authorization check
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      unauthorized(response);
+      return;
+    }
     String boardIdParam = request.getParameter("id");
     if (boardIdParam != null) {
       long boardId = Long.parseLong(boardIdParam);
