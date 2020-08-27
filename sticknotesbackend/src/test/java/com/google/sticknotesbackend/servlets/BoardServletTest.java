@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import com.google.sticknotesbackend.models.User;
 
 /**
  * Unit tests for BoardServlet.
@@ -38,6 +39,11 @@ public class BoardServletTest extends NotesboardTestBase {
 
   @Test
   public void testBoardCreateSuccessWithValidPayload() throws Exception {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
     // create mocked request
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("title", "Board title");
@@ -72,7 +78,7 @@ public class BoardServletTest extends NotesboardTestBase {
     // call get with board.id + 1
     // mock request get parameter
     when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id + 1));
-    
+
     boardServlet.doGet(mockRequest, mockResponse);
     // check that bad request error was generated
     verify(mockResponse).sendError(BAD_REQUEST);
@@ -80,6 +86,12 @@ public class BoardServletTest extends NotesboardTestBase {
 
   @Test
   public void testBoardCreateFailsWithInvalidPayload() throws Exception {
+    // creating mock user and log-in
+    User user = new User("googler@google.com", "nick");
+    user.googleAccId = "10";
+    ofy().save().entity(user).now();
+    logIn(user);
+
     // create mocked request
     JsonObject jsonObject = new JsonObject();
     // add unexisting property
