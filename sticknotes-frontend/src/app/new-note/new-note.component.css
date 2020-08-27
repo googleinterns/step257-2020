@@ -32,11 +32,3 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
-
-input[type="file"] {
-  display: none;
-}
-
-.custom-file-upload {
-  margin-bottom: 10px;
-}
