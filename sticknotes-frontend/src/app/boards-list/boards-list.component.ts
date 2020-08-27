@@ -30,6 +30,6 @@ export class BoardsListComponent implements OnInit {
    * Creates a link to the board
    */
   public getBoardLink(boardPreview: BoardPreview) {
-    return `boards/${boardPreview.id}`;
+    return `/boards/${boardPreview.id}`;
   }
 }
