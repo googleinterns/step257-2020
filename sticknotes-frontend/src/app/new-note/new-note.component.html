@@ -14,6 +14,9 @@
       <mat-radio-button *ngFor="let item of 4 | rangeLoop, let i = index" [value]="(i + 1).toString()"><span
           class="circle" [style]="'background-color:' + getColorHexValue((i + 1).toString())"></span></mat-radio-button>
     </mat-radio-group>
+    <mat-form-field>
+      <input formControlName="file" type="file" name="file">
+    </mat-form-field>
   </form>
   <button mat-raised-button color="primary" (click)="handleSubmit()"
     [disabled]="sendingData">{{submitButtonText}}</button>

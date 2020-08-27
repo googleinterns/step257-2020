@@ -32,7 +32,8 @@ export class NewNoteComponent implements OnInit {
     ]),
     options: new FormControl('1', [
       Validators.required
-    ])
+    ]),
+    file: new FormControl('', [])
   });
 
   constructor(@Inject(MAT_DIALOG_DATA) private data: NotePopupData,
