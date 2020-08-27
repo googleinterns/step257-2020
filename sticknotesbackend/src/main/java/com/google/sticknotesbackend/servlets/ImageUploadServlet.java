@@ -45,7 +45,9 @@ public class ImageUploadServlet extends HttpServlet {
     BlobId blobId = BlobId.of(bucketName, fileName);
     BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
     // upload file
-    String linkToFile = storage.create(blobInfo, bytes).getMediaLink();
+    storage.create(blobInfo, bytes);
+    // generate a link to the file
+    String linkToFile = "https://storage.cloud.google.com/" + bucketName + "/" + fileName; 
     response.getWriter().print(linkToFile);
   }
 }
