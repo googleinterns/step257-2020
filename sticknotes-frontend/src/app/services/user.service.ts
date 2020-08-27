@@ -21,10 +21,6 @@ export class UserService {
       this.authenticated.next(true);
       this.userSubject.next(fetchedUser);
       return this.userSubject.value;
-    }), catchError((err, caught) => {
-      this.authenticated.next(false);
-      this.userSubject.next(null);
-      return this.userSubject.asObservable();
     }));
   }
 
