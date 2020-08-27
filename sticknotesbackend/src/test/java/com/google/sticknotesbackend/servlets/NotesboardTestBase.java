@@ -10,7 +10,7 @@ import com.google.cloud.NoCredentials;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.testing.LocalDatastoreHelper;
+import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
@@ -22,6 +22,7 @@ import com.googlecode.objectify.util.Closeable;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
@@ -43,8 +44,8 @@ public abstract class NotesboardTestBase {
 
   // Set up a helper so that the ApiProxy returns a valid environment for local
   // testing.
-  protected final LocalServiceTestHelper helper = new LocalServiceTestHelper(
-      new LocalMemcacheServiceTestConfig(), new LocalDatastoreServiceTestConfig(), new LocalUserServiceTestConfig());
+  protected final LocalServiceTestHelper helper =
+      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalUserServiceTestConfig());
 
   protected Closeable session;
 
@@ -97,27 +98,54 @@ public abstract class NotesboardTestBase {
   }
 
   /**
-   * Helper method that constructs a testing object of Whiteboard.
+   * Creates a board and stores it in the datastore
    */
-  protected Whiteboard getMockBoard() {
-    Whiteboard board = new Whiteboard("test");
+  protected Whiteboard createBoard() {
+    String uuid = UUID.randomUUID().toString();
+    Whiteboard board = new Whiteboard("board title " + uuid);
     board.creationDate = System.currentTimeMillis();
-    // create dummy user and set this user as a creator of the board
-    User dummyUser = new User("googler@google.com", "nickname");
-    ofy().save().entity(dummyUser).now();
-    board.setCreator(dummyUser);
-    board.rows = 4;
-    board.cols = 6;
+    board.rows = 10;
+    board.cols = 10;
+    board.id = ofy().save().entity(board).now().getId();
     return board;
   }
 
   /**
-   * Helper method to create a note.
+   * Creates a note and stores it in the datastore
    */
-  protected Note getMockNote() {
-    User dummyUser = new User("googler@google.com", "nickname");
-    ofy().save().entity(dummyUser).now();
-    return new Note(dummyUser, "content", "color", 1, 2);
+  protected Note createNote() {
+    String uuid = UUID.randomUUID().toString();
+    Note note = new Note();
+    note.content = uuid + " note content";
+    note.x = 1;
+    note.y = 1;
+    note.color = "#000000";
+    note.id = ofy().save().entity(note).now().getId();
+    return note;
+  }
+
+  /**
+   * Creates a mock user and stores the user in the datastore
+   */
+  protected User createUser() {
+    // creating mock user with random email and nickname to avoid data duplication
+    String uuid = UUID.randomUUID().toString();
+    String userEmail = uuid + "@google.com";
+    String userNickname = uuid + "-nickname";
+    User user = new User(userEmail, userNickname);
+    user.googleAccId = uuid;
+    user.id = ofy().save().entity(user).now().getId();
+    return user;
+  }
+
+  /**
+   * Creates a mock userboardrole and stores in the datastore
+   */
+  protected UserBoardRole createRole(Whiteboard board, User user, Role role) {
+    UserBoardRole userBoardRole = new UserBoardRole(role, board, user);
+    // save the role
+    userBoardRole.id = ofy().save().entity(userBoardRole).now().getId();
+    return userBoardRole;
   }
 
   /**

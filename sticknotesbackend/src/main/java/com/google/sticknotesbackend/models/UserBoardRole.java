@@ -13,6 +13,7 @@ public class UserBoardRole {
   }
 
   public @Id Long id;
+  public Long boardId;
 
   @Index
   public Role role;
@@ -32,6 +33,7 @@ public class UserBoardRole {
     this.board = Ref.create(board);
     this.user = Ref.create(user);
     this.role = role;
+    this.boardId = board.id; // to speed up validation when only board id is known
   }
 
   public Whiteboard getBoard() {
