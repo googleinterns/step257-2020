@@ -12,8 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class AppAbstractServlet extends HttpServlet {
   protected final int OK = 200;
   protected final int CREATED = 201;
-  protected final int BAD_REQUEST = 400;
   protected final int NO_CONTENT = 204;
+  protected final int BAD_REQUEST = 400;
+  protected final int UNAUTHORIZED = 401;
+  protected final int FORBIDDEN = 403;
+  
+  
 
   /**
    * Validates JsonObject fields using the list requiredFields. Each field
@@ -32,10 +36,26 @@ public abstract class AppAbstractServlet extends HttpServlet {
   }
 
   /**
-   * Sends a 400 Bad request response with the given message;
+   * Sends a 400 Bad request response
    */
   protected void badRequest(String message, HttpServletResponse response) throws IOException {
     response.getWriter().println(message);
     response.sendError(BAD_REQUEST);
+  }
+
+  /**
+   * Send a 401 unauthorized response
+   */
+  protected void unauthorized(HttpServletResponse response) throws IOException {
+    response.getWriter().println("User not authenticated.");
+    response.sendError(UNAUTHORIZED);
+  }
+
+   /**
+   * Send a 403 forbidden response
+   */
+  protected void notAllowed(HttpServletResponse response) throws IOException {
+    response.getWriter().println("User is not allowed to use this resource.");
+    response.sendError(FORBIDDEN);
   }
 }
