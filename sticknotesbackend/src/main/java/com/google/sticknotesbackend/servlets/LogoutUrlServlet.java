@@ -22,6 +22,6 @@ public class LogoutUrlServlet extends AppAbstractServlet {
       return;
     }
     
-    unauthenticated(response);
+    unauthorized(response);
   }
 }
