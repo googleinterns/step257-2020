@@ -94,7 +94,7 @@ public class BoardServlet extends BoardAbstractServlet {
     // field
     board.id = ofy().save().entity(board).now().getId();
     // automatically adding user with role ADMIN(will be changed to OWNER)
-    UserBoardRole userBoardRole = new UserBoardRole(Role.ADMIN, board, user);
+    UserBoardRole userBoardRole = new UserBoardRole(Role.OWNER, board, user);
     ofy().save().entity(userBoardRole).now();
     // return JSON of the new created board
     response.getWriter().print(gson.toJson(board));
