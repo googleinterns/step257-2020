@@ -7,7 +7,7 @@ import com.googlecode.objectify.annotation.Index;
 @Entity
 public class User {
   public @Id Long id;
-  public @Index String userId; 
+  public @Index String googleAccId; 
   public String nickname;
   public @Index String email;
 

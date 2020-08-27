@@ -21,7 +21,6 @@ export class LoginPageComponent implements OnInit {
   }
 
   goToUrl(): void {
-    console.log(this.loginUrl);
     this.document.location.href = this.loginUrl;
-}
+  }
 }
