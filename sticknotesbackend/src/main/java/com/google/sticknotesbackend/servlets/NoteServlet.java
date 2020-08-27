@@ -7,15 +7,13 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.sticknotesbackend.enums.Role;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
-import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -83,8 +81,9 @@ public class NoteServlet extends NoteAbstractServlet {
       // get note that is going to be deleted
       Note note = ofy().load().type(Note.class).id(noteId).now();
       // check if user has enough permissions to modify note
-      if (!canModifyNote(note)) {
-        unauthorized(response);
+      Permission perm = noteModifyPermission(note);
+      if (!perm.equals(Permission.GRANTED)) {
+        handleBadPermission(perm, response);
         return;
       }
       // get note board

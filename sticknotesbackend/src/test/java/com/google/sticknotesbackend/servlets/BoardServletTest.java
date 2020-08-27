@@ -58,7 +58,7 @@ public class BoardServletTest extends NotesboardTestBase {
   public void testBoardRetrieveSuccessWithValidBoardId() throws Exception {
     // create board firstly
     Whiteboard board = createBoard();
-    // create mock user 
+    // create mock user
     User user = createUser();
     // set board creator
     board.setCreator(user);
@@ -77,6 +77,26 @@ public class BoardServletTest extends NotesboardTestBase {
     assertThat(responseWriter.toString()).isEqualTo(boardServlet.getBoardGsonParser().toJson(board));
   }
 
+  @Test
+  public void testBoardRetrieveFailsIfUserNotInTheBoardUsersList() throws Exception {
+    // create board firstly
+    Whiteboard board = createBoard();
+    // create mock users
+    User boardCreator = createUser();
+    User user = createUser();
+    board.setCreator(boardCreator);
+    // save updated board
+    ofy().save().entity(board);
+    // log in user who is not in the list of board users
+    logIn(user);
+    // try to retrieve a board
+    // mock request get parameter
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id));
+    // do request
+    boardServlet.doGet(mockRequest, mockResponse);
+    // check that forbidden error was thrown
+    verify(mockResponse).sendError(FORBIDDEN);
+  }
   @Test
   public void testBoardRetrieveFailsWithUnexistingId() throws IOException {
     // creating mock user and log-in

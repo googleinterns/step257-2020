@@ -5,6 +5,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
@@ -49,8 +50,9 @@ public class EditBoardServlet extends BoardAbstractServlet {
       return;
     }
     // check if user has enough permissions to modify the board
-    if (!canModifyBoard(board)) {
-      unauthorized(response);
+    Permission perm = boardModifyPermission(board);
+    if (!perm.equals(Permission.GRANTED)) {
+      handleBadPermission(perm, response);
       return;
     }
     // update entity fields

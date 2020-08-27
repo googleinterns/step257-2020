@@ -6,11 +6,11 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
-import com.google.sticknotesbackend.models.Whiteboard;
 import com.google.sticknotesbackend.serializers.NoteSerializer;
 import java.util.List;
 
@@ -29,13 +29,13 @@ public abstract class NoteAbstractServlet extends AppAbstractServlet {
   /**
    * Checks if current user has enough permissions to modify the note (edit/delete)
    */
-  protected boolean canModifyNote(Note note) {
+  protected Permission noteModifyPermission(Note note) {
     // check that user is authenticated
     UserService userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {
       // if the user is author of the note, allow modify
       if (note.getCreator().googleAccId.equals(userService.getCurrentUser().getUserId())) {
-        return true;
+        return Permission.GRANTED;
       }
       // if there is a role ADMIN or OWNER with this board and this user, then delete the note
       // get current user
@@ -46,10 +46,11 @@ public abstract class NoteAbstractServlet extends AppAbstractServlet {
           ofy().load().type(UserBoardRole.class).filter("boardId", note.boardId).filter("user", user).list();
       for (UserBoardRole role : boardRoles) {
         if (role.role.equals(Role.ADMIN)) {
-          return true;
+          return Permission.GRANTED;
         }
       }
+      return Permission.FORBIDDEN;
     }
-    return false;
+    return Permission.NOAUTH;
   }
 }

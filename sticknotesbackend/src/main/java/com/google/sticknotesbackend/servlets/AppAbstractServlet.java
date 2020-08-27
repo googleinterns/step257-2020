@@ -1,6 +1,7 @@
 package com.google.sticknotesbackend.servlets;
 
 import com.google.gson.JsonObject;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import java.io.IOException;
 import javax.servlet.http.HttpServlet;
@@ -57,5 +58,13 @@ public abstract class AppAbstractServlet extends HttpServlet {
   protected void notAllowed(HttpServletResponse response) throws IOException {
     response.getWriter().println("User is not allowed to use this resource.");
     response.sendError(FORBIDDEN);
+  }
+
+  protected void handleBadPermission(Permission perm, HttpServletResponse response) throws IOException {
+    if (perm.equals(Permission.FORBIDDEN)) {
+      notAllowed(response);
+    } else if (perm.equals(Permission.NOAUTH)) {
+      unauthorized(response);
+    }
   }
 }
