@@ -44,7 +44,6 @@ public class BoardServlet extends BoardAbstractServlet {
         response.sendError(BAD_REQUEST);
         return;
       }
-      
       Permission perm = AuthChecker.boardAccessPermission(boardId);
       System.out.println(perm);
       if (!perm.equals(Permission.GRANTED)) {

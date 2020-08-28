@@ -14,6 +14,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
+import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
@@ -90,8 +92,9 @@ public class UserListServlet extends AppAbstractServlet {
       return;
     }
 
-    if (!canAddOrRemove(role, board)) {
-      forbidden(response);
+    Permission perm = AuthChecker.userListModifyPermission(role, board);
+    if (perm != Permission.GRANTED) {
+      handleBadPermission(perm, response);
       return;
     }
 
@@ -140,42 +143,15 @@ public class UserListServlet extends AppAbstractServlet {
       return;
     }
 
-    if (!canAddOrRemove(boardRole.role, boardRole.getBoard())) {
-      forbidden(response);
+    Permission perm = AuthChecker.userListModifyPermission(boardRole.role, boardRole.getBoard());
+    if (perm != Permission.GRANTED) {
+      handleBadPermission(perm, response);
       return;
     }
 
     ofy().delete().entity(boardRole).now();
     response.setStatus(OK);
     return;
-  }
-
-  // permission for adding/removing are the same
-  private boolean canAddOrRemove(Role role, Whiteboard board) {
-    UserService userService = UserServiceFactory.getUserService();
-    String googleAccId = userService.getCurrentUser().getUserId();
-    User userTakingAction = ofy().load().type(User.class).filter("googleAccId", googleAccId).first().now();
-
-    if (userTakingAction == null)
-      return false;
-
-    UserBoardRole roleOnTheBoard = ofy().load().type(UserBoardRole.class).filter("board", board)
-        .filter("user", userTakingAction).first().now();
-
-    if (roleOnTheBoard == null)
-      return false;
-
-    // when successfully fetched user and his role we can check his permissions
-    // if user is only USER we return false
-    if (roleOnTheBoard.role == Role.USER)
-      return false;
-    // if user is ADMIN and he tries to add someone more than USER return false
-    if (roleOnTheBoard.role == Role.ADMIN && role != Role.USER)
-      return false;
-    // if we havent returned by this point it means that either user is OWNER or
-    // ADMIN that wants to add USER
-    // in both of this situations user is allowed so return true
-    return true;
   }
 
   public Gson getBoardRoleGsonParser() {
