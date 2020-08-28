@@ -67,9 +67,7 @@ public class EditNoteServlet extends NoteAbstractServlet {
     if (editedNote.content != null) {
       note.content = editedNote.content;
     }
-    if (editedNote.image != null) {
-      note.image = editedNote.image;
-    }
+    note.image = editedNote.image;
     // save note
     ofy().save().entity(note).now();
     // return updated note in the response

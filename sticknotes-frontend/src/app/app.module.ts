@@ -29,7 +29,7 @@ import { AddUserComponent } from './add-user/add-user.component';
 import { BoardEditComponent } from './board-edit/board-edit.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
-
+import { MaterialFileInputModule } from 'ngx-material-file-input';
 
 @NgModule({
   declarations: [
@@ -64,7 +64,8 @@ import { MatSelectModule } from '@angular/material/select';
     HttpClientModule,
     MomentModule,
     MatSnackBarModule,
-    MatSelectModule
+    MatSelectModule,
+    MaterialFileInputModule
   ],
   providers: [],
   bootstrap: [AppComponent]

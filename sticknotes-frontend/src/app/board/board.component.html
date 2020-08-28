@@ -28,6 +28,7 @@
             </div>
             <p>{{note.creator.email}}</p>
             <p>{{note.content}}</p>
+            <img class="note-image" *ngIf="note.image" [src]="note.image" alt="Image attached to the note">
             <p>{{getNoteCreationDate(note) | amCalendar}}</p>
           </mat-card-content>
         </mat-card>
