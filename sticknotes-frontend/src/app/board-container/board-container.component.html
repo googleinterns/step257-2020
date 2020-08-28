@@ -40,6 +40,6 @@
     <button mat-icon-button (click)="toggleMenu(drawer)" class="toggle-button">
       <mat-icon>{{iconName}}</mat-icon>
     </button>
-    <app-board [boardUpdatedData]="boardData" [translatedNotes]="translatedNotes" (boardLoaded)="receiveBoardData($event)"></app-board>
+    <app-board [boardUpdatedData]="boardData" [notesLanguage]="targetLanguage" (boardLoaded)="receiveBoardData($event)"></app-board>
   </div>
 </mat-drawer-container>

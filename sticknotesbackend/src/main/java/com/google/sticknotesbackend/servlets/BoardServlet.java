@@ -8,6 +8,9 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -35,29 +38,37 @@ public class BoardServlet extends BoardAbstractServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String boardIdParam = request.getParameter("id");
+    // optional language param
+    String languageCode = request.getParameter("lc");
     if (boardIdParam != null) {
       long boardId = Long.parseLong(boardIdParam);
 
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
       if (board == null) {
-        response.getWriter().println("Board with this id doesn't exist");
-        response.sendError(BAD_REQUEST);
+        badRequest("Board with this id doesn't exist", response);
         return;
       }
 
       // check if user can access the board
       Permission perm = AuthChecker.boardAccessPermission(boardId);
-      System.out.println(perm);
       if (!perm.equals(Permission.GRANTED)) {
         handleBadPermission(perm, response);
         return;
       }
-
+      // if translate language is set, translate all notes
+      if (languageCode != null) {
+        Translate translate = TranslateOptions.getDefaultInstance().getService();
+        board.notes.forEach(noteRef -> {
+          // translate each note
+          Translation translation = translate.translate(noteRef.get().content, Translate.TranslateOption.targetLanguage(languageCode));
+          noteRef.get().content = translation.getTranslatedText();
+        });
+      }
       Gson gson = getBoardGsonParser();
+      response.setCharacterEncoding("UTF-8");
       response.getWriter().print(gson.toJson(board));
     } else {
-      response.getWriter().println("No id parameter");
-      response.sendError(BAD_REQUEST);
+      badRequest("No id parameter", response);
     }
   }
 

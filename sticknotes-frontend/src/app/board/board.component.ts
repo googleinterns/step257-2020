@@ -34,15 +34,19 @@ export class BoardComponent implements OnInit {
       this.updateBoardAbstractGrid();
     }
   }
+
   /**
-   * Input property used by board-container to send translated notes
+   * Input used to set target language of notes
    */
   @Input()
-  set translatedNotes(notes: Note[]) {
-    if (notes) {
-      this.board.notes = notes;
+  set notesLanguage(notesTargetLanguage: string) {
+    this.notesTargetLanguage = notesTargetLanguage;
+    if (this.board) {
+      this.fetchBoardData(this.board.id);
     }
   }
+
+  private notesTargetLanguage: string = null;
   private boardGrid: number[][];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
@@ -74,7 +78,7 @@ export class BoardComponent implements OnInit {
    */
   private fetchBoardData(boardId: string) {
     // load board with the key
-    this.boardApiService.getBoard(boardId).subscribe(board => {
+    this.boardApiService.getBoard(boardId, this.notesTargetLanguage).subscribe(board => {
       this.board = board;
       this.updateBoardAbstractGrid();
       // pass essential board's data to the sidenav
