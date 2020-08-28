@@ -7,12 +7,12 @@
         <div matLine> {{ userWithRole.user.nickname }} </div>
         <div mat-line> {{ userWithRole.user.email }} <p class="mat-small"> {{ userWithRole.role }} </p> </div>
         <!-- adminView set to true because UsersAPI not integrated yet -->
-        <button mat-icon-button *ngIf="currentUser.id !== userWithRole.user.id && userWithRole.role === 'USER'" color="primary" (click) = 'removeUser(userWithRole)' aria-label="Open add user dialog">
+        <button mat-icon-button *ngIf="currentUser.id !== userWithRole.user.id && currentUser.role !== 'USER'" color="primary" (click) = 'removeUser(userWithRole)' aria-label="Open add user dialog">
           <mat-icon>delete</mat-icon>
         </button>   
       </mat-list-item>
       <mat-list-item>
-        <button *ngIf="true" mat-mini-fab color="primary" (click) = 'openAddUserDialog()' aria-label="Open add user dialog">
+        <button *ngIf="adminView" mat-mini-fab color="primary" (click) = 'openAddUserDialog()' aria-label="Open add user dialog">
           <mat-icon>add</mat-icon>
         </button>
       </mat-list-item>
