@@ -68,3 +68,12 @@
   flex-direction: row;
   justify-content: flex-end;
 }
+
+.note-image {
+  max-width: 184px;
+}
+
+mat-card-content {
+  overflow-y: scroll;
+  height: 240px;
+}

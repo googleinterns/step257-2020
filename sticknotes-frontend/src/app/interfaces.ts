@@ -35,7 +35,7 @@ export interface NotePopupData {
 
 export interface CreateNoteApiData {
   content: string;
-  image?: string;
+  image: string | null; // it is possible that note doesn't have image
   color: string;
   x: number;
   y: number;

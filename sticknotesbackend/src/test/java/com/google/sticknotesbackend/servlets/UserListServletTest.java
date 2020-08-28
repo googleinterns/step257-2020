@@ -51,37 +51,23 @@ public class UserListServletTest extends NotesboardTestBase {
     clearDatastore();
     ofy().clear(); //clearing Objectify cache
     // filling datastore with board and few users
-    user1 = new User("user1@google.com", "user1");
-    user2 = new User("user2@google.com", "user2");
-    user3 = new User("user3@google.com", "user3");
-    user4 = new User("user4@google.com", "user4");
+    user1 = createUser();
+    user2 = createUser();
+    user3 = createUser();
+    user4 = createUser();
 
-    board1 = new Whiteboard("title1");
-    board2 = new Whiteboard("title2");
-    board3 = new Whiteboard("title3");
+    board1 = createBoard();
+    board2 = createBoard();
+    board3 = createBoard();
 
-    ofy().save().entity(user1).now();
-    ofy().save().entity(user2).now();
-    ofy().save().entity(user3).now();
-    ofy().save().entity(user4).now();
-
-    ofy().save().entity(board1).now();
-    ofy().save().entity(board2).now();
-    ofy().save().entity(board3).now();
-
-    userBoardRole1 = new UserBoardRole(Role.ADMIN, board1, user1);
-    userBoardRole2 = new UserBoardRole(Role.ADMIN, board1, user2);
-    userBoardRole3 = new UserBoardRole(Role.USER, board1, user3);
-    userBoardRole4 = new UserBoardRole(Role.USER, board1, user4);
-    userBoardRole5 = new UserBoardRole(Role.USER, board2, user3);
-    userBoardRole6 = new UserBoardRole(Role.USER, board2, user4);
-
-    ofy().save().entity(userBoardRole1).now();
-    ofy().save().entity(userBoardRole2).now();
-    ofy().save().entity(userBoardRole3).now();
-    ofy().save().entity(userBoardRole4).now();
-    ofy().save().entity(userBoardRole5).now();
-    ofy().save().entity(userBoardRole6).now();
+  
+    userBoardRole1 = createRole(board1, user1, Role.ADMIN);
+    userBoardRole2 = createRole(board1, user2, Role.ADMIN);
+    userBoardRole3 = createRole(board1, user3, Role.USER);
+    
+    userBoardRole4 = createRole(board1, user4, Role.USER);
+    userBoardRole5 = createRole(board2, user3, Role.USER);
+    userBoardRole6 = createRole(board2, user4, Role.USER);
 
     ofy().clear(); //after loading data to datastore clearing cache once again
 

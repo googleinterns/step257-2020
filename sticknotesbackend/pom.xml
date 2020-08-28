@@ -22,6 +22,18 @@
     <maven>3.5</maven>
   </prerequisites>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>libraries-bom</artifactId>
+        <version>9.1.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <!-- Compile/runtime dependencies -->
     <dependency>
@@ -50,6 +62,15 @@
       <groupId>com.googlecode.objectify</groupId>
       <artifactId>objectify</artifactId>
       <version>6.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-storage</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.5</version>
     </dependency>
 
     <!-- Test Dependencies -->

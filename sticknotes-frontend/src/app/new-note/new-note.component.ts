@@ -7,6 +7,7 @@ import { CreateNoteApiData, Note, NotePopupData } from '../interfaces';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FileUploadService } from '../services/file-upload.service';
 
 @Component({
   selector: 'app-new-note',
@@ -19,7 +20,7 @@ export class NewNoteComponent implements OnInit {
   // this component can be in 2 states: editing the existing note or creating a new one
   private mode: State;
   // this object stores the note the user edits in the moment
-  private editableNote: Note = null;
+  public editableNote: Note = null;
   public submitButtonText: string;
   // to disable button when the data is being sent to the server
   public sendingData = false;
@@ -32,13 +33,15 @@ export class NewNoteComponent implements OnInit {
     ]),
     options: new FormControl('1', [
       Validators.required
-    ])
+    ]),
+    file: new FormControl({value: '', disabled: this.editableNote && this.editableNote.image !== null}, [])
   });
 
   constructor(@Inject(MAT_DIALOG_DATA) private data: NotePopupData,
     private notesApiService: NotesApiService,
     private dialogRef: MatDialogRef<NewNoteComponent>,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar,
+    private fileUploadService: FileUploadService) {
     if (data.mode === State.CREATE) {
       // creating new note
       const noteData = data.noteData as { position: Vector2, boardId: string };
@@ -60,7 +63,9 @@ export class NewNoteComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  // creates new note
+  /**
+   * Creates new note
+   */
   private createNote(): void {
     if (this.newNoteForm.valid) {
       // disable button
@@ -73,23 +78,29 @@ export class NewNoteComponent implements OnInit {
         y: this.position.y,
         content: noteContent,
         color: noteColor,
-        boardId: this.boardId
+        boardId: this.boardId,
+        image: null
       };
-      // service returns a new note object
-      this.notesApiService.createNote(noteData).subscribe(note => {
-        // successfully created, close the dialog and pass the note back to the board
-        this.dialogRef.close(note);
-      }, err => {
-        // something went wrong
-        this.snackBar.open("Server error occurred while creating a note", "Ok", {
-          duration: 2000,
+      const fileInput = this.newNoteForm.controls.file.value;
+      // save image if it is there
+      if (fileInput && fileInput.files.length) {
+        const snackbarUpload = this.snackBar.open('Uploading image...');
+        this.fileUploadService.uploadFile(fileInput.files[0]).subscribe(response => {
+          // set attached image url to the payload
+          noteData.image = response.fileUrl;
+          snackbarUpload.dismiss();
+          this.sendNoteCreateData(noteData);
         });
-        this.dialogRef.close();
-      });
+      } else {
+        // otherwise just create without image
+        this.sendNoteCreateData(noteData);
+      }
     }
   }
 
-  // updates the note
+  /**
+   * Updates the note
+   */
   private updateNote(): void {
     if (this.newNoteForm.valid) {
       // disable button
@@ -97,15 +108,52 @@ export class NewNoteComponent implements OnInit {
       // update editableNote object fields
       this.editableNote.content = this.newNoteForm.controls.content.value;
       this.editableNote.color = this.getColorHexValue(this.newNoteForm.controls.options.value);
-      this.notesApiService.updateNote(this.editableNote).subscribe(note => {
-        this.dialogRef.close(note);
-      }, err => {
-        this.snackBar.open("Server error occurred while updating a note", "Ok", {
-          duration: 2000,
+      const fileInput = this.newNoteForm.controls.file.value;
+      // save image if it is there
+      if (fileInput && fileInput.files.length) {
+        const snackbarUpload = this.snackBar.open('Uploading image...');
+        this.fileUploadService.uploadFile(fileInput.files[0]).subscribe(response => {
+          // set attached image url to the payload
+          this.editableNote.image = response.fileUrl;
+          snackbarUpload.dismiss();
+          this.sendNoteUpdateData(this.editableNote);
         });
-        this.dialogRef.close();
-      });
+      } else {
+        // otherwise just update without image
+        this.sendNoteUpdateData(this.editableNote);
+      }
     }
+  }
+
+  /**
+   * Sends create note payload
+   */
+  private sendNoteCreateData(payload: CreateNoteApiData) {
+    // service returns a new note object
+    this.notesApiService.createNote(payload).subscribe(note => {
+      // successfully created, close the dialog and pass the note back to the board
+      this.dialogRef.close(note);
+    }, err => {
+      // something went wrong
+      this.snackBar.open("Server error occurred while creating a note", "Ok", {
+        duration: 2000,
+      });
+      this.dialogRef.close();
+    });
+  }
+
+  /**
+   * Sends updated note to the server to update note's fields
+   */
+  private sendNoteUpdateData(payload: Note) {
+    this.notesApiService.updateNote(payload).subscribe(note => {
+      this.dialogRef.close(note);
+    }, err => {
+      this.snackBar.open("Server error occurred while updating a note", "Ok", {
+        duration: 2000,
+      });
+      this.dialogRef.close();
+    });
   }
 
   public handleSubmit(): void {
@@ -146,5 +194,13 @@ export class NewNoteComponent implements OnInit {
         return '4';
       }
     }
+  }
+
+  /**
+   * Removes image from editableNote.
+   * Possible to send a request to cloud storage to delete a file indeed
+   */
+  public removeImage() {
+    this.editableNote.image = null;
   }
 }

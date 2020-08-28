@@ -5,6 +5,8 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
@@ -31,7 +33,7 @@ public class EditBoardServlet extends BoardAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = { "id" };
+      String[] requiredFields = {"id"};
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -48,14 +50,20 @@ public class EditBoardServlet extends BoardAbstractServlet {
       badRequest("No board with the given id", response);
       return;
     }
+    // check if user has enough permissions to modify the board
+    Permission perm = AuthChecker.boardModifyPermission(board);
+    if (!perm.equals(Permission.GRANTED)) {
+      handleBadPermission(perm, response);
+      return;
+    }
     // update entity fields
     if (editedBoard.title != null) {
       board.title = editedBoard.title;
     }
 
     // run this code only if board is resized
-    if ((editedBoard.cols != -1 && editedBoard.cols != board.cols)
-        || (editedBoard.rows != -1 && editedBoard.rows != board.rows)) {
+    if ((editedBoard.cols != -1 && editedBoard.cols != board.cols) ||
+        (editedBoard.rows != -1 && editedBoard.rows != board.rows)) {
       if (editedBoard.rows != -1) {
         if (editedBoard.rows < 1) {
           badRequest("Can not resize to < 1 rows", response);
