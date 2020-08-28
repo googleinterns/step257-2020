@@ -2,11 +2,15 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
 import java.io.IOException;
@@ -37,6 +41,11 @@ public class BoardNotesTranslatedServlet extends NoteAbstractServlet {
       return;
     }
     Long boardId = Long.parseLong(boardIdParam);
+    Permission perm = AuthChecker.boardAccessPermission(boardId);
+    if (!perm.equals(Permission.GRANTED)) {
+      handleBadPermission(perm, response);
+      return;
+    }
     // get the board which notes have to be translated
     Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
     // get the list of notes from list of references store in the board
@@ -47,7 +56,8 @@ public class BoardNotesTranslatedServlet extends NoteAbstractServlet {
     Translate translate = TranslateOptions.getDefaultInstance().getService();
     notes.forEach(note -> {
       // translate each note
-      Translation translation = translate.translate(note.content, Translate.TranslateOption.targetLanguage(languageCode));
+      Translation translation =
+          translate.translate(note.content, Translate.TranslateOption.targetLanguage(languageCode));
       note.content = translation.getTranslatedText();
       // add JsonObject of note to the translatedNotesJsonArray response
       // it uses custom note serializer

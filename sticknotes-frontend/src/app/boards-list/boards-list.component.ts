@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NewBoardComponent } from '../new-board/new-board.component';
 import { BoardApiService } from '../services/board-api.service';
-import { BoardPreview } from '../interfaces';
+import { UserService } from '../services/user.service';
+import { BoardPreview, User } from '../interfaces';
 
 @Component({
   selector: 'app-boards-list',
@@ -11,13 +12,16 @@ import { BoardPreview } from '../interfaces';
 })
 export class BoardsListComponent implements OnInit {
   public myBoards: BoardPreview[] = null;
+  //temporary solution before we introduce guards
+  public user: User = null;
 
-  constructor(private dialog: MatDialog, private boardApiService: BoardApiService) { }
+  constructor(private dialog: MatDialog, private boardApiService: BoardApiService, private userService: UserService) { }
 
   ngOnInit(): void {
     this.boardApiService.myBoardsList().subscribe(boards => {
       this.myBoards = boards;
     });
+    this.userService.getUser().subscribe(user => this.user = user);
   }
 
   public showNewBoardDialog(): void {
@@ -30,6 +34,6 @@ export class BoardsListComponent implements OnInit {
    * Creates a link to the board
    */
   public getBoardLink(boardPreview: BoardPreview) {
-    return `/boards/${boardPreview.id}`;
+    return `/board/${boardPreview.id}`;
   }
 }
