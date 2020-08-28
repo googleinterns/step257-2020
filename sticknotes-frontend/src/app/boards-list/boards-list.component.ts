@@ -26,9 +26,7 @@ export class BoardsListComponent implements OnInit {
   }
 
   public showNewBoardDialog(): void {
-    this.dialog.open(NewBoardComponent, {
-      width: '500px',
-    });
+    this.dialog.open(NewBoardComponent);
   }
 
   /**

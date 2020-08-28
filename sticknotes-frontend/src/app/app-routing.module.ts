@@ -3,15 +3,18 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { BoardContainerComponent } from './board-container/board-container.component';
 import { BoardsListComponent } from './boards-list/boards-list.component';
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   {
     path: 'board/:id',
-    component: BoardContainerComponent
+    component: BoardContainerComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'boards',
     component: BoardsListComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: '',
