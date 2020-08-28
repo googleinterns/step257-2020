@@ -2,8 +2,6 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
@@ -27,9 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("api/board/notes/")
 public class BoardNotesTranslatedServlet extends NoteAbstractServlet {
   /**
-   * Required URL params are "id" and "lc"
-   * Takes notes of the board with id = "id" and translate notes content to the language with language code = "lc"
-   * Returns translated array of notes
+   * Required URL params are "id" and "lc" Takes notes of the board with id = "id"
+   * and translate notes content to the language with language code = "lc" Returns
+   * translated array of notes
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -56,8 +54,8 @@ public class BoardNotesTranslatedServlet extends NoteAbstractServlet {
     Translate translate = TranslateOptions.getDefaultInstance().getService();
     notes.forEach(note -> {
       // translate each note
-      Translation translation =
-          translate.translate(note.content, Translate.TranslateOption.targetLanguage(languageCode));
+      Translation translation = translate.translate(note.content,
+          Translate.TranslateOption.targetLanguage(languageCode));
       note.content = translation.getTranslatedText();
       // add JsonObject of note to the translatedNotesJsonArray response
       // it uses custom note serializer

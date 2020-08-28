@@ -41,7 +41,7 @@ public class NoteServlet extends NoteAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = {"content", "boardId", "color", "x", "y"};
+      String[] requiredFields = { "content", "boardId", "color", "x", "y" };
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -52,8 +52,8 @@ public class NoteServlet extends NoteAbstractServlet {
     Gson gson = getNoteGsonParser();
     Note note = gson.fromJson(jsonPayload, Note.class);
     // get currently logged in user from the datastore
-    User user =
-        ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first().now();
+    User user = ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first()
+        .now();
     note.setCreator(user);
     note.creationDate = System.currentTimeMillis();
     // save the note and set id

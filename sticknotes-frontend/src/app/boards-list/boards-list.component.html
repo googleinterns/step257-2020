@@ -1,4 +1,4 @@
-<div *ngIf="user" class="boards-list-container">
+<div *ngIf="myBoards" class="boards-list-container">
   <h1>Go to board</h1>
   <mat-grid-list gutterSize="10" cols="5" rowHeight="20vw">
     <mat-grid-tile *ngFor="let board of myBoards" appElevateOnHover [defaultElevation]="2" [raisedElevation]="24">
