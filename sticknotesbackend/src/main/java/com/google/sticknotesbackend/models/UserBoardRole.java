@@ -13,6 +13,8 @@ public class UserBoardRole {
   }
 
   public @Id Long id;
+
+  @Index
   public Long boardId;
 
   @Index

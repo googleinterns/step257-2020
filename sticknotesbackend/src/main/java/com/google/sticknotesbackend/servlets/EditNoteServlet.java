@@ -5,6 +5,8 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
 import java.io.IOException;
@@ -44,9 +46,10 @@ public class EditNoteServlet extends NoteAbstractServlet {
       response.sendError(BAD_REQUEST);
       return;
     }
-    // if user doesn't have enough permissions to modify note, return 403 unauthorized response
-    if (!canModifyNote(note)) {
-      unauthorized(response);
+    // if user doesn't have enough permissions to modify note, return 40* response
+    Permission perm = AuthChecker.noteModifyPermission(note);
+    if (!perm.equals(Permission.GRANTED)) {
+      handleBadPermission(perm, response);
       return;
     }
     // assign updated fields to the note retrieved from the datastore

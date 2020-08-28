@@ -11,6 +11,8 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.User;
@@ -32,12 +34,6 @@ public class BoardServlet extends BoardAbstractServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // authorization check
-    UserService userService = UserServiceFactory.getUserService();
-    if (!userService.isUserLoggedIn()) {
-      unauthorized(response);
-      return;
-    }
     String boardIdParam = request.getParameter("id");
     if (boardIdParam != null) {
       long boardId = Long.parseLong(boardIdParam);
@@ -45,6 +41,13 @@ public class BoardServlet extends BoardAbstractServlet {
       if (board == null) {
         response.getWriter().println("Board with this id doesn't exist");
         response.sendError(BAD_REQUEST);
+        return;
+      }
+      // check if user can access the board
+      Permission perm = AuthChecker.boardAccessPermission(boardId);
+      System.out.println(perm);
+      if (!perm.equals(Permission.GRANTED)) {
+        handleBadPermission(perm, response);
         return;
       }
       Gson gson = getBoardGsonParser();

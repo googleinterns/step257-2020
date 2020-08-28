@@ -103,4 +103,36 @@ public class NoteServletTest extends NotesboardTestBase {
     assertThat(deletedNote).isNull();
     verify(mockResponse).setStatus(NO_CONTENT);
   }
+
+  @Test
+  public void testNoteDeleteFailsByNotAuthorOrAdmin() throws IOException, ServletException {
+    // creating mock user and log-in
+    User user = createUser();
+    User creator = createUser();
+    // log user in
+    logIn(user);
+    // create mocked note and save it
+    Note note = createNote();
+    // create mocked board and save it
+    Whiteboard board = createBoard();
+    board.notes.add(Ref.create(note));
+    board.setCreator(creator);
+    note.setCreator(creator);
+    note.boardId = board.id;
+    // save updated board
+    ofy().save().entity(board).now();
+    // save updated note
+    ofy().save().entity(note).now();
+    // create one rule for board admin and one for board user
+    createRole(board, creator, Role.ADMIN);
+    createRole(board, user, Role.USER);
+    // add note id to the request
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(note.id));
+    // do delete
+    noteServlet.doDelete(mockRequest, mockResponse);
+    // verify that 403 was thrown and note was not deleted
+    verify(mockResponse).sendError(FORBIDDEN);
+    Note notDeletedNote = ofy().load().type(Note.class).id(note.id).now();
+    assertThat(notDeletedNote).isNotNull();
+  }
 }

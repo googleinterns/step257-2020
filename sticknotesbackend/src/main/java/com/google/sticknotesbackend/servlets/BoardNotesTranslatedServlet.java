@@ -9,6 +9,8 @@ import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
 import java.io.IOException;
@@ -31,12 +33,6 @@ public class BoardNotesTranslatedServlet extends NoteAbstractServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    // authorization check
-    UserService userService = UserServiceFactory.getUserService();
-    if (!userService.isUserLoggedIn()) {
-      unauthorized(response);
-      return;
-    }
     // get and validate URL parameters
     String boardIdParam = request.getParameter("id");
     String languageCode = request.getParameter("lc");
@@ -45,6 +41,11 @@ public class BoardNotesTranslatedServlet extends NoteAbstractServlet {
       return;
     }
     Long boardId = Long.parseLong(boardIdParam);
+    Permission perm = AuthChecker.boardAccessPermission(boardId);
+    if (!perm.equals(Permission.GRANTED)) {
+      handleBadPermission(perm, response);
+      return;
+    }
     // get the board which notes have to be translated
     Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
     // get the list of notes from list of references store in the board
