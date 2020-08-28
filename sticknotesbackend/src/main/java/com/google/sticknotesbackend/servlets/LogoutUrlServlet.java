@@ -21,7 +21,7 @@ public class LogoutUrlServlet extends AppAbstractServlet {
       response.getWriter().println(logoutUrl);
       return;
     }
-    
+
     unauthorized(response);
   }
 }

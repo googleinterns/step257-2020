@@ -22,6 +22,6 @@ public class LoginUrlServlet extends AppAbstractServlet {
       return;
     }
 
-    notAllowed(response);
+    forbidden(response);
   }
 }

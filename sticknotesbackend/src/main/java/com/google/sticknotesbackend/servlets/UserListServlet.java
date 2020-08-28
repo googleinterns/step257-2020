@@ -4,17 +4,18 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
-
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
+import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
@@ -25,6 +26,12 @@ public class UserListServlet extends AppAbstractServlet {
   // with a given id it returns list of users of the board
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // authorization check
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      unauthorized(response);
+      return;
+    }
     String boardIdParam = request.getParameter("id");
     if (boardIdParam != null) {
       Long boardId = Long.valueOf(boardIdParam);
@@ -49,6 +56,13 @@ public class UserListServlet extends AppAbstractServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // authorization check
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      unauthorized(response);
+      return;
+    }
+
     String boardIdParam = request.getParameter("id");
     if (boardIdParam == null) {
       badRequest("Error while reading request param.", response);
@@ -68,13 +82,19 @@ public class UserListServlet extends AppAbstractServlet {
     try {
       role = Role.valueOf(body.get("role").getAsString().toUpperCase());
     } catch (IllegalArgumentException e) {
-      badRequest("Role has to be admin or user", response);
+      badRequest("Role has to be one of: admin, user, owner", response);
       return;
     }
 
     Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
     if (board == null) {
       badRequest("Board with a given id not found.", response);
+      return;
+    }
+
+    Permission perm = AuthChecker.userListModifyPermission(role, board);
+    if (perm != Permission.GRANTED) {
+      handleBadPermission(perm, response);
       return;
     }
 
@@ -102,6 +122,13 @@ public class UserListServlet extends AppAbstractServlet {
 
   @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // authorization check
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      unauthorized(response);
+      return;
+    }
+
     String boardRoleIdParam = request.getParameter("id");
     if (boardRoleIdParam == null) {
       badRequest("Error while reading request param.", response);
@@ -113,6 +140,12 @@ public class UserListServlet extends AppAbstractServlet {
     UserBoardRole boardRole = ofy().load().type(UserBoardRole.class).id(boardRoleId).now();
     if (boardRole == null) {
       badRequest("Role with a given id not found.", response);
+      return;
+    }
+
+    Permission perm = AuthChecker.userListModifyPermission(boardRole.role, boardRole.getBoard());
+    if (perm != Permission.GRANTED) {
+      handleBadPermission(perm, response);
       return;
     }
 

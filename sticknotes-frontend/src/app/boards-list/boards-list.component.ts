@@ -13,15 +13,16 @@ import { BoardPreview, User } from '../interfaces';
 export class BoardsListComponent implements OnInit {
   public myBoards: BoardPreview[] = null;
   //temporary solution before we introduce guards
-  public user: User = null;
 
   constructor(private dialog: MatDialog, private boardApiService: BoardApiService, private userService: UserService) { }
 
   ngOnInit(): void {
-    this.boardApiService.myBoardsList().subscribe(boards => {
-      this.myBoards = boards;
+    //ensuring right order of fetching data
+    this.userService.getUser().subscribe(user => { 
+      this.boardApiService.myBoardsList().subscribe(boards => {
+        this.myBoards = boards;
+      });
     });
-    this.userService.getUser().subscribe(user => this.user = user);
   }
 
   public showNewBoardDialog(): void {

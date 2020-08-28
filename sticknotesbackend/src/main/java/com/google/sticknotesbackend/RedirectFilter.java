@@ -40,8 +40,7 @@ public class RedirectFilter implements Filter {
    * Checks if requests is to API or Angular by checking the request's URI.
    */
   private boolean isApiUri(String uri) {
-    return uri.startsWith("api") || uri.startsWith("/api") || uri.startsWith("/_ah/")
-        || uri.startsWith("_ah/");
+    return uri.startsWith("api") || uri.startsWith("/api") || uri.startsWith("/_ah/") || uri.startsWith("_ah/");
   }
 
   @Override

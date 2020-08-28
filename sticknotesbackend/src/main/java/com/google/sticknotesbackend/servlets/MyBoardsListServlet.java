@@ -1,4 +1,5 @@
 package com.google.sticknotesbackend.servlets;
+
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.appengine.api.users.UserService;
@@ -30,6 +31,7 @@ public class MyBoardsListServlet extends AppAbstractServlet {
       unauthorized(response);
       return;
     }
+
     // get google id of the current user
     String googleAccId = userService.getCurrentUser().getUserId();
     // get the user with this id
@@ -38,7 +40,7 @@ public class MyBoardsListServlet extends AppAbstractServlet {
     List<UserBoardRole> userRoles = ofy().load().type(UserBoardRole.class).filter("user", user).list();
     JsonArray boardsJsonArray = new JsonArray();
     Gson gson = getBoardPreviewGsonParser();
-    for (UserBoardRole role: userRoles) {
+    for (UserBoardRole role : userRoles) {
       boardsJsonArray.add(gson.toJsonTree(role.getBoard()));
     }
     response.getWriter().print(boardsJsonArray.toString());
