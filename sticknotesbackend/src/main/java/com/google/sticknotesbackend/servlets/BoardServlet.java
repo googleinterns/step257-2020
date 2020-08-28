@@ -93,7 +93,7 @@ public class BoardServlet extends BoardAbstractServlet {
     // when the board is saved, get the auto generated id and assign to the board
     // field
     board.id = ofy().save().entity(board).now().getId();
-    // automatically adding user with role ADMIN(will be changed to OWNER)
+    // automatically adding user with role OWNER
     UserBoardRole userBoardRole = new UserBoardRole(Role.OWNER, board, user);
     ofy().save().entity(userBoardRole).now();
     // return JSON of the new created board

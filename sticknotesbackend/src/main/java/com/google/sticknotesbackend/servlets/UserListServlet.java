@@ -90,15 +90,15 @@ public class UserListServlet extends AppAbstractServlet {
       return;
     }
 
+    if (!canAddOrRemove(role, board)) {
+      forbidden(response);
+      return;
+    }
+
     User user = ofy().load().type(User.class).filter("email", email).first().now();
     if (user == null) {
       user = new User(email, "---");
       ofy().save().entity(user).now();
-    }
-
-    if (!canAddOrRemove(role, board)) {
-      forbidden(response);
-      return;
     }
 
     UserBoardRole roleFromDatastore = ofy().load().type(UserBoardRole.class).filter("board", board).filter("user", user)

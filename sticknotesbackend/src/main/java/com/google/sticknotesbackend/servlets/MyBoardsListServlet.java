@@ -36,7 +36,6 @@ public class MyBoardsListServlet extends AppAbstractServlet {
     // get the user with this id
     User user = ofy().load().type(User.class).filter("googleAccId", googleAccId).first().now();
     // get all UserBoardRoles where this user is
-    System.out.println("#############\n" + user);
     List<UserBoardRole> userRoles = ofy().load().type(UserBoardRole.class).filter("user", user).list();
     JsonArray boardsJsonArray = new JsonArray();
     Gson gson = getBoardPreviewGsonParser();
