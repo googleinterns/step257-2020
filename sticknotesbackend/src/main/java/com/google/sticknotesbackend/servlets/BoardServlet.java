@@ -37,19 +37,21 @@ public class BoardServlet extends BoardAbstractServlet {
     String boardIdParam = request.getParameter("id");
     if (boardIdParam != null) {
       long boardId = Long.parseLong(boardIdParam);
+      // check if user can access the board
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
       if (board == null) {
         response.getWriter().println("Board with this id doesn't exist");
         response.sendError(BAD_REQUEST);
         return;
       }
-      // check if user can access the board
+      
       Permission perm = AuthChecker.boardAccessPermission(boardId);
       System.out.println(perm);
       if (!perm.equals(Permission.GRANTED)) {
         handleBadPermission(perm, response);
         return;
       }
+      
       Gson gson = getBoardGsonParser();
       response.getWriter().print(gson.toJson(board));
     } else {

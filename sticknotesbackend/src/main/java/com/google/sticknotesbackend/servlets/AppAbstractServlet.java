@@ -62,7 +62,7 @@ public abstract class AppAbstractServlet extends HttpServlet {
 
   protected void handleBadPermission(Permission perm, HttpServletResponse response) throws IOException {
     if (perm.equals(Permission.FORBIDDEN)) {
-      notAllowed(response);
+      forbidden(response);
     } else if (perm.equals(Permission.NOAUTH)) {
       unauthorized(response);
     }

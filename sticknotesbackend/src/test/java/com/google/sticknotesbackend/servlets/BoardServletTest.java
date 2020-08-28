@@ -63,6 +63,10 @@ public class BoardServletTest extends NotesboardTestBase {
 
   @Test
   public void testBoardRetrieveNotAuthorized() throws Exception {
+    Whiteboard board = createBoard();
+
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id));
+
     boardServlet.doGet(mockRequest, mockResponse);
     // verify response status
     verify(mockResponse).sendError(UNAUTHORIZED);
@@ -111,12 +115,9 @@ public class BoardServletTest extends NotesboardTestBase {
     // check that forbidden error was thrown
     verify(mockResponse).sendError(FORBIDDEN);
   }
+
   @Test
   public void testBoardRetrieveFailsWithUnexistingId() throws IOException {
-    // creating mock user and log-in
-    User user = createUser();
-    // log user in
-    logIn(user);
     // call get with board.id = "-1"
     // mock request get parameter
     when(mockRequest.getParameter("id")).thenReturn("-1");
