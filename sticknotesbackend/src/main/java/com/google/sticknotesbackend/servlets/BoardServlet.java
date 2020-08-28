@@ -11,14 +11,14 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.sticknotesbackend.enums.Role;
+import com.google.sticknotesbackend.AuthChecker;
 import com.google.sticknotesbackend.enums.Permission;
+import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import java.io.IOException;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +44,7 @@ public class BoardServlet extends BoardAbstractServlet {
         return;
       }
       // check if user can access the board
-      Permission perm = boardAccessPermission(boardId);
+      Permission perm = AuthChecker.boardAccessPermission(boardId);
       System.out.println(perm);
       if (!perm.equals(Permission.GRANTED)) {
         handleBadPermission(perm, response);

@@ -5,6 +5,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.AuthChecker;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
@@ -50,7 +51,7 @@ public class EditBoardServlet extends BoardAbstractServlet {
       return;
     }
     // check if user has enough permissions to modify the board
-    Permission perm = boardModifyPermission(board);
+    Permission perm = AuthChecker.boardModifyPermission(board);
     if (!perm.equals(Permission.GRANTED)) {
       handleBadPermission(perm, response);
       return;

@@ -7,6 +7,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.AuthChecker;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
@@ -81,7 +82,7 @@ public class NoteServlet extends NoteAbstractServlet {
       // get note that is going to be deleted
       Note note = ofy().load().type(Note.class).id(noteId).now();
       // check if user has enough permissions to modify note
-      Permission perm = noteModifyPermission(note);
+      Permission perm = AuthChecker.noteModifyPermission(note);
       if (!perm.equals(Permission.GRANTED)) {
         handleBadPermission(perm, response);
         return;
