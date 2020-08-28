@@ -5,7 +5,12 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
+import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.Note;
+import com.google.sticknotesbackend.models.User;
+import com.google.sticknotesbackend.models.UserBoardRole;
+import com.google.sticknotesbackend.models.Whiteboard;
+import com.googlecode.objectify.Ref;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,9 +41,21 @@ public class EditNoteServletTest extends NotesboardTestBase {
   @Test
   public void testNoteEditSuccessWithValidPayload() throws IOException, ServletException {
     // create a mock note
-    Note note = getMockNote();
-    // save note
+    Note note = createNote();
+    // create board
+    Whiteboard board = createBoard();
+    // creating mock user and log-in
+    User user = createUser();
+    board.setCreator(user);
+    note.setCreator(user);
+    // save updated note
     note.id = ofy().save().entity(note).now().getId();
+    board.notes.add(Ref.create(note));
+    // save updated board
+    ofy().save().entity(board).now();
+    createRole(board, user, Role.ADMIN);
+    // log user in
+    logIn(user);
     // generate an updated payload
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("id", note.id);

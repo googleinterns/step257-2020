@@ -2,15 +2,20 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
+import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,10 +33,16 @@ public class NoteServlet extends NoteAbstractServlet {
    */
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // check that user is authenticated
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      unauthorized(response);
+      return;
+    }
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = { "content", "boardId", "color", "x", "y" };
+      String[] requiredFields = {"content", "boardId", "color", "x", "y"};
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -41,10 +52,10 @@ public class NoteServlet extends NoteAbstractServlet {
     // create gson parser that uses custom note serializer
     Gson gson = getNoteGsonParser();
     Note note = gson.fromJson(jsonPayload, Note.class);
-    // fill the remaining note data
-    User dummyUser = new User("googler@google.com", "nickname");
-    ofy().save().entity(dummyUser).now();
-    note.setCreator(dummyUser);
+    // get currently logged in user from the datastore
+    User user =
+        ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first().now();
+    note.setCreator(user);
     note.creationDate = System.currentTimeMillis();
     // save the note and set id
     note.id = ofy().save().entity(note).now().getId();
@@ -71,6 +82,11 @@ public class NoteServlet extends NoteAbstractServlet {
       Long noteId = Long.parseLong(noteIdParam);
       // get note that is going to be deleted
       Note note = ofy().load().type(Note.class).id(noteId).now();
+      // check if user has enough permissions to modify note
+      if (!canModifyNote(note)) {
+        unauthorized(response);
+        return;
+      }
       // get note board
       Whiteboard noteBoard = ofy().load().type(Whiteboard.class).id(note.boardId).now();
       // remove note from the list of noteBoard notes
