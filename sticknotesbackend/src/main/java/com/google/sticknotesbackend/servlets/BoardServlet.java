@@ -37,20 +37,22 @@ public class BoardServlet extends BoardAbstractServlet {
     String boardIdParam = request.getParameter("id");
     if (boardIdParam != null) {
       long boardId = Long.parseLong(boardIdParam);
-      // check if user can access the board
+
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
       if (board == null) {
         response.getWriter().println("Board with this id doesn't exist");
         response.sendError(BAD_REQUEST);
         return;
       }
+
+      // check if user can access the board
       Permission perm = AuthChecker.boardAccessPermission(boardId);
       System.out.println(perm);
       if (!perm.equals(Permission.GRANTED)) {
         handleBadPermission(perm, response);
         return;
       }
-      
+
       Gson gson = getBoardGsonParser();
       response.getWriter().print(gson.toJson(board));
     } else {
@@ -73,7 +75,7 @@ public class BoardServlet extends BoardAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = {"title"};
+      String[] requiredFields = { "title" };
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -84,7 +86,8 @@ public class BoardServlet extends BoardAbstractServlet {
     Gson gson = getBoardGsonParser();
     Whiteboard board = gson.fromJson(jsonPayload, Whiteboard.class);
     board.creationDate = System.currentTimeMillis();
-    // at this point we can assume that users is logged in (so also present in datastore)
+    // at this point we can assume that users is logged in (so also present in
+    // datastore)
     // get google id of the current user
     String googleAccId = userService.getCurrentUser().getUserId();
     // get the user with this id

@@ -20,9 +20,9 @@ public class UserServlet extends AppAbstractServlet {
     // if user is logged in than we update/or save for the first time email,
     // username and user id
     if (userService.isUserLoggedIn()) {
-      User currentUser = ofy().load().type(User.class).filter("email", userService.getCurrentUser().getEmail())
-          .first().now();
-      //if user is not present in our datastore we create new user
+      User currentUser = ofy().load().type(User.class).filter("email", userService.getCurrentUser().getEmail()).first()
+          .now();
+      // if user is not present in our datastore we create new user
       if (currentUser == null) {
         currentUser = new User();
       }

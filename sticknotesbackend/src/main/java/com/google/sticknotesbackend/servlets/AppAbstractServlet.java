@@ -17,8 +17,6 @@ public abstract class AppAbstractServlet extends HttpServlet {
   protected final int BAD_REQUEST = 400;
   protected final int UNAUTHORIZED = 401;
   protected final int FORBIDDEN = 403;
-  
-  
 
   /**
    * Validates JsonObject fields using the list requiredFields. Each field
@@ -52,7 +50,7 @@ public abstract class AppAbstractServlet extends HttpServlet {
     response.sendError(UNAUTHORIZED);
   }
 
-   /**
+  /**
    * Send a 403 forbidden response
    */
   protected void forbidden(HttpServletResponse response) throws IOException {
