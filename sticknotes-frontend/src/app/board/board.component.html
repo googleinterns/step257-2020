@@ -1,19 +1,35 @@
-<div class="board-header">
-  <h3>{{board.title}}</h3>
-</div>
-<div class="board-wrapper">
-  <div class="board" [style]="'width:' + NOTE_WIDTH * board.cols + 'px;height:' + NOTE_HEIGHT * board.rows + 'px'">
+<div class="flex-container" *ngIf="board">
+  <h3>{{boardTitle}}</h3>
+  <div class="board-wrapper" [style]="getBoardWrapperStyle()">
+    <div class="board" [style]="getBoardWidth()">
+      <div *ngFor="let y of board.rows | rangeLoop">
+        <div *ngFor="let x of board.cols | rangeLoop" class="new-note-container" [style]="getSlotStyle(x, y)">
+          <button mat-icon-button aria-label="Create new note" (click)="openNewNoteDialog(x, y)">
+            <mat-icon color="primary">add</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
     <div *ngFor="let note of board.notes; let i = index">
-      <div cdkDragBoundary=".board" (cdkDragEnded)="onNoteDrop($event, note)" cdkDrag class="mat-card-wrapper"
-        [style]="'left:'+note.x + 'px;top:' + note.y + 'px'">
+      <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)" (cdkDragEnded)="onNoteDrop($event, note)"
+        cdkDrag class="mat-card-wrapper" [style]="getNoteStyle(note)">
         <mat-card [style]="'background-color:' + note.color">
           <mat-card-content>
             <div class="card-header">
-              <p>{{note.creator}}</p>
+              <div class="card-header-buttons-group">
+                <button mat-icon-button class="note-button" (click)="deleteNote(note);">
+                  <mat-icon class="note-icon">delete</mat-icon>
+                </button>
+                <button mat-icon-button class="note-button" (click)="openEditNoteDialog(note)">
+                  <mat-icon class="note-icon">edit</mat-icon>
+                </button>
+              </div>
               <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
             </div>
+            <p>{{note.creator}}</p>
             <p>{{note.content}}</p>
-            <p>{{note.creationDate}}</p>
+            <!-- amCalendar is a moment js pipe used to make date human readable -->
+            <p>{{getNoteCreationDate(note) | amCalendar}}</p>
           </mat-card-content>
         </mat-card>
       </div>

@@ -1,3 +1,7 @@
+import { Vector2 } from './utility/vector';
+import { State } from './enums/state.enum';
+import { UserRole } from './enums/user-role.enum';
+
 export interface User {
   key: string;
   nickname: string;
@@ -7,12 +11,12 @@ export interface User {
 
 export interface UserBoardRole {
   user: User;
-  board: Board;
-  role: string;
+  boardId: string;
+  role: UserRole;
 }
 
 export interface Board {
-  key: string;
+  id: string;
   notes: Note[];
   users: UserBoardRole[];
   creationDate: string;
@@ -23,13 +27,29 @@ export interface Board {
   backgroundImg: string | null;
 }
 
-export interface Note {
-  key: string;
+export interface NotePopupData {
+  mode: State;
+  noteData: {position: Vector2, boardId: string} | Note;
+}
+
+export interface CreateNoteApiData {
   content: string;
-  image: string | null;
-  creationDate: string;
+  image?: string;
   color: string;
-  creator: string;
   x: number;
   y: number;
+  boardId: string;
+}
+
+export interface Note extends CreateNoteApiData {
+  id: string;
+  creationDate: string;
+  creator: User;
+}
+
+export interface SidenavBoardData {
+  id: string;
+  creationDate: string;
+  title: string;
+  backgroundImg: string | null;
 }

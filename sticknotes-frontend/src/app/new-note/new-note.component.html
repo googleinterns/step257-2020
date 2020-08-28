@@ -1,0 +1,20 @@
+<div class="new-note-form-container">
+  <form [formGroup]="newNoteForm" class="new-note-form">
+    <mat-form-field>
+      <mat-label>Note</mat-label>
+      <textarea matInput formControlName="content" (keydown.enter)="handleSubmit()" cdkTextareaAutosize
+        placeholder="What would you like to note?" #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="5"></textarea>
+      <mat-error *ngIf="!this.newNoteForm.valid">
+        Please enter a valid note
+      </mat-error>
+    </mat-form-field>
+    <label id="colorpicker-label">Note color</label>
+    <mat-radio-group aria-labelledby="colorpicker-label" class="color-picker" formControlName="colors">
+      <mat-radio-button *ngFor="let item of 4 | rangeLoop, let i = index" [value]="(i + 1).toString()"><span
+          class="circle" [style]="'background-color:' + getColorHexValue((i + 1).toString())"></span></mat-radio-button>
+    </mat-radio-group>
+  </form>
+  <button mat-raised-button color="primary" (click)="handleSubmit()"
+    [disabled]="sendingData">{{submitButtonText}}</button>
+</div>

@@ -1,26 +1,19 @@
 <mat-card class="mat-elevation-z12">
-  <mat-card-title>Users</mat-card-title>
+  <mat-card-title> Users </mat-card-title>
   <mat-card-content>
     <mat-list>
-      <mat-list-item>
-        <mat-icon color="primary"  matListIcon>account_circle</mat-icon>
-        <div matLine> User1 </div>
-        <div mat-line> user1@google.com </div> 
-      </mat-list-item>
-      <mat-list-item >
-        <mat-icon color="primary"  matListIcon>account_circle</mat-icon>
-        <div matLine> User2 </div>
-        <div mat-line> user2@google.com </div> 
+      <mat-list-item *ngFor="let userWithRole of usersWithRole">
+        <mat-icon color="primary" matListIcon>account_circle</mat-icon>
+        <div matLine> {{ userWithRole.user.nickname }} </div>
+        <div mat-line> {{ userWithRole.user.email }} <p class="mat-small"> {{ userWithRole.role }} </p> </div>
+        <button mat-icon-button *ngIf="adminView  && currentUser.key !== userWithRole.user.key && userWithRole.role === 'user'" color="primary" (click) = 'removeUser(userWithRole)' aria-label="Open add user dialog">
+          <mat-icon>delete</mat-icon>
+        </button>   
       </mat-list-item>
       <mat-list-item>
-        <mat-icon color="primary"  matListIcon>account_circle</mat-icon>
-        <div matLine> User3 </div>
-        <div mat-line> user3@google.com </div> 
-      </mat-list-item>
-      <mat-list-item>
-        <mat-icon color="primary"  matListIcon>account_circle</mat-icon>
-        <div matLine> User4 </div>
-        <div mat-line> user4@google.com </div> 
+        <button *ngIf="adminView" mat-mini-fab color="primary" (click) = 'openAddUserDialog()' aria-label="Open add user dialog">
+          <mat-icon>add</mat-icon>
+        </button>
       </mat-list-item>
     </mat-list>
   </mat-card-content>

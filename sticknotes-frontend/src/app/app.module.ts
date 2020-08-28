@@ -20,6 +20,12 @@ import { UserListComponent } from './user-list/user-list.component';
 import { MatIconModule } from '@angular/material/icon';
 import { BoardComponent } from './board/board.component';
 import { BoardsListComponent } from './boards-list/boards-list.component';
+import { NewNoteComponent } from './new-note/new-note.component';
+import { RangeLoopPipe } from './pipes';
+import { MatRadioModule } from '@angular/material/radio';
+import { HttpClientModule } from '@angular/common/http';
+import { MomentModule } from 'ngx-moment';
+import { AddUserComponent } from './add-user/add-user.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +36,10 @@ import { BoardsListComponent } from './boards-list/boards-list.component';
     BoardContainerComponent,
     NewBoardComponent,
     UserListComponent,
-    BoardsListComponent
+    BoardsListComponent,
+    NewNoteComponent,
+    RangeLoopPipe,
+    AddUserComponent
   ],
   imports: [
     BrowserModule,
@@ -45,7 +54,10 @@ import { BoardsListComponent } from './boards-list/boards-list.component';
     ReactiveFormsModule,
     MatInputModule,
     MatDialogModule,
-    MatGridListModule
+    MatGridListModule,
+    MatRadioModule,
+    HttpClientModule,
+    MomentModule
   ],
   providers: [],
   bootstrap: [AppComponent]

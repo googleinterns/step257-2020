@@ -14,6 +14,9 @@ export class BoardsListComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  /**
+   * Opens a NewBoardComponent in a dialog in a "create" mode
+   */
   public showNewBoardDialog(): void {
     this.dialog.open(NewBoardComponent, {
       width: '500px',

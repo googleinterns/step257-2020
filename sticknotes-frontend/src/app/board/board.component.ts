@@ -1,38 +1,80 @@
-import { Component, OnInit } from '@angular/core';
-import { CdkDragEnd } from '@angular/cdk/drag-drop';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board } from '../interfaces';
-import { ApiService } from '../services/api.service';
+import { Note, Board, SidenavBoardData } from '../interfaces';
+import { NewNoteComponent } from '../new-note/new-note.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
+import { NotesApiService } from '../services/notes-api.service';
+import { State } from '../enums/state.enum';
+import { BoardApiService } from '../services/board-api.service';
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
-export class BoardComponent {
-  private boardGrid: number[][] = [];
+export class BoardComponent implements OnInit {
+
+  // Output event used by sidenav to receive a data about the currently displayed board.
+  @Output() boardLoaded = new EventEmitter<SidenavBoardData>(true);
+  // Input property use by sidenav. When title is edited there, it gets updated in this component too.
+  @Input() boardTitle: string = null;
+  // A 2D grid of 0s and 1s used to run BFS on.
+  private boardGrid: number[][];
   public board: Board;
+
+  // Notes width and height in pixels
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
 
-  constructor(private apiService: ApiService) {
+  constructor(private boardApiService: BoardApiService,
+    private dialog: MatDialog,
+    private activatedRoute: ActivatedRoute,
+    private notesApiService: NotesApiService) {
+  }
+
+  /**
+   * Gets the route parameter "id" of the board and fetches the board with this id from the server
+   * Creates SidenavBoardData, which is passed to the sidenav to be dispalyed there
+   */
+  ngOnInit(): void {
     // load board
-    this.apiService.getBoard('boardKey').subscribe(board => {
-      this.board = board;
-      for (let i = 0; i < board.rows; ++i) {
-        this.boardGrid[i] = [];
-        for (let j = 0; j < board.cols; ++j) {
-          this.boardGrid[i][j] = 0;
-        }
-      }
-      this.updateBoardAbstractGrid();
+    this.activatedRoute.paramMap.subscribe(params => {
+      const boardId = params.get('id'); // get board id from route param
+      // load board with the key
+      this.boardApiService.getBoard(boardId).subscribe(board => {
+        this.board = board;
+        this.boardTitle = board.title;
+        this.updateBoardAbstractGrid();
+        // pass essential board's data to the sidenav
+        const sidenavData: SidenavBoardData = {
+          id: board.id,
+          title: board.title,
+          creationDate: board.creationDate,
+          backgroundImg: board.backgroundImg
+        };
+        this.boardLoaded.emit(sidenavData);
+      });
     });
   }
 
-  // moves a note to a proper position after it was released
-  public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note) {
+  /**
+   * Updates the z-index of the note, so it appears on the top of all other notes while dragging
+   */
+  public onNoteDragStart(cdkDragStart: CdkDragStart): void {
+    const elementRef = cdkDragStart.source.element.nativeElement;
+    elementRef.style.setProperty('z-index', '10');
+  }
+
+  /**
+   * Moves a note to a proper position after it was released, resets z-index.
+   */
+  public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note): void {
     const elementRef = cdkDragEnd.source.element.nativeElement;
+    // reset z-index
+    elementRef.style.setProperty('z-index', '3');
     const curTranslate = getTranslateValues(elementRef);
     // free currently taken note position
     this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
@@ -45,18 +87,36 @@ export class BoardComponent {
     note.y = closestPoint.y * this.NOTE_HEIGHT;
     cdkDragEnd.source._dragRef.reset();
     elementRef.style.transform = '';
+    // update note data
+    this.notesApiService.updateNote(note).subscribe();
   }
 
-  // updates boardGrid with the positions of notes
+  /**
+   * Updates boardGrid with the positions of notes. If boardGrid doesn't exist yet, creates it.
+   */
   public updateBoardAbstractGrid(): void {
-    this.board.notes.forEach(note => {
-      const i = Math.floor(note.y / this.NOTE_HEIGHT);
-      const j = Math.floor(note.x / this.NOTE_WIDTH);
-      this.boardGrid[i][j] = 1;
-    });
+    if (!this.boardGrid) {
+      this.boardGrid = [];
+      for (let i = 0; i < this.board.rows; ++i) {
+        this.boardGrid[i] = [];
+        for (let j = 0; j < this.board.cols; ++j) {
+          this.boardGrid[i][j] = 0;
+        }
+      }
+    }
+
+    if (this.board.notes) {
+      this.board.notes.forEach(note => {
+        const i = Math.floor(note.y / this.NOTE_HEIGHT);
+        const j = Math.floor(note.x / this.NOTE_WIDTH);
+        this.boardGrid[i][j] = 1;
+      });
+    }
   }
 
-  // returns the closes available position to the given x and y
+  /**
+   * Returns the closest available position to the given x and y.
+   */
   public getClosestFreeSlot(note: Note, x: number, y: number): Vector2 {
     // get the closest cells indices
     const closePoints = [];
@@ -102,5 +162,107 @@ export class BoardComponent {
         }
       }
     }
+  }
+
+  /**
+   * Generates a CSS style to position the note on the grid.
+   */
+  public getNoteStyle(note: Note): string {
+    return `left:${note.x}px;top:${note.y}px`;
+  }
+
+  /**
+   * Generates a CSS style to position the slot on the grid.
+   */
+  public getSlotStyle(x: number, y: number): string {
+    return `left:${x * this.NOTE_WIDTH}px;top:${y * this.NOTE_HEIGHT}px`;
+  }
+
+  /**
+   * Opens new-note component in a dialog and passes the position where the note has to be created.
+   * When the note is craeted, updates the local board notes array. Updates board grid.
+   */
+  public openNewNoteDialog(x: number, y: number): void {
+    const dialogRef = this.dialog.open(NewNoteComponent, {
+      data: { mode: State.CREATE, noteData: { position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardId: this.board.id } }
+    });
+    dialogRef.afterClosed().subscribe(note => {
+      // receive a new note here and add it to the board
+      // data maybe undefined
+      if (note) {
+        this.board.notes.push(note);
+        // update grid
+        this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 1;
+      }
+    });
+  }
+
+  /**
+   * Opens note edit dialog, which is a NewNoteComponent opened in "edit" mode
+   * After data from the dialog is submitted, the updated note is received and
+   * updated in the current board.
+   */
+  public openEditNoteDialog(note: Note): void {
+    const dialogRef = this.dialog.open(NewNoteComponent, {
+      data: { mode: State.EDIT, noteData: note }
+    });
+    dialogRef.afterClosed().subscribe(newNote => {
+      // receive an updated note here and update it in the board
+      // data maybe undefined
+      if (newNote) {
+        const updateNote = this.board.notes.find(n => n.id === newNote.id);
+        if (updateNote) {
+          updateNote.content = newNote.content;
+          updateNote.color = newNote.color;
+        }
+      }
+    });
+  }
+
+  /**
+   * Deletes the note passed as the parameter
+   * Sends a DELETE request to the server and removes the note from the list of board notes
+   */
+  public deleteNote(note: Note): void {
+    const reallyWantToDelete = confirm('Delete this note?');
+    if (reallyWantToDelete) {
+      const indexOfNote = this.board.notes.indexOf(note);
+      if (indexOfNote !== -1) {
+        this.notesApiService.deleteNote(note.id).subscribe(() => {
+          // set 0 to the position of the note
+          this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
+          // remove note from local array
+          this.board.notes.splice(indexOfNote, 1);
+        });
+      }
+    }
+  }
+
+  /**
+   * Generates a CSS style string of the board element based on the number of columns and rows in the board
+   */
+  public getBoardWidth() {
+    if (this.board) {
+      return `width:${this.NOTE_WIDTH * this.board.cols}px;height:${this.NOTE_HEIGHT * this.board.rows}px`;
+    }
+    return '';
+  }
+  
+  /**
+   * Generates a CSS style string of the board wrapper element based on the number of columns and rows in the board
+   */
+  public getBoardWrapperStyle() {
+    // if board is wider than 100% of the screen or higher than 100%, set fixed width and height
+    if (this.board) {
+      return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.board.cols}px); height: min(100% - 100px, ${this.NOTE_HEIGHT * this.board.rows}px)`;
+    }
+    return '';
+  }
+
+  /**
+   * Converts timestamp sent from the server to the TS Date object
+   */
+  public getNoteCreationDate(note: Note) {
+    return new Date(Number(note.creationDate));
   }
 }

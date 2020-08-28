@@ -1,0 +1,13 @@
+<div class="add-user-form-container">
+  <form [formGroup]="addUserForm" class="add-user-form">
+    <mat-form-field>
+      <mat-label>Add User: </mat-label>
+      <input formControlName="userEmail" matInput placeholder="User email">
+    </mat-form-field>
+    <mat-radio-group formControlName="role">
+      <mat-radio-button color="primary" value="{{userRole.USER}}">User</mat-radio-button>
+      <mat-radio-button color="primary" value="{{userRole.ADMIN}}">Admin</mat-radio-button>
+    </mat-radio-group>
+  </form>
+  <button mat-raised-button color="primary" (click)="addUser()">Add</button>
+</div>
