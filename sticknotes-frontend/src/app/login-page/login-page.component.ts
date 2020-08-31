@@ -12,10 +12,11 @@ export class LoginPageComponent implements OnInit {
   public loginUrl = null;
 
   constructor(private userService: UserService, private router: Router) {
-    this.userService.getLoginUrl().subscribe(url => {
-      this.loginUrl = url;
+    this.userService.getLoginUrl().subscribe(data => {
+      this.loginUrl = data.url;
     }, err => {
       // probably user is already logged in, redirect to boards/
+      this.userService.getUser().subscribe();
       this.router.navigateByUrl('/boards');
     })
   }

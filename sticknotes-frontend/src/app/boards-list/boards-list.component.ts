@@ -18,10 +18,8 @@ export class BoardsListComponent implements OnInit {
 
   ngOnInit(): void {
     //ensuring right order of fetching data
-    this.userService.getUser().subscribe(user => { 
-      this.boardApiService.myBoardsList().subscribe(boards => {
-        this.myBoards = boards;
-      });
+    this.boardApiService.myBoardsList().subscribe(boards => {
+      this.myBoards = boards;
     });
   }
 
