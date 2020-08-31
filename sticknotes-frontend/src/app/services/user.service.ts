@@ -26,7 +26,10 @@ export class UserService {
   isAuthenticated(): Observable<boolean> {
     if (this.userSubject.value == null) {
       return this.fetch().pipe(map((user: User) => {
-        return this.authenticated.value;
+        if (user) {
+          return true;
+        }
+        return false;
       }));
     }
     return this.authenticated.asObservable();
@@ -43,8 +46,8 @@ export class UserService {
     this.userSubject.next(null);
   }
 
-  getLoginUrl(): Observable<{url: string}> {
-    return this.http.get<{url: string}>('api/login-url/');
+  getLoginUrl(): Observable<{ url: string }> {
+    return this.http.get<{ url: string }>('api/login-url/');
   }
 
   getLogoutUrl(): Observable<string> {
