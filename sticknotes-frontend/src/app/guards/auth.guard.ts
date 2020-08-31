@@ -13,12 +13,17 @@ export class AuthGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    return this.userService.isAuthenticated().pipe(tap(loggedIn => {
-      // if user is not authenticated, redirect to home page
-      if (!loggedIn) {
-        this.router.navigateByUrl('/');
-      }
-    }));
+      // fetch user data firstly
+      return this.userService.getUser().pipe(() => {
+        // now when user data is loaded it can check for auth status
+        // user data is not loaded each time getUser is accessed, only when local user variable is null
+        return this.userService.isAuthenticated().pipe(tap(loggedIn => {
+          // if user is not authenticated, redirect to home page
+          if (!loggedIn) {
+            this.router.navigateByUrl('/');
+          }
+        }));
+      });
   }
 
 }

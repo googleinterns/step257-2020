@@ -17,7 +17,6 @@ export class BoardsListComponent implements OnInit {
   constructor(private dialog: MatDialog, private boardApiService: BoardApiService, private userService: UserService) { }
 
   ngOnInit(): void {
-    //ensuring right order of fetching data
     this.boardApiService.myBoardsList().subscribe(boards => {
       this.myBoards = boards;
     });
