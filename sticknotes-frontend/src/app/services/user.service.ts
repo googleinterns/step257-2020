@@ -24,6 +24,11 @@ export class UserService {
   }
 
   isAuthenticated(): Observable<boolean> {
+    if (this.userSubject.value == null) {
+      return this.fetch().pipe(map((user: User) => {
+        return this.authenticated.value;
+      }));
+    }
     return this.authenticated.asObservable();
   }
 
