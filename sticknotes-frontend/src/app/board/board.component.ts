@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board, SidenavBoardData } from '../interfaces';
+import { Note, Board, BoardData } from '../interfaces';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -17,8 +17,32 @@ import { BoardApiService } from '../services/board-api.service';
 })
 export class BoardComponent implements OnInit {
 
-  @Output() boardLoaded = new EventEmitter<SidenavBoardData>(true);
-  @Input() boardTitle: string = null;
+  @Output() boardLoaded = new EventEmitter<BoardData>(true);
+
+  /**
+   * Used by board-container component to pass update board data
+   */
+  @Input()
+  set boardUpdatedData(data: BoardData) {
+    if (data) {
+      // received a new data, update board object fields
+      this.board.title = data.title;
+      this.board.cols = data.cols;
+      this.board.rows = data.rows;
+      // update abstract grid
+      this.boardGrid = null;
+      this.updateBoardAbstractGrid();
+    }
+  }
+  /**
+   * Input property used by board-container to send translated notes
+   */
+  @Input()
+  set translatedNotes(notes: Note[]) {
+    if (notes) {
+      this.board.notes = notes;
+    }
+  }
   private boardGrid: number[][];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
@@ -34,13 +58,13 @@ export class BoardComponent implements OnInit {
     // load board
     this.activatedRoute.paramMap.subscribe(params => {
       const boardId = params.get('id'); // get board id from route param
+      console.log(boardId)
       // load board with the key
       this.boardApiService.getBoard(boardId).subscribe(board => {
         this.board = board;
-        this.boardTitle = board.title;
         this.updateBoardAbstractGrid();
         // pass essential board's data to the sidenav
-        const sidenavData: SidenavBoardData = {
+        const sidenavData: BoardData = {
           id: board.id,
           title: board.title,
           creationDate: board.creationDate,

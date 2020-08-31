@@ -1,4 +1,5 @@
 package com.google.sticknotesbackend.servlets;
+
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.gson.Gson;
@@ -16,28 +17,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet that handles Note logic
- * Implements methods:
- * * POST  - create note
+ * Servlet that handles Note logic Implements methods: * POST - create note
  */
 @WebServlet("api/notes/")
 public class NoteServlet extends NoteAbstractServlet {
   /**
-   * Creates a Note
-   * The expected JSON payload is
-    boardId: id of the board
-    content: the content of the note;
-    image: url / base64 (not decided yet);
-    color: string;
-    x: the coordinate
-    y: another coordinate
+   * Creates a Note The expected JSON payload is boardId: id of the board content:
+   * the content of the note; image: url / base64 (not decided yet); color:
+   * string; x: the coordinate y: another coordinate
    */
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = {"content", "boardId", "color", "x", "y"};
+      String[] requiredFields = { "content", "boardId", "color", "x", "y" };
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -48,7 +42,9 @@ public class NoteServlet extends NoteAbstractServlet {
     Gson gson = getNoteGsonParser();
     Note note = gson.fromJson(jsonPayload, Note.class);
     // fill the remaining note data
-    note.setCreator(new User("randomkey", "googler", "googler@google.com"));
+    User dummyUser = new User("googler@google.com", "nickname");
+    ofy().save().entity(dummyUser).now();
+    note.setCreator(dummyUser);
     note.creationDate = System.currentTimeMillis();
     // save the note and set id
     note.id = ofy().save().entity(note).now().getId();
@@ -62,12 +58,13 @@ public class NoteServlet extends NoteAbstractServlet {
     // set 204 created status code
     response.setStatus(CREATED);
   }
+
   /**
-   * Deletes the note with the given id
-   * Id must be passed as a url param "id"
+   * Deletes the note with the given id Id must be passed as a url param "id"
    */
   @Override
-  protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
     // get note id from the request
     String noteIdParam = request.getParameter("id");
     if (noteIdParam != null) {

@@ -26,6 +26,10 @@ import { MatRadioModule } from '@angular/material/radio';
 import { HttpClientModule } from '@angular/common/http';
 import { MomentModule } from 'ngx-moment';
 import { AddUserComponent } from './add-user/add-user.component';
+import { BoardEditComponent } from './board-edit/board-edit.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+
 
 @NgModule({
   declarations: [
@@ -39,7 +43,8 @@ import { AddUserComponent } from './add-user/add-user.component';
     BoardsListComponent,
     NewNoteComponent,
     RangeLoopPipe,
-    AddUserComponent
+    AddUserComponent,
+    BoardEditComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +62,9 @@ import { AddUserComponent } from './add-user/add-user.component';
     MatGridListModule,
     MatRadioModule,
     HttpClientModule,
-    MomentModule
+    MomentModule,
+    MatSnackBarModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

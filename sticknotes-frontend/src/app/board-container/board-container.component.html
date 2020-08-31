@@ -2,27 +2,44 @@
   <mat-drawer #drawer mode="side">
     <div class="side-menu">
       <button mat-raised-button color="primary" (click)="backToBoards()">Back to boards</button>
-      <div class="board-info" *ngIf="sidenavBoardData">
+      <div class="board-info" *ngIf="boardData">
         <mat-card class="mat-elevation-z12">
-          <mat-card-title>Board info</mat-card-title>
+          <mat-card-title>Board info
+            <button mat-icon-button (click)="openEditBoardDialog()">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </mat-card-title>
           <mat-card-content>
             <div class="flex-container">
-              <h3>{{sidenavBoardData.title}}</h3>
-              <button mat-icon-button (click)="openEditBoardDialog()">
-                <mat-icon>edit</mat-icon>
-              </button>
+              <h3>{{boardData.title}}</h3>
             </div>
+            <h3>{{boardData.rows}} X {{boardData.cols}} board</h3>
             <h3>Created {{getBoardCreatedDate() | amCalendar}}</h3>
           </mat-card-content>
         </mat-card>
       </div>
-      <app-user-list></app-user-list>
+      <app-user-list *ngIf="boardData" [boardId]=boardData.id></app-user-list>
+      <div class="notes-translate">
+        <mat-card class="mat-elevation-z12">
+          <mat-card-title>Notes language</mat-card-title>
+          <mat-card-content>
+            <mat-form-field>
+              <mat-label>Translate notes to</mat-label>
+              <mat-select [formControl]="translateFormControl" (selectionChange)="translateNotes()">
+                <mat-option *ngFor="let language of translateLanguages" [value]="language.value">
+                  {{language.viewValue}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
   </mat-drawer>
   <div class="board-container">
     <button mat-icon-button (click)="toggleMenu(drawer)" class="toggle-button">
       <mat-icon>{{iconName}}</mat-icon>
     </button>
-    <app-board [boardTitle]="newTitle" (boardLoaded)="receiveBoardData($event)"></app-board>
+    <app-board [boardUpdatedData]="boardData" [translatedNotes]="translatedNotes" (boardLoaded)="receiveBoardData($event)"></app-board>
   </div>
 </mat-drawer-container>
