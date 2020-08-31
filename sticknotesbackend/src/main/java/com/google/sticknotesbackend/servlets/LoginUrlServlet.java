@@ -21,7 +21,6 @@ public class LoginUrlServlet extends AppAbstractServlet {
       response.getWriter().println(loginUrl);
       return;
     }
-    // if user is already logged in - redirect them to boards list
-    response.sendRedirect("/boards");
+    forbidden(response);
   }
 }

@@ -40,7 +40,7 @@ export class UserService {
   }
 
   getLoginUrl(): Observable<string> {
-    return this.http.get<string>('api/login-url/');
+    return this.http.get<string>('api/login-url/', {responseType: 'text'});
   }
 
   getLogoutUrl(): Observable<string> {
