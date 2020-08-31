@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { DOCUMENT } from '@angular/common';
+import { UserService } from '../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
@@ -11,9 +11,12 @@ export class LoginPageComponent implements OnInit {
 
   public loginUrl = null;
 
-  constructor(private http: HttpClient, @Inject(DOCUMENT) private document: Document) {
-    this.http.get(`api/login-url/`, {responseType: 'text'}).subscribe((loginUrl: string) => {
-      this.loginUrl = loginUrl;
+  constructor(private userService: UserService, private router: Router) {
+    this.userService.getLoginUrl().subscribe(data => {
+      this.loginUrl = data.url;
+    }, err => {
+      // probably user is already logged in, redirect to boards/
+      this.router.navigateByUrl('/boards');
     })
   }
 
@@ -21,6 +24,6 @@ export class LoginPageComponent implements OnInit {
   }
 
   goToUrl(): void {
-    this.document.location.href = this.loginUrl;
+    window.location.href = this.loginUrl;
   }
 }

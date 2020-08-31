@@ -9,4 +9,4 @@ cp -r dist/sticknotes-frontend/* ../sticknotesbackend/src/main/webapp/
 cd ../sticknotesbackend
 
 # run deployment
-mvn package appengine:deploy
+mvn package -DskipTests appengine:deploy 
