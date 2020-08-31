@@ -16,7 +16,6 @@ export class LoginPageComponent implements OnInit {
       this.loginUrl = data.url;
     }, err => {
       // probably user is already logged in, redirect to boards/
-      this.userService.getUser().subscribe();
       this.router.navigateByUrl('/boards');
     })
   }
