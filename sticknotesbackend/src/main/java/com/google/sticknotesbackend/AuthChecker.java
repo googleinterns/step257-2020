@@ -10,6 +10,8 @@ import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.googlecode.objectify.Key;
+
 import java.util.List;
 
 /**
@@ -31,8 +33,7 @@ public class AuthChecker {
         return Permission.GRANTED;
       }
       // otherwise find user's role
-      List<UserBoardRole> roles = ofy().load().type(UserBoardRole.class).filter("board", board).filter("user", user)
-          .list();
+      List<UserBoardRole> roles = ofy().load().type(UserBoardRole.class).ancestor(board).filter("user", user).list();
       for (UserBoardRole role : roles) {
         if (role.role.equals(Role.ADMIN)) {
           return Permission.GRANTED;
@@ -53,8 +54,8 @@ public class AuthChecker {
       User user = ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first()
           .now();
       // find the first role with the user and board
-      UserBoardRole role = ofy().load().type(UserBoardRole.class).filter("boardId", boardId).filter("user", user)
-          .first().now();
+      UserBoardRole role = ofy().load().type(UserBoardRole.class).ancestor(Key.create(Whiteboard.class, boardId))
+          .filter("user", user).first().now();
       if (role != null) {
         return Permission.GRANTED;
       }
@@ -103,7 +104,7 @@ public class AuthChecker {
       if (userTakingAction == null)
         return Permission.FORBIDDEN;
 
-      UserBoardRole roleOnTheBoard = ofy().load().type(UserBoardRole.class).filter("board", board)
+      UserBoardRole roleOnTheBoard = ofy().load().type(UserBoardRole.class).ancestor(board)
           .filter("user", userTakingAction).first().now();
 
       if (roleOnTheBoard == null)

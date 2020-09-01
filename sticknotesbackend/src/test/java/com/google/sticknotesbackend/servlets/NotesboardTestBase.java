@@ -44,13 +44,15 @@ public abstract class NotesboardTestBase {
 
   // Set up a helper so that the ApiProxy returns a valid environment for local
   // testing.
-  protected final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalUserServiceTestConfig());
+  protected final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(),
+      new LocalUserServiceTestConfig());
 
   protected Closeable session;
 
-  @Mock protected HttpServletRequest mockRequest;
-  @Mock protected HttpServletResponse mockResponse;
+  @Mock
+  protected HttpServletRequest mockRequest;
+  @Mock
+  protected HttpServletResponse mockResponse;
   protected StringWriter responseWriter;
 
   /**
@@ -59,12 +61,8 @@ public abstract class NotesboardTestBase {
   @BeforeClass
   public static void initializeObjectify() {
     // necessary setup to make Obejctify work
-    DatastoreOptions options = DatastoreOptions.newBuilder()
-                                   .setProjectId("dummy")
-                                   .setHost("localhost:8484")
-                                   .setCredentials(NoCredentials.getInstance())
-                                   .setRetrySettings(ServiceOptions.getNoRetrySettings())
-                                   .build();
+    DatastoreOptions options = DatastoreOptions.newBuilder().setProjectId("dummy").setHost("localhost:8484")
+        .setCredentials(NoCredentials.getInstance()).setRetrySettings(ServiceOptions.getNoRetrySettings()).build();
     Datastore datastore = options.getService();
     ObjectifyService.init(new ObjectifyFactory(datastore));
     ObjectifyService.register(Whiteboard.class);
@@ -139,6 +137,20 @@ public abstract class NotesboardTestBase {
   }
 
   /**
+   * Creates a mock user and stores the user in the datastore, than waits until
+   * user is available on indexes
+   */
+  protected User createUserSafe() {
+    // creating mock user with random email and nickname to avoid data duplication
+    User user = createUser();
+    while (ofy().load().type(User.class).filter("googleAccId", user.googleAccId).first().now() == null)
+      ;
+    while (ofy().load().type(User.class).filter("email", user.email).first().now() == null)
+      ;
+    return user;
+  }
+
+  /**
    * Creates a mock userboardrole and stores in the datastore
    */
   protected UserBoardRole createRole(Whiteboard board, User user, Role role) {
@@ -149,8 +161,8 @@ public abstract class NotesboardTestBase {
   }
 
   /**
-   * Logs in given user for a test
-   * User object passed here must have googleAccId property set
+   * Logs in given user for a test User object passed here must have googleAccId
+   * property set
    */
   protected void logIn(User user) {
     // log the user in

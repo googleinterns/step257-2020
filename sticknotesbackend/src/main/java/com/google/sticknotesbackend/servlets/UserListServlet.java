@@ -14,6 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
+import com.googlecode.objectify.Key;
 import com.google.sticknotesbackend.AuthChecker;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
@@ -37,7 +38,7 @@ public class UserListServlet extends AppAbstractServlet {
       Long boardId = Long.valueOf(boardIdParam);
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
       if (board != null) {
-        List<UserBoardRole> boardUsers = ofy().load().type(UserBoardRole.class).filter("board", board).list();
+        List<UserBoardRole> boardUsers = ofy().load().type(UserBoardRole.class).ancestor(board).list();
         Gson userBoardRoleParser = getBoardRoleGsonParser();
 
         String responseJson = userBoardRoleParser.toJson(boardUsers);
@@ -104,7 +105,7 @@ public class UserListServlet extends AppAbstractServlet {
       ofy().save().entity(user).now();
     }
 
-    UserBoardRole roleFromDatastore = ofy().load().type(UserBoardRole.class).filter("board", board).filter("user", user)
+    UserBoardRole roleFromDatastore = ofy().load().type(UserBoardRole.class).ancestor(board).filter("user", user)
         .first().now();
 
     if (roleFromDatastore != null) {
@@ -120,6 +121,12 @@ public class UserListServlet extends AppAbstractServlet {
     return;
   }
 
+  /**
+   * doDelete needs two params passed in the request: board-id and id (role id),
+   * two params are needed because there is parent relationship between role and a board,
+   * because of that fact the role can't be identified only by it's id anymore, 
+   * it's key consists of parent key and it's id
+   */
   @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // authorization check
@@ -130,14 +137,17 @@ public class UserListServlet extends AppAbstractServlet {
     }
 
     String boardRoleIdParam = request.getParameter("id");
+    String boardIdParam = request.getParameter("board-id");
     if (boardRoleIdParam == null) {
       badRequest("Error while reading request param.", response);
       return;
     }
 
     Long boardRoleId = Long.valueOf(boardRoleIdParam);
-
-    UserBoardRole boardRole = ofy().load().type(UserBoardRole.class).id(boardRoleId).now();
+    Long boardId = Long.valueOf(boardIdParam);
+    Key<Whiteboard> boardKey = Key.create(Whiteboard.class, boardId);
+    UserBoardRole boardRole = ofy().load().type(UserBoardRole.class)
+        .filterKey(Key.create(boardKey, UserBoardRole.class, boardRoleId)).first().now();
     if (boardRole == null) {
       badRequest("Role with a given id not found.", response);
       return;

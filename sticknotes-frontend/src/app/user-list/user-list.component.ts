@@ -54,7 +54,7 @@ export class UserListComponent implements OnInit {
   }
 
   removeUser(userBoardRole: UserBoardRole): void {
-    this.boardUsersService.removeUser(userBoardRole.id).subscribe(()=>{
+    this.boardUsersService.removeUser(this.boardId, userBoardRole.id).subscribe(()=>{
       this.snackBar.open("User removed successfully.", "Ok", {
         duration: 2000,
       });

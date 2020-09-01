@@ -41,7 +41,7 @@ public class BoardServletTest extends NotesboardTestBase {
   @Test
   public void testBoardCreateSuccessWithValidPayload() throws Exception {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
     // create mocked request
     JsonObject jsonObject = new JsonObject();
@@ -77,7 +77,7 @@ public class BoardServletTest extends NotesboardTestBase {
     // create board firstly
     Whiteboard board = createBoard();
     // create mock user
-    User user = createUser();
+    User user = createUserSafe();
     // set board creator
     board.setCreator(user);
     // when the board is saved, get the auto generated id and assign to board field
@@ -100,8 +100,8 @@ public class BoardServletTest extends NotesboardTestBase {
     // create board firstly
     Whiteboard board = createBoard();
     // create mock users
-    User boardCreator = createUser();
-    User user = createUser();
+    User boardCreator = createUserSafe();
+    User user = createUserSafe();
     board.setCreator(boardCreator);
     // save updated board
     ofy().save().entity(board);
@@ -130,7 +130,7 @@ public class BoardServletTest extends NotesboardTestBase {
   @Test
   public void testBoardCreateFailsWithInvalidPayload() throws Exception {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
     // create mocked request
     JsonObject jsonObject = new JsonObject();
