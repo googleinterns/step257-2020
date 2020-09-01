@@ -121,6 +121,12 @@ public class UserListServlet extends AppAbstractServlet {
     return;
   }
 
+  /**
+   * doDelete needs two params passed in the request: board-id and id (role id),
+   * two params are needed because there is parent relationship between role and a board,
+   * because of that fact the role can't be identified only by it's id anymore, 
+   * it's key consists of parent key and it's id
+   */
   @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // authorization check
