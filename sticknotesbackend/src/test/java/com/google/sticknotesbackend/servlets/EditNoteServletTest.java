@@ -45,7 +45,7 @@ public class EditNoteServletTest extends NotesboardTestBase {
     // create board
     Whiteboard board = createBoard();
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     board.setCreator(user);
     note.setCreator(user);
     // save updated note

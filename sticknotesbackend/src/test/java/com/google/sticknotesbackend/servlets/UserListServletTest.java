@@ -53,10 +53,10 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testBoard1Key() throws IOException {
-    User user1 = createUser();
-    User user2 = createUser();
-    User user3 = createUser();
-    User user4 = createUser();
+    User user1 = createUserSafe();
+    User user2 = createUserSafe();
+    User user3 = createUserSafe();
+    User user4 = createUserSafe();
 
     Whiteboard board1 = createBoard();
     Whiteboard board2 = createBoard();
@@ -95,10 +95,10 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testBoard2Key() throws IOException {
-    User user1 = createUser();
-    User user2 = createUser();
-    User user3 = createUser();
-    User user4 = createUser();
+    User user1 = createUserSafe();
+    User user2 = createUserSafe();
+    User user3 = createUserSafe();
+    User user4 = createUserSafe();
 
     Whiteboard board1 = createBoard();
     Whiteboard board2 = createBoard();
@@ -136,7 +136,7 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testNotExistingBoard() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     when(mockRequest.getParameter("id")).thenReturn("-1");
@@ -150,7 +150,7 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testBoardExistsButNoUsers() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
@@ -173,7 +173,7 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testAddUserNotAllowedUserAddsUser() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
@@ -196,7 +196,7 @@ public class UserListServletTest extends NotesboardTestBase {
   public void testAddUserNotAllowedUserAddsAdmin() throws IOException {
     // creating mock user and log-in
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
@@ -218,7 +218,7 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testAddUserNotAllowedUserAddsOwner() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
@@ -240,7 +240,7 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testAddUserNotAllowedAdminAddsAdmin() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
@@ -261,7 +261,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
   @Test
   public void testAddUserNotAllowedAdminAddsOwner() throws IOException {
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
@@ -283,13 +283,13 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testOwnerAddUserToBoardUserExistsBoardExists() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
     createRole(board, user, Role.OWNER);
 
-    User userToAdd = createUser();
+    User userToAdd = createUserSafe();
 
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("email", userToAdd.email);
@@ -307,7 +307,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     // checking if data correctly in the datastore
     ofy().clear();
-    UserBoardRole datastoreData = ofy().load().type(UserBoardRole.class).filter("board", board).filter("user", userToAdd)
+    UserBoardRole datastoreData = ofy().load().type(UserBoardRole.class).ancestor(board).filter("user", userToAdd)
         .filter("role", Role.USER).first().now();
 
     assertNotNull(datastoreData);
@@ -321,13 +321,13 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testAdminAddUserToBoardUserExistsBoardExists() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
     createRole(board, user, Role.ADMIN);
 
-    User userToAdd = createUser();
+    User userToAdd = createUserSafe();
 
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("email", userToAdd.email);
@@ -345,8 +345,8 @@ public class UserListServletTest extends NotesboardTestBase {
 
     // checking if data correctly in the datastore
     ofy().clear();
-    UserBoardRole datastoreData = ofy().load().type(UserBoardRole.class).filter("board", board)
-        .filter("user", userToAdd).filter("role", Role.USER).first().now();
+    UserBoardRole datastoreData = ofy().load().type(UserBoardRole.class).ancestor(board).filter("user", userToAdd)
+        .filter("role", Role.USER).first().now();
 
     assertNotNull(datastoreData);
 
@@ -359,13 +359,13 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testAddUserToBoardUserAlreadyInTheBoardList() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
     createRole(board, user, Role.OWNER);
 
-    User userAlreadyInTheBoard = createUser();
+    User userAlreadyInTheBoard = createUserSafe();
     createRole(board, userAlreadyInTheBoard, Role.USER);
 
     JsonObject jsonObject = new JsonObject();
@@ -389,7 +389,7 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testAddUserToBoardUserExistsBoardNotExists() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
@@ -416,7 +416,7 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testAddUserToBoardUserNotExistsBoardExists() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
@@ -442,7 +442,7 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testAddUserToBoardUserNotExistsBoardNotExists() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     JsonObject jsonObject = new JsonObject();
@@ -466,15 +466,16 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testDeleteRoleExists() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
     createRole(board, user, Role.OWNER);
 
-    UserBoardRole roleToDelete = createRole(board, createUser(), Role.USER);
+    UserBoardRole roleToDelete = createRole(board, createUserSafe(), Role.USER);
 
     when(mockRequest.getParameter("id")).thenReturn(roleToDelete.id.toString());
+    when(mockRequest.getParameter("board-id")).thenReturn(board.id.toString());
 
     userListServlet.doDelete(mockRequest, mockResponse);
 
@@ -489,7 +490,7 @@ public class UserListServletTest extends NotesboardTestBase {
   @Test
   public void testDeleteRoleNotExists() throws IOException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     logIn(user);
 
     Whiteboard board = createBoard();
@@ -497,6 +498,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     Long roleId = (long) -1;
     when(mockRequest.getParameter("id")).thenReturn(roleId.toString());
+    when(mockRequest.getParameter("board-id")).thenReturn(board.id.toString());
 
     userListServlet.doDelete(mockRequest, mockResponse);
     // checking response status

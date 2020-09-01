@@ -46,7 +46,7 @@ public class NoteServletTest extends NotesboardTestBase {
   public void testNoteCreateSuccessWithValidPayload() throws IOException, ServletException {
     // create a mock board
     Whiteboard board = createBoard();
-    User user = createUser();
+    User user = createUserSafe();
     board.setCreator(user);
     // save updated board
     ofy().save().entity(board).now();
@@ -78,7 +78,7 @@ public class NoteServletTest extends NotesboardTestBase {
   @Test
   public void testNoteDeleteSuccessWithValidBoardId() throws IOException, ServletException {
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     // log user in
     logIn(user);
     // create mocked note and save it
@@ -107,8 +107,8 @@ public class NoteServletTest extends NotesboardTestBase {
   @Test
   public void testNoteDeleteFailsByNotAuthorOrAdmin() throws IOException, ServletException {
     // creating mock user and log-in
-    User user = createUser();
-    User creator = createUser();
+    User user = createUserSafe();
+    User creator = createUserSafe();
     // log user in
     logIn(user);
     // create mocked note and save it

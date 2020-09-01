@@ -47,7 +47,7 @@ public class EditBoardServletTest extends NotesboardTestBase {
     // create board firstly
     Whiteboard board = createBoard();
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     board.setCreator(user);
     // save updated the board
     ofy().save().entity(board).now();
@@ -71,7 +71,7 @@ public class EditBoardServletTest extends NotesboardTestBase {
 
   @Test
   public void testBoardEditFailsWithUnexistingId() throws IOException {
-    User user = createUser();
+    User user = createUserSafe();
     // log user in
     logIn(user);
     // call post with board.id = "-1"
@@ -90,7 +90,7 @@ public class EditBoardServletTest extends NotesboardTestBase {
     // create board firstly
     Whiteboard board = createBoard();
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     board.setCreator(user);
     createRole(board, user, Role.ADMIN);
     // log user in
@@ -121,7 +121,7 @@ public class EditBoardServletTest extends NotesboardTestBase {
     // create board firstly
     Whiteboard board = createBoard();
     // creating mock user and log-in
-    User user = createUser();
+    User user = createUserSafe();
     board.setCreator(user);
     createRole(board, user, Role.ADMIN);
     // log user in
