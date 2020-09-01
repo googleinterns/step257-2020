@@ -10,10 +10,16 @@ export class BoardApiService {
 
   constructor(private http: HttpClient) { }
 
+  /**
+   * Retrieves the board with the given ID from the server
+   */
   public getBoard(boardId: string): Observable<Board> {
     return this.http.get<Board>(`api/board/?id=${boardId}`);
   }
 
+  /**
+   * Craetes a board with the given title and returns the result
+   */
   public createBoard(boardTitle: string): Observable<Board> {
     return this.http.post<Board>('api/board/', { title: boardTitle });
   }

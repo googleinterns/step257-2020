@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Inject } from '@angular/core';
 import { UserRole } from '../enums/user-role.enum';
-import { UserBoardRole, User } from '../interfaces';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BoardUsersApiService } from '../services/board-users-api.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
