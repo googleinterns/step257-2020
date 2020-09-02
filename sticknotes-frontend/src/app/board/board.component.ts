@@ -127,7 +127,7 @@ export class BoardComponent implements OnInit {
         // server returns array of notes that have been changed, find local copy of that notes and update them
         for (const newNote of newNotes) {
           // lets have this n^2 algo for now, will imrove it later
-          const note = this.board.notes.find(note => note.id === newNote.id);
+          let note = this.board.notes.find(note => note.id === newNote.id);
           // if existing note is updated, 
           if (note) {
             // if content was changed and translation is enabled, redo translation
@@ -135,17 +135,7 @@ export class BoardComponent implements OnInit {
               notesWithUpdatedContent.push(note);
             }
             // update remaing note's data
-            note.lastUpdated = newNote.lastUpdated;
-            if (note.x !== newNote.x)
-              note.x = newNote.x;
-            if (note.y !== newNote.y)
-              note.y = newNote.y;
-            if (note.color !== newNote.color)
-              note.color = newNote.color;
-            if (note.content !== newNote.content)
-              note.content = newNote.content;
-            if (note.image !== newNote.image)
-              note.image = newNote.image;
+            note = _.merge(note, newNote);
           } else {
             // if new note, just add to the board notes array
             this.board.notes.push(newNote);
