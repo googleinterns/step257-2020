@@ -82,7 +82,6 @@ export class BoardComponent implements OnInit {
     this.boardApiService.getBoard(boardId, this.notesTargetLanguage).subscribe(board => {
       // this.board = board;
       this.board = _.merge(this.board, board);
-      console.log(this.board);
       this.updateBoardAbstractGrid();
       // pass essential board's data to the sidenav
       const sidenavData: BoardData = {
