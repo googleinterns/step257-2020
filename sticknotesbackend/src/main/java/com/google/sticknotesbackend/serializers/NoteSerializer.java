@@ -28,6 +28,7 @@ public class NoteSerializer implements JsonSerializer<Note> {
     note.addProperty("x", src.x);
     note.addProperty("y", src.y);
     note.addProperty("creationDate", src.creationDate);
+    note.addProperty("lastUpdated", src.lastUpdated);
     note.add("creator", new Gson().toJsonTree(src.getCreator()));
     return note;
   }

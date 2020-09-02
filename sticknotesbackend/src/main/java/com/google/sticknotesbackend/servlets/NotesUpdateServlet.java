@@ -5,7 +5,6 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.googlecode.objectify.Ref;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 import java.util.stream.Collectors;
@@ -14,7 +13,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.JsonElement;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -33,57 +31,44 @@ public class NotesUpdateServlet extends AppAbstractServlet {
     Gson gson = new Gson();
     JsonObject requestBody = new JsonParser().parse(request.getReader()).getAsJsonObject();
 
-    if (!requestBody.has("notes")) {
-      badRequest("Request has to contain 'notes' property", response);
+    if (!requestBody.has("notes") && !requestBody.has("boardId")) {
+      badRequest("Request has to contain 'notes' and 'boardId' property", response);
       return;
     }
 
-    JsonArray requestArray = requestBody.get("notes").getAsJsonArray();
-
-    String boardIdParam =  requestBody.get("boardId").getAsString();
-    if (boardIdParam == null) {
-      badRequest("Error while reading request param.", response);
-      return;
-    }
+    String boardIdParam = requestBody.get("boardId").getAsString();
     Long boardId = Long.parseLong(boardIdParam);
 
+    JsonArray requestArray = requestBody.get("notes").getAsJsonArray();
     Type queryListType = new TypeToken<List<UpdateQueryData>>() {
     }.getType();
-
     List<UpdateQueryData> notesQueryArray = gson.fromJson(requestArray.toString(), queryListType);
-
-    HashSet<Long> idSet = new HashSet<>();
-    for (UpdateQueryData query : notesQueryArray) {
-      idSet.add(query.id);
-    }
 
     List<Note> notesToReturn = notesQueryArray.stream().filter((query) -> query.wasUpdated())
         .map((query) -> ofy().load().type(Note.class).id(query.id).now()).collect(Collectors.toList());
-    Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
 
+    HashSet<Long> queriedNotesIdSet = new HashSet<>();
+    for (UpdateQueryData query : notesQueryArray) {
+      queriedNotesIdSet.add(query.id);
+    }
+    Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
     if (board != null) {
       for (Ref<Note> noteRef : board.notes) {
         Note note = noteRef.get();
-        if (!idSet.contains(note.id)) {
+        if (!queriedNotesIdSet.contains(note.id)) {
           notesToReturn.add(note);
         }
       }
     }
 
-    JsonArray notesArray = new JsonArray();
-    for (Note note: notesToReturn) {
-      JsonElement noteJson = getNoteGsonParser().toJsonTree(note);
-      notesArray.add(noteJson);
-    }
+    String jsonResponse = getNoteGsonParser().toJson(notesToReturn);
 
-    String jsonResponse = gson.toJson(notesArray);
-    
     response.getWriter().println(jsonResponse);
     response.setStatus(OK);
     return;
   }
 
-  protected Gson getNoteGsonParser() {
+  private Gson getNoteGsonParser() {
     GsonBuilder gson = new GsonBuilder();
     gson.registerTypeAdapter(Note.class, new NoteSerializer());
     Gson parser = gson.create();
