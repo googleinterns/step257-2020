@@ -9,6 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
 import { BoardApiService } from '../services/board-api.service';
+import { TranslateService } from '../services/translate.service';
 
 @Component({
   selector: 'app-board',
@@ -40,17 +41,24 @@ export class BoardComponent implements OnInit {
    */
   @Input()
   set notesLanguage(notesTargetLanguage: string) {
-    this.notesTargetLanguage = notesTargetLanguage;
     // do translation here
+    const texts = [];
     this.board.notes.forEach(note => {
-      this.
-    })
+      texts.push(note.content);
+    });
+    // do a request to translate api
+    this.translateService.translateArray(texts, notesTargetLanguage).subscribe(result => {
+      for (let i = 0; i < this.board.notes.length; ++i) {
+        const note = this.board.notes[i];
+        // create mapping from note to translated text
+        this.notesTranslation[note.id] = result[i];
+      }
+    });
   }
 
   // hashtable which has translation for every note
   // note.id mapped to note translation
   private notesTranslation = {};
-  private notesTargetLanguage: string = null;
   private boardGrid: number[][];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
@@ -59,7 +67,8 @@ export class BoardComponent implements OnInit {
   constructor(private boardApiService: BoardApiService,
     private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
-    private notesApiService: NotesApiService) {
+    private notesApiService: NotesApiService,
+    private translateService: TranslateService) {
   }
 
   ngOnInit(): void {
@@ -269,5 +278,15 @@ export class BoardComponent implements OnInit {
 
   public getNoteCreationDate(note: Note) {
     return new Date(Number(note.creationDate));
+  }
+
+  /**
+   * Returns translated note text if there is a translation or original note text
+   */
+  public getNoteContent(note: Note) {
+    if (this.notesTranslation && this.notesTranslation[note.id]) {
+      return this.notesTranslation[note.id];
+    }
+    return note.content;
   }
 }

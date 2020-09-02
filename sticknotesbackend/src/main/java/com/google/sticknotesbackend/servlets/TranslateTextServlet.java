@@ -47,10 +47,17 @@ public class TranslateTextServlet extends AppAbstractServlet {
     String targetLanguage = body.get("targetLanguage").getAsString();
     // translate text
     Translate translate = TranslateOptions.getDefaultInstance().getService();
+    // translate a list of strings because it is faster
     List<Translation> translation = translate.translate(texts, Translate.TranslateOption.targetLanguage(targetLanguage));
+    // create a JSON array which stores the result
+    JsonArray responseJsonArray = new JsonArray();
+    for (Translation t: translation) {
+      // add each translation to the array
+      responseJsonArray.add(t.getTranslatedText());
+    }
     // construct a JSON response
     JsonObject responseJson = new JsonObject();
-    responseJson.addProperty("result", translation.getTranslatedText());
+    responseJson.add("result", responseJsonArray);
     // set character encoding to UTF-8 to allow non latin characters
     response.setCharacterEncoding("UTF-8");
     response.getWriter().print(responseJson.toString());
