@@ -39,7 +39,7 @@ public class NoteServlet extends NoteAbstractServlet {
       return;
     }
     // convert request payload to a json object and validate it
-    JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    JsonObject jsonPayload = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
       String[] requiredFields = { "content", "boardId", "color", "x", "y" };
       validateRequestData(jsonPayload, response, requiredFields);

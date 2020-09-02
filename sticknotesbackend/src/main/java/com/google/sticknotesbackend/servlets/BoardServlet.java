@@ -84,7 +84,7 @@ public class BoardServlet extends BoardAbstractServlet {
       return;
     }
     // convert request payload to a json object and validate it
-    JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    JsonObject jsonPayload = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
       String[] requiredFields = { "title" };
       validateRequestData(jsonPayload, response, requiredFields);

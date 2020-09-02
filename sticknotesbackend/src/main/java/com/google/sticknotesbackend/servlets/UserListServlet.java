@@ -73,7 +73,7 @@ public class UserListServlet extends AppAbstractServlet {
     Long boardId = Long.parseLong(boardIdParam);
 
     Gson gson = getBoardRoleGsonParser();
-    JsonObject body = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    JsonObject body = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     if (!body.has("email") || !body.has("role")) {
       badRequest("Request has to contain 'email' and 'role' property", response);
       return;
