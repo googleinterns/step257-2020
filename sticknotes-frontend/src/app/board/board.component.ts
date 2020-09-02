@@ -9,6 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
 import { BoardApiService } from '../services/board-api.service';
+import _ from 'lodash';
 
 @Component({
   selector: 'app-board',
@@ -79,7 +80,8 @@ export class BoardComponent implements OnInit {
   private fetchBoardData(boardId: string) {
     // load board with the key
     this.boardApiService.getBoard(boardId, this.notesTargetLanguage).subscribe(board => {
-      this.board = board;
+      // this.board = board;
+      this.board = _.merge(this.board, board);
       this.updateBoardAbstractGrid();
       // pass essential board's data to the sidenav
       const sidenavData: BoardData = {
