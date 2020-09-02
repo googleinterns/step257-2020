@@ -52,9 +52,8 @@ export class UserListComponent implements OnInit {
         return true;
       }
       return false;
-    } else {
-      return false;
     }
+    return false;
   }
 
   openAddUserDialog(): void {
