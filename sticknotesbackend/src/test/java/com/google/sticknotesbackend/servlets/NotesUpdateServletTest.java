@@ -9,6 +9,8 @@ import java.io.StringWriter;
 import com.google.gson.JsonArray;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.UpdateQueryData;
+import com.google.sticknotesbackend.models.Whiteboard;
+import com.googlecode.objectify.Ref;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import static org.mockito.Mockito.when;
@@ -34,22 +36,30 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
 
   @Test
   public void noUpdatesTest() throws IOException {
+    Whiteboard board = createBoard();
+
     Note note1 = createNote();
     Note note2 = createNote();
     Note note3 = createNote();
     Note note4 = createNote();
 
+    board.notes.add(Ref.create(note1));
+    board.notes.add(Ref.create(note2));
+    board.notes.add(Ref.create(note3));
+    board.notes.add(Ref.create(note4));
+
     Gson gson = new Gson();
     JsonObject requestBody = new JsonObject();
     JsonArray requestArray = new JsonArray();
+
+
     requestArray.add(gson.toJsonTree(new UpdateQueryData(note1.id, note1.lastUpdated)));
     requestArray.add(gson.toJsonTree(new UpdateQueryData(note2.id, note2.lastUpdated)));
     requestArray.add(gson.toJsonTree(new UpdateQueryData(note3.id, note3.lastUpdated)));
     requestArray.add(gson.toJsonTree(new UpdateQueryData(note4.id, note4.lastUpdated)));
 
     requestBody.add("notes", requestArray);
-
-
+    requestBody.addProperty("boardId", board.id.toString());
 
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestBody.toString())));
 

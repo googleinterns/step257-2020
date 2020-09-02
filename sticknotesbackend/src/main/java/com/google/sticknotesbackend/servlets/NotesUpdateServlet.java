@@ -22,50 +22,53 @@ import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.UpdateQueryData;
 import com.google.sticknotesbackend.models.Whiteboard;
 
-
 @WebServlet("api/notes-update/")
 public class NotesUpdateServlet extends AppAbstractServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String boardIdParam = request.getParameter("id");
-    if (boardIdParam == null) {
-      badRequest("Error while reading request param.", response);
-      return;
-    }
-    Long boardId = Long.parseLong(boardIdParam);
-
-    Gson gson = new Gson(); 
+    Gson gson = new Gson();
     JsonObject requestBody = new JsonParser().parse(request.getReader()).getAsJsonObject();
 
-    if(!requestBody.has("notes")){
+    if (!requestBody.has("notes")) {
       badRequest("Request has to contain 'notes' property", response);
       return;
     }
 
     JsonArray requestArray = requestBody.get("notes").getAsJsonArray();
 
-    Type queryListType = new TypeToken<List<UpdateQueryData>>(){}.getType();
+    String boardIdParam =  requestBody.get("boardId").getAsString();
+    if (boardIdParam == null) {
+      badRequest("Error while reading request param.", response);
+      return;
+    }
+    Long boardId = Long.parseLong(boardIdParam);
 
-    List<UpdateQueryData> notesQueryArray = gson.fromJson(requestArray.toString(), queryListType); 
+    Type queryListType = new TypeToken<List<UpdateQueryData>>() {
+    }.getType();
+
+    List<UpdateQueryData> notesQueryArray = gson.fromJson(requestArray.toString(), queryListType);
 
     HashSet<Long> idSet = new HashSet<>();
-    for(UpdateQueryData query : notesQueryArray){
+    for (UpdateQueryData query : notesQueryArray) {
       idSet.add(query.id);
     }
-    
-    List<Note> notesToReturn = notesQueryArray.stream().filter((query) -> query.wasUpdated()).map((query)->ofy().load().type(Note.class).id(query.id).now()).collect(Collectors.toList());
+
+    List<Note> notesToReturn = notesQueryArray.stream().filter((query) -> query.wasUpdated())
+        .map((query) -> ofy().load().type(Note.class).id(query.id).now()).collect(Collectors.toList());
     Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
 
-    for(Ref<Note> noteRef : board.notes){
-      Note note = noteRef.get();
-      if(!idSet.contains(note.id)){
-        notesToReturn.add(note);
+    if (board != null) {
+      for (Ref<Note> noteRef : board.notes) {
+        Note note = noteRef.get();
+        if (!idSet.contains(note.id)) {
+          notesToReturn.add(note);
+        }
       }
     }
 
     String jsonResponse = gson.toJson(notesToReturn);
 
-    System.out.println(jsonResponse);
+    System.out.println("###" + jsonResponse);
 
     response.getWriter().println(gson.toJson(notesToReturn));
     response.setStatus(OK);
