@@ -29,4 +29,11 @@ export class NotesApiService {
   public deleteNote(noteId: string): Observable<void> {
     return this.http.delete<void>(`api/notes/?id=${noteId}`);
   }
+
+  /**
+   * Returns updated notes
+   */
+  public getUpdatedNotes(data: any): Observable<Note[]> {
+    return this.http.post<Note[]>('api/notes-updates/', data);
+  }
 }

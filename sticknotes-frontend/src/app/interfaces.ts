@@ -26,6 +26,7 @@ export interface Board {
   rows: number;
   cols: number;
   backgroundImg: string | null;
+  lastUpdated: string;
 }
 
 export interface NotePopupData {
@@ -46,6 +47,7 @@ export interface Note extends CreateNoteApiData {
   id: string;
   creationDate: string;
   creator: User;
+  lastUpdated: string;
 }
 
 /**

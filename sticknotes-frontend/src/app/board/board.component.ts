@@ -44,6 +44,7 @@ export class BoardComponent implements OnInit {
   set notesLanguage(notesTargetLanguage: string) {
     // do translation here
     if (notesTargetLanguage && this.board.notes) {
+      this.notesTargetLanguage = notesTargetLanguage;
       const texts = [];
       this.board.notes.forEach(note => {
         texts.push(note.content);
@@ -62,6 +63,7 @@ export class BoardComponent implements OnInit {
   // hashtable which has translation for every note
   // note.id mapped to note translation
   private notesTranslation = {};
+  private notesTargetLanguage = null;
   private boardGrid: number[][];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
@@ -80,10 +82,10 @@ export class BoardComponent implements OnInit {
       const boardId = params.get('id'); // get board id from route param
       // load board with the key
       this.fetchBoardData(boardId);
-      // fetch board data each 5 seconds from the server
+      // fetch updates data each 2 seconds from the server
       setInterval(() => {
-        this.fetchBoardData(boardId);
-      }, 5000);
+        this.fetchUpdate();
+      }, 2000);
     });
   }
 
@@ -110,6 +112,69 @@ export class BoardComponent implements OnInit {
       this.boardLoaded.emit(sidenavData);
     });
   }
+
+  private fetchUpdate() {
+    if (this.board) {
+      // generate notes update request
+      const notesRequestData = [];
+      this.board.notes.forEach(note => {
+        notesRequestData.push({ id: note.id, lastUpdated: note.lastUpdated });
+      });
+      const notesWithUpdatedContent = [];
+      // send a request
+      this.notesApiService.getUpdatedNotes(notesRequestData).subscribe((newNotes) => {
+        // server returns array of notes that have been changed, find local copy of that notes and update them
+        for (const newNote of newNotes) {
+          // lets have this n^2 algo for now, will imrove it later
+          let note = this.board.notes.find(note => note.id === newNote.id);
+          // if existing note is updated, 
+          if (note) {
+            // if content was changed and translation is enabled, redo translation
+            if (this.notesTargetLanguage && note.content !== newNote.content) {
+              notesWithUpdatedContent.push(note);
+            }
+            // update remaing note's data
+            note = _.merge(newNote);
+          } else {
+            // if new note, just add to the board notes array
+            this.board.notes.push(newNote);
+            // if translation is enabled, add note to the list of notes that have to be translated
+            if (this.notesTargetLanguage) {
+              notesWithUpdatedContent.push(newNote);
+            }
+          }
+        }
+        // if any notes must be translated, execute translation
+        if (notesWithUpdatedContent.length) {
+          const textsToTranslate = [];
+          notesWithUpdatedContent.forEach(note => {
+            textsToTranslate.push(note.content);
+          });
+          // send array of note content to the translate api and update local translation hashtable
+          this.translateService.translateArray(textsToTranslate, this.notesTargetLanguage).subscribe(data => {
+            for (let i = 0; i < notesWithUpdatedContent.length; ++i) {
+              const note = notesWithUpdatedContent[i];
+              this.notesTranslation[note.id] = data.result[i];
+            }
+          });
+        }
+      });
+
+      // pull board updates
+      const boardRequestData = {id: this.board.id, lastUpdated: this.board.lastUpdated};
+      this.boardApiService.getUpdatedBoard(boardRequestData).subscribe(newBoard => {
+        // if there is an update
+        if (newBoard) {
+          this.board.backgroundImg = newBoard.backgroundImg;
+          this.board.cols = newBoard.cols;
+          this.board.rows = newBoard.rows;
+          this.board.title = newBoard.title;
+          this.board.lastUpdated = newBoard.lastUpdated;
+        }
+      })
+    }
+  }
+
   // updates the z-index of the note
   public onNoteDragStart(cdkDragStart: CdkDragStart): void {
     const elementRef = cdkDragStart.source.element.nativeElement;
