@@ -79,3 +79,8 @@ export interface BoardPreview {
   readonly id: string;
   readonly title: string;
 }
+
+export interface NoteUpdateRequest {
+  id: string;
+  lastUpdated: string;
+}

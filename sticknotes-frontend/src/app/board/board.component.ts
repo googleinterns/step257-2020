@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board, BoardData } from '../interfaces';
+import { Note, Board, BoardData, NoteUpdateRequest } from '../interfaces';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -116,13 +116,13 @@ export class BoardComponent implements OnInit {
   private fetchUpdate() {
     if (this.board) {
       // generate notes update request
-      const notesRequestData = [];
+      const notesTimestamps: NoteUpdateRequest[] = [];
       this.board.notes.forEach(note => {
-        notesRequestData.push({ id: note.id, lastUpdated: note.lastUpdated });
+        notesTimestamps.push({ id: note.id, lastUpdated: note.lastUpdated });
       });
-      const notesWithUpdatedContent = [];
       // send a request
-      this.notesApiService.getUpdatedNotes(notesRequestData).subscribe((newNotes) => {
+      this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((newNotes) => {
+        const notesWithUpdatedContent = [];
         // server returns array of notes that have been changed, find local copy of that notes and update them
         for (const newNote of newNotes) {
           // lets have this n^2 algo for now, will imrove it later
