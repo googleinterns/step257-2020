@@ -89,6 +89,7 @@ public class EditBoardServlet extends BoardAbstractServlet {
         }
       }
     }
+    board.lastUpdated = System.currentTimeMillis();
     // save the board
     ofy().save().entity(board).now();
     // servlet default will return 200

@@ -60,7 +60,8 @@ public class BoardServlet extends BoardAbstractServlet {
         Translate translate = TranslateOptions.getDefaultInstance().getService();
         board.notes.forEach(noteRef -> {
           // translate each note
-          Translation translation = translate.translate(noteRef.get().content, Translate.TranslateOption.targetLanguage(languageCode));
+          Translation translation =
+              translate.translate(noteRef.get().content, Translate.TranslateOption.targetLanguage(languageCode));
           noteRef.get().content = translation.getTranslatedText();
         });
       }
@@ -86,7 +87,7 @@ public class BoardServlet extends BoardAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = { "title" };
+      String[] requiredFields = {"title"};
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -97,8 +98,8 @@ public class BoardServlet extends BoardAbstractServlet {
     Gson gson = getBoardGsonParser();
     Whiteboard board = gson.fromJson(jsonPayload, Whiteboard.class);
     board.creationDate = System.currentTimeMillis();
-    // at this point we can assume that users is logged in (so also present in
-    // datastore)
+    board.lastUpdated = System.currentTimeMillis();
+    // at this point we can assume that users is logged in (so also present in datastore)
     // get google id of the current user
     String googleAccId = userService.getCurrentUser().getUserId();
     // get the user with this id
