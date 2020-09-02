@@ -72,7 +72,16 @@
       <artifactId>commons-io</artifactId>
       <version>2.5</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-jsr107cache</artifactId>
+      <version>1.9.59</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.14</version>
+    </dependency>
     <!-- Test Dependencies -->
     <dependency>
       <groupId>com.google.appengine</groupId>

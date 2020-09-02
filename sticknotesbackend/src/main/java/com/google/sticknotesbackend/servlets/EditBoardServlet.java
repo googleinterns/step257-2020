@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.Cacher;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
@@ -22,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  * endpoint, we create a new endpoint for editing that has another URI.
  */
 @WebServlet("api/edit-board/")
-public class EditBoardServlet extends BoardAbstractServlet {
+public class EditBoardServlet extends AppAbstractServlet {
   /**
    * Edits a board, for now only title editing is supported, returns an updated
    * board. The JSON payload must include field "id" and a set of editable fields
@@ -33,7 +35,7 @@ public class EditBoardServlet extends BoardAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = { "id" };
+      String[] requiredFields = {"id"};
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -41,7 +43,7 @@ public class EditBoardServlet extends BoardAbstractServlet {
       return;
     }
     // construct a gson object that uses custom Whiteboard serializer
-    Gson gson = getBoardGsonParser();
+    Gson gson = JsonParsers.getBoardGsonParser();
     Whiteboard editedBoard = gson.fromJson(jsonPayload, Whiteboard.class);
     // get board that is to be edited from datastore
     Whiteboard board = ofy().load().type(Whiteboard.class).id(editedBoard.id).now();
@@ -62,8 +64,8 @@ public class EditBoardServlet extends BoardAbstractServlet {
     }
 
     // run this code only if board is resized
-    if ((editedBoard.cols != -1 && editedBoard.cols != board.cols)
-        || (editedBoard.rows != -1 && editedBoard.rows != board.rows)) {
+    if ((editedBoard.cols != -1 && editedBoard.cols != board.cols) ||
+        (editedBoard.rows != -1 && editedBoard.rows != board.rows)) {
       if (editedBoard.rows != -1) {
         if (editedBoard.rows < 1) {
           badRequest("Can not resize to < 1 rows", response);
@@ -91,6 +93,8 @@ public class EditBoardServlet extends BoardAbstractServlet {
     }
     // save the board
     ofy().save().entity(board).now();
+    // also save the board to the datastore with default language code
+    Cacher.storeBoardInCache(Long.toString(board.id), gson.toJson(board), null);
     // servlet default will return 200
   }
 }

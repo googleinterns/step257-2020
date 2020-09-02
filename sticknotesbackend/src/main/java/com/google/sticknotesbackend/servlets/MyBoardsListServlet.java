@@ -45,11 +45,4 @@ public class MyBoardsListServlet extends AppAbstractServlet {
     }
     response.getWriter().print(boardsJsonArray.toString());
   }
-
-  public Gson getBoardPreviewGsonParser() {
-    GsonBuilder gson = new GsonBuilder();
-    gson.registerTypeAdapter(Whiteboard.class, new WhiteboardPreviewSerializer());
-    Gson parser = gson.create();
-    return parser;
-  }
 }

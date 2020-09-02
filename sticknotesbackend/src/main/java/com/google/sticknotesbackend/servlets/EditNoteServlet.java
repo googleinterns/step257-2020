@@ -6,9 +6,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.Cacher;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
+import com.google.sticknotesbackend.models.Whiteboard;
+
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  * NoteServlet, but requires id of the note that is edited
  */
 @WebServlet("api/edit-note/")
-public class EditNoteServlet extends NoteAbstractServlet {
+public class EditNoteServlet extends AppAbstractServlet {
   /**
    * Edits the note with the id sent in the JSON payload
    */
@@ -37,7 +41,7 @@ public class EditNoteServlet extends NoteAbstractServlet {
       return;
     }
     // create gson parser that uses custom note serializer
-    Gson gson = getNoteGsonParser();
+    Gson gson = JsonParsers.getNoteGsonParser();
     Note editedNote = gson.fromJson(jsonPayload, Note.class);
     // load requested note from the datastore
     Note note = ofy().load().type(Note.class).id(editedNote.id).now();
@@ -70,6 +74,10 @@ public class EditNoteServlet extends NoteAbstractServlet {
     note.image = editedNote.image;
     // save note
     ofy().save().entity(note).now();
+    // update board cache record
+    Whiteboard board = ofy().load().type(Whiteboard.class).id(note.boardId).now();
+    String boardJson = JsonParsers.getBoardGsonParser().toJson(board);
+    Cacher.storeBoardInCache(Long.toString(board.id), boardJson, null);
     // return updated note in the response
     response.getWriter().print(gson.toJson(note));
   }

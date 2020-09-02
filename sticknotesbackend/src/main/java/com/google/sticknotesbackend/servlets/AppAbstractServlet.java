@@ -1,9 +1,18 @@
 package com.google.sticknotesbackend.servlets;
 
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import javax.cache.Cache;
+import javax.cache.CacheException;
+import javax.cache.CacheFactory;
+import javax.cache.CacheManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 

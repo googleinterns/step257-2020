@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
@@ -24,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet that handles Note logic Implements methods: * POST - create note
  */
 @WebServlet("api/notes/")
-public class NoteServlet extends NoteAbstractServlet {
+public class NoteServlet extends AppAbstractServlet {
   /**
    * Creates a Note The expected JSON payload is boardId: id of the board content:
    * the content of the note; image: url / base64 (not decided yet); color:
@@ -49,7 +50,7 @@ public class NoteServlet extends NoteAbstractServlet {
       return;
     }
     // create gson parser that uses custom note serializer
-    Gson gson = getNoteGsonParser();
+    Gson gson = JsonParsers.getNoteGsonParser();
     Note note = gson.fromJson(jsonPayload, Note.class);
     // get currently logged in user from the datastore
     User user = ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first()
