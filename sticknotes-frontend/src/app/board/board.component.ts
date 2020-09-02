@@ -136,6 +136,16 @@ export class BoardComponent implements OnInit {
             }
             // update remaing note's data
             note.lastUpdated = newNote.lastUpdated;
+            if (note.x !== newNote.x)
+              note.x = newNote.x;
+            if (note.y !== newNote.y)
+              note.y = newNote.y;
+            if (note.color !== newNote.color)
+              note.color = newNote.color;
+            if (note.content !== newNote.content)
+              note.content = newNote.content;
+            if (note.image !== newNote.image)
+              note.image = newNote.image;
           } else {
             // if new note, just add to the board notes array
             this.board.notes.push(newNote);
@@ -163,16 +173,16 @@ export class BoardComponent implements OnInit {
 
       // pull board updates
       const boardRequestData = {id: this.board.id, lastUpdated: this.board.lastUpdated};
-      // this.boardApiService.getUpdatedBoard(boardRequestData).subscribe(newBoard => {
-      //   // if there is an update
-      //   if (newBoard) {
-      //     this.board.backgroundImg = newBoard.backgroundImg;
-      //     this.board.cols = newBoard.cols;
-      //     this.board.rows = newBoard.rows;
-      //     this.board.title = newBoard.title;
-      //     this.board.lastUpdated = newBoard.lastUpdated;
-      //   }
-      // });
+      this.boardApiService.getUpdatedBoard(boardRequestData).subscribe(newBoard => {
+        // if there is an update
+        if (newBoard) {
+          this.board.backgroundImg = newBoard.backgroundImg;
+          this.board.cols = newBoard.cols;
+          this.board.rows = newBoard.rows;
+          this.board.title = newBoard.title;
+          this.board.lastUpdated = newBoard.lastUpdated;
+        }
+      });
     }
   }
 
