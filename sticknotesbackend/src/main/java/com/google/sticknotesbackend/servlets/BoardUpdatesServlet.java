@@ -3,12 +3,14 @@ package com.google.sticknotesbackend.servlets;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.google.sticknotesbackend.serializers.WhiteboardWithoutNotesSerializer;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -48,10 +50,21 @@ public class BoardUpdatesServlet extends BoardAbstractServlet {
     Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
     if (board.lastUpdated != clientsValue) {
       // send update
-      Gson gson = getBoardGsonParser();
+      Gson gson = getBoardUpdateGsonParser();
       response.getWriter().print(gson.toJson(board));
     } else {
       response.getWriter().print("{}");
     }
+  }
+
+  /**
+   * Generates a Gson object that uses custom WhiteboardWithoutNotesSerializer when
+   * serializing Whiteboard objects.
+   */
+  public Gson getBoardUpdateGsonParser() {
+    GsonBuilder gson = new GsonBuilder();
+    gson.registerTypeAdapter(Whiteboard.class, new WhiteboardWithoutNotesSerializer());
+    Gson parser = gson.create();
+    return parser;
   }
 }
