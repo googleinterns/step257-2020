@@ -123,6 +123,21 @@ public abstract class NotesboardTestBase {
   }
 
   /**
+   * Creates a note with creator
+   */
+  protected Note createNoteWithCreator() {
+    String uuid = UUID.randomUUID().toString();
+    Note note = new Note();
+    note.content = uuid + " note content";
+    note.x = 1;
+    note.y = 1;
+    note.color = "#000000";
+    note.id = ofy().save().entity(note).now().getId();
+    note.setCreator(createUser());
+    return note;
+  }
+
+  /**
    * Creates a mock user and stores the user in the datastore
    */
   protected User createUser() {

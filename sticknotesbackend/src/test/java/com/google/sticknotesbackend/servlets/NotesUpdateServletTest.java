@@ -70,10 +70,10 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
   public void oneUpdateTest() throws IOException {
     Whiteboard board = createBoard();
 
-    Note note1 = createNote();
-    Note note2 = createNote();
-    Note note3 = createNote();
-    Note note4 = createNote();
+    Note note1 = createNoteWithCreator();
+    Note note2 = createNoteWithCreator();
+    Note note3 = createNoteWithCreator();
+    Note note4 = createNoteWithCreator();
 
     board.notes.add(Ref.create(note1));
     board.notes.add(Ref.create(note2));

@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.JsonElement;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -70,10 +72,11 @@ public class NotesUpdateServlet extends AppAbstractServlet {
 
     JsonArray notesArray = new JsonArray();
     for (Note note: notesToReturn) {
-      notesArray.add(gson.toJsonTree(note));
+      JsonElement noteJson = getNoteGsonParser().toJsonTree(note);
+      notesArray.add(noteJson);
     }
 
-    String jsonResponse = getNoteGsonParser().toJson(notesArray);
+    String jsonResponse = gson.toJson(notesArray);
 
     System.out.println("###" + jsonResponse);
 
