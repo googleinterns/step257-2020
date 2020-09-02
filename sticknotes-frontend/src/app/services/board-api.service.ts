@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Board } from '../interfaces';
+import { Board, BoardData, Note } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -24,16 +24,14 @@ export class BoardApiService {
     return this.http.post<Board>('api/board/', { title: boardTitle });
   }
 
+  public updateBoard(data: BoardData): Observable<void> {
+    return this.http.post<void>('api/edit-board/', data);
+  }
+
   /**
-   * Sets new title to the board with the given id
-   * Makes a POST request on board edit endpoint
-   * Returns the updated board
+   * Executes a request to translate notes of the board with id = boardId to language with targetLanguageCode
    */
-  public updateBoardTitle(boardId: string, boardTitle: string): Observable<Board> {
-    const payload = {
-      id: boardId,
-      title: boardTitle
-    };
-    return this.http.post<Board>('api/edit-board/', payload);
+  public translateNotesOfBoard(boardId: string, targetLanguageCode: string): Observable<Note[]> {
+    return this.http.get<Note[]>(`api/board/notes/?id=${boardId}&lc=${targetLanguageCode}`);
   }
 }

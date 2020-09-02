@@ -9,7 +9,7 @@ ng serve
 ```
 
 To run backend locally, run datastore emulator firstly using 
-`gcloud beta emulators datastore start --host-port=localhost:8484`.
+`gcloud beta emulators datastore start --host-port=localhost:8484  --no-store-on-disk`.
 Next execute
 ```
 cd sticknotesbackend

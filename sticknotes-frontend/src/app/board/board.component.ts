@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board, SidenavBoardData } from '../interfaces';
+import { Note, Board, BoardData } from '../interfaces';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -17,11 +17,32 @@ import { BoardApiService } from '../services/board-api.service';
 })
 export class BoardComponent implements OnInit {
 
-  // Output event used by sidenav to receive a data about the currently displayed board.
-  @Output() boardLoaded = new EventEmitter<SidenavBoardData>(true);
-  // Input property use by sidenav. When title is edited there, it gets updated in this component too.
-  @Input() boardTitle: string = null;
-  // A 2D grid of 0s and 1s used to run BFS on.
+  @Output() boardLoaded = new EventEmitter<BoardData>(true);
+
+  /**
+   * Used by board-container component to pass update board data
+   */
+  @Input()
+  set boardUpdatedData(data: BoardData) {
+    if (data) {
+      // received a new data, update board object fields
+      this.board.title = data.title;
+      this.board.cols = data.cols;
+      this.board.rows = data.rows;
+      // update abstract grid
+      this.boardGrid = null;
+      this.updateBoardAbstractGrid();
+    }
+  }
+  /**
+   * Input property used by board-container to send translated notes
+   */
+  @Input()
+  set translatedNotes(notes: Note[]) {
+    if (notes) {
+      this.board.notes = notes;
+    }
+  }
   private boardGrid: number[][];
   public board: Board;
 
@@ -43,17 +64,19 @@ export class BoardComponent implements OnInit {
     // load board
     this.activatedRoute.paramMap.subscribe(params => {
       const boardId = params.get('id'); // get board id from route param
+      console.log(boardId)
       // load board with the key
       this.boardApiService.getBoard(boardId).subscribe(board => {
         this.board = board;
-        this.boardTitle = board.title;
         this.updateBoardAbstractGrid();
         // pass essential board's data to the sidenav
-        const sidenavData: SidenavBoardData = {
+        const sidenavData: BoardData = {
           id: board.id,
           title: board.title,
           creationDate: board.creationDate,
-          backgroundImg: board.backgroundImg
+          backgroundImg: board.backgroundImg,
+          rows: board.rows,
+          cols: board.cols
         };
         this.boardLoaded.emit(sidenavData);
       });
@@ -77,14 +100,14 @@ export class BoardComponent implements OnInit {
     elementRef.style.setProperty('z-index', '3');
     const curTranslate = getTranslateValues(elementRef);
     // free currently taken note position
-    this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
+    this.boardGrid[note.y][note.x] = 0;
     // get closest free point
-    const closestPoint = this.getClosestFreeSlot(note, note.x + curTranslate.x, note.y + curTranslate.y);
+    const closestPoint = this.getClosestFreeSlot(note, (note.x * this.NOTE_WIDTH) + curTranslate.x, (note.y * this.NOTE_HEIGHT) + curTranslate.y);
     // set the new position of the note on the board
     this.boardGrid[closestPoint.y][closestPoint.x] = 1;
     // apply new transformation
-    note.x = closestPoint.x * this.NOTE_WIDTH;
-    note.y = closestPoint.y * this.NOTE_HEIGHT;
+    note.x = closestPoint.x;
+    note.y = closestPoint.y;
     cdkDragEnd.source._dragRef.reset();
     elementRef.style.transform = '';
     // update note data
@@ -168,7 +191,7 @@ export class BoardComponent implements OnInit {
    * Generates a CSS style to position the note on the grid.
    */
   public getNoteStyle(note: Note): string {
-    return `left:${note.x}px;top:${note.y}px`;
+    return `left:${note.x * this.NOTE_WIDTH}px;top:${note.y * this.NOTE_HEIGHT}px`;
   }
 
   /**
@@ -184,7 +207,7 @@ export class BoardComponent implements OnInit {
    */
   public openNewNoteDialog(x: number, y: number): void {
     const dialogRef = this.dialog.open(NewNoteComponent, {
-      data: { mode: State.CREATE, noteData: { position: new Vector2(x * this.NOTE_WIDTH, y * this.NOTE_HEIGHT), boardId: this.board.id } }
+      data: { mode: State.CREATE, noteData: { position: new Vector2(x, y), boardId: this.board.id } }
     });
     dialogRef.afterClosed().subscribe(note => {
       // receive a new note here and add it to the board
@@ -192,7 +215,7 @@ export class BoardComponent implements OnInit {
       if (note) {
         this.board.notes.push(note);
         // update grid
-        this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 1;
+        this.boardGrid[note.y][note.x] = 1;
       }
     });
   }
