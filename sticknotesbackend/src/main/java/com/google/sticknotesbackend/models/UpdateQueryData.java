@@ -3,8 +3,8 @@ package com.google.sticknotesbackend.models;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 public class UpdateQueryData {
-  public long id;
-  public long lastUpdated;
+  public Long id;
+  public Long lastUpdated;
 
   public UpdateQueryData(){}
 

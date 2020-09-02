@@ -42,12 +42,14 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     Gson gson = new Gson();
     JsonObject requestBody = new JsonObject();
     JsonArray requestArray = new JsonArray();
-    requestArray.add(gson.toJson(new UpdateQueryData(note1.id, note1.lastUpdated)));
-    requestArray.add(gson.toJson(new UpdateQueryData(note2.id, note2.lastUpdated)));
-    requestArray.add(gson.toJson(new UpdateQueryData(note3.id, note3.lastUpdated)));
-    requestArray.add(gson.toJson(new UpdateQueryData(note4.id, note4.lastUpdated)));
+    requestArray.add(gson.toJsonTree(new UpdateQueryData(note1.id, note1.lastUpdated)));
+    requestArray.add(gson.toJsonTree(new UpdateQueryData(note2.id, note2.lastUpdated)));
+    requestArray.add(gson.toJsonTree(new UpdateQueryData(note3.id, note3.lastUpdated)));
+    requestArray.add(gson.toJsonTree(new UpdateQueryData(note4.id, note4.lastUpdated)));
 
     requestBody.add("notes", requestArray);
+
+
 
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestBody.toString())));
 
