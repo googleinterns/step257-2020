@@ -77,9 +77,6 @@ public class NotesUpdateServlet extends AppAbstractServlet {
     }
 
     String jsonResponse = gson.toJson(notesArray);
-
-    System.out.println("###" + jsonResponse);
-
     
     response.getWriter().println(jsonResponse);
     response.setStatus(OK);
