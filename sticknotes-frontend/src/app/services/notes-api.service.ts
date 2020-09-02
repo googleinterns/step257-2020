@@ -38,6 +38,6 @@ export class NotesApiService {
       notes: data,
       boardId: boardId
     };
-    return this.http.post<Note[]>('api/notes-updates/', payload);
+    return this.http.post<Note[]>('api/notes-update/', payload);
   }
 }

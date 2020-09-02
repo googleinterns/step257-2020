@@ -118,15 +118,16 @@ export class BoardComponent implements OnInit {
       // generate notes update request
       const notesTimestamps: NoteUpdateRequest[] = [];
       this.board.notes.forEach(note => {
-        notesTimestamps.push({ id: note.id, lastUpdated: note.lastUpdated });
+        notesTimestamps.push({ id: note.id, lastUpdated: this.getNoteLastUpdated(note)});
       });
+      console.log(notesTimestamps);
       // send a request
       this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((newNotes) => {
         const notesWithUpdatedContent = [];
         // server returns array of notes that have been changed, find local copy of that notes and update them
         for (const newNote of newNotes) {
           // lets have this n^2 algo for now, will imrove it later
-          let note = this.board.notes.find(note => note.id === newNote.id);
+          const note = this.board.notes.find(note => note.id === newNote.id);
           // if existing note is updated, 
           if (note) {
             // if content was changed and translation is enabled, redo translation
@@ -134,7 +135,7 @@ export class BoardComponent implements OnInit {
               notesWithUpdatedContent.push(note);
             }
             // update remaing note's data
-            note = _.merge(newNote);
+            note.lastUpdated = newNote.lastUpdated;
           } else {
             // if new note, just add to the board notes array
             this.board.notes.push(newNote);
@@ -162,16 +163,16 @@ export class BoardComponent implements OnInit {
 
       // pull board updates
       const boardRequestData = {id: this.board.id, lastUpdated: this.board.lastUpdated};
-      this.boardApiService.getUpdatedBoard(boardRequestData).subscribe(newBoard => {
-        // if there is an update
-        if (newBoard) {
-          this.board.backgroundImg = newBoard.backgroundImg;
-          this.board.cols = newBoard.cols;
-          this.board.rows = newBoard.rows;
-          this.board.title = newBoard.title;
-          this.board.lastUpdated = newBoard.lastUpdated;
-        }
-      })
+      // this.boardApiService.getUpdatedBoard(boardRequestData).subscribe(newBoard => {
+      //   // if there is an update
+      //   if (newBoard) {
+      //     this.board.backgroundImg = newBoard.backgroundImg;
+      //     this.board.cols = newBoard.cols;
+      //     this.board.rows = newBoard.rows;
+      //     this.board.title = newBoard.title;
+      //     this.board.lastUpdated = newBoard.lastUpdated;
+      //   }
+      // });
     }
   }
 
@@ -356,5 +357,12 @@ export class BoardComponent implements OnInit {
       return this.notesTranslation[note.id];
     }
     return note.content;
+  }
+
+  private getNoteLastUpdated(note: Note): string {
+    if (note.lastUpdated) {
+      return note.lastUpdated;
+    }
+    return "0";
   }
 }
