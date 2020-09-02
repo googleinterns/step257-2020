@@ -5,14 +5,11 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.appengine.repackaged.com.google.gson.JsonElement;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
-import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
 import java.io.BufferedReader;
@@ -134,5 +131,36 @@ public class NoteServletTest extends NotesboardTestBase {
     verify(mockResponse).sendError(FORBIDDEN);
     Note notDeletedNote = ofy().load().type(Note.class).id(note.id).now();
     assertThat(notDeletedNote).isNotNull();
+  }
+
+  @Test
+  public void testCreateNoteOnTheTakenSlot() throws IOException, ServletException {
+    User user = createUserSafe();
+    logIn(user);
+    // create a board and a note
+    Whiteboard board = createBoard();
+    Note note = createNote();
+    board.notes.add(Ref.create(note));
+    board.setCreator(user);
+    note.setCreator(user);
+    note.boardId = board.id;
+    // save updated note
+    ofy().save().entity(note).now();
+    // save updated board
+    ofy().save().entity(board).now();
+    createRole(board, user, Role.USER);
+    // generate a payload
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("boardId", board.id);
+    jsonObject.addProperty("color", "#000000");
+    jsonObject.addProperty("content", "dummy content");
+    jsonObject.addProperty("x", note.x);
+    jsonObject.addProperty("y", note.y);
+    // prepare mocked request
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+    // do request
+    noteServlet.doPost(mockRequest, mockResponse);
+    verify(mockResponse).sendError(BAD_REQUEST);
+    assertThat(responseWriter.toString()).isEqualTo("Coordinates already taken\n");
   }
 }
