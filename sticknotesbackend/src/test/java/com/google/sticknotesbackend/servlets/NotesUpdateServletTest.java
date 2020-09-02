@@ -65,4 +65,38 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
 
     notesUpdateServlet.doPost(mockRequest, mockResponse);
   }
+
+  @Test
+  public void oneUpdateTest() throws IOException {
+    Whiteboard board = createBoard();
+
+    Note note1 = createNote();
+    Note note2 = createNote();
+    Note note3 = createNote();
+    Note note4 = createNote();
+
+    board.notes.add(Ref.create(note1));
+    board.notes.add(Ref.create(note2));
+    board.notes.add(Ref.create(note3));
+    board.notes.add(Ref.create(note4));
+
+    Gson gson = new Gson();
+    JsonObject requestBody = new JsonObject();
+    JsonArray requestArray = new JsonArray();
+
+
+    requestArray.add(gson.toJsonTree(new UpdateQueryData(note1.id, note1.lastUpdated)));
+    requestArray.add(gson.toJsonTree(new UpdateQueryData(note2.id, note2.lastUpdated)));
+    requestArray.add(gson.toJsonTree(new UpdateQueryData(note3.id, note3.lastUpdated)));
+    requestArray.add(gson.toJsonTree(new UpdateQueryData(note4.id, note4.lastUpdated)));
+
+    note4.lastUpdated+=1;
+
+    requestBody.add("notes", requestArray);
+    requestBody.addProperty("boardId", board.id.toString());
+
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestBody.toString())));
+
+    notesUpdateServlet.doPost(mockRequest, mockResponse);
+  }
 }

@@ -14,6 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -21,6 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.UpdateQueryData;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.google.sticknotesbackend.serializers.NoteSerializer;
 
 @WebServlet("api/notes-update/")
 public class NotesUpdateServlet extends AppAbstractServlet {
@@ -66,10 +68,25 @@ public class NotesUpdateServlet extends AppAbstractServlet {
       }
     }
 
-    String jsonResponse = gson.toJson(notesToReturn);
+    JsonArray notesArray = new JsonArray();
+    for (Note note: notesToReturn) {
+      notesArray.add(gson.toJsonTree(note));
+    }
 
-    response.getWriter().println(gson.toJson(notesToReturn));
+    String jsonResponse = getNoteGsonParser().toJson(notesArray);
+
+    System.out.println("###" + jsonResponse);
+
+    
+    response.getWriter().println(jsonResponse);
     response.setStatus(OK);
     return;
+  }
+
+  protected Gson getNoteGsonParser() {
+    GsonBuilder gson = new GsonBuilder();
+    gson.registerTypeAdapter(Note.class, new NoteSerializer());
+    Gson parser = gson.create();
+    return parser;
   }
 }
