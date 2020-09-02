@@ -1,15 +1,18 @@
 package com.google.sticknotesbackend.models;
 
 import com.googlecode.objectify.Ref;
+import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Load;
 import java.util.ArrayList;
 
 @Entity
+@Cache(expirationSeconds = 600) // expire cache after ten minutes
 public class Whiteboard {
   public @Id Long id;
   public Long creationDate; // it's a timestamp
+  public Long lastUpdated; // time when board was last updated
   private @Load Ref<User> creator;
   public String title;
   public int rows;
@@ -20,9 +23,11 @@ public class Whiteboard {
   public Whiteboard() {
     this.rows = -1;
     this.cols = -1;
+    this.lastUpdated = 0L;
   }
 
   public Whiteboard(String title) {
+    this(); // call default constructor to initialize necessary fields
     this.title = title;
   }
 
