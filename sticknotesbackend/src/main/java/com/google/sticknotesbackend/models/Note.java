@@ -4,6 +4,7 @@ import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Load;
+import java.sql.Timestamp;
 
 @Entity
 public class Note {
@@ -11,6 +12,7 @@ public class Note {
   public String content;
   public String image;
   public Long creationDate; // timestamp here
+  public Long lastUpdated;
   public int x;
   public int y;
   public String color;
@@ -28,6 +30,10 @@ public class Note {
   public Note() {
     this.x = -1;
     this.y = -1;
+
+    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+    creationDate = timestamp.getTime();
+    lastUpdated = timestamp.getTime();
   }
 
   public void setCreator(User user) {
