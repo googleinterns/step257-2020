@@ -16,7 +16,7 @@ public class UpdateQueryData {
   public boolean wasUpdated(){
     Note noteFromDatastore = ofy().load().type(Note.class).id(this.id).now();
     if(noteFromDatastore != null)
-      return noteFromDatastore.lastUpdated != this.lastUpdated;
+      return !noteFromDatastore.lastUpdated.equals(this.lastUpdated);
     return false;
   }
 }
