@@ -10,6 +10,7 @@ import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
 import { BoardApiService } from '../services/board-api.service';
 import { TranslateService } from '../services/translate.service';
+import _ from 'lodash';
 
 @Component({
   selector: 'app-board',
@@ -42,18 +43,20 @@ export class BoardComponent implements OnInit {
   @Input()
   set notesLanguage(notesTargetLanguage: string) {
     // do translation here
-    const texts = [];
-    this.board.notes.forEach(note => {
-      texts.push(note.content);
-    });
-    // do a request to translate api
-    this.translateService.translateArray(texts, notesTargetLanguage).subscribe(result => {
-      for (let i = 0; i < this.board.notes.length; ++i) {
-        const note = this.board.notes[i];
-        // create mapping from note to translated text
-        this.notesTranslation[note.id] = result[i];
-      }
-    });
+    if (notesTargetLanguage && this.board.notes) {
+      const texts = [];
+      this.board.notes.forEach(note => {
+        texts.push(note.content);
+      });
+      // do a request to translate api
+      this.translateService.translateArray(texts, notesTargetLanguage).subscribe(data => {
+        for (let i = 0; i < this.board.notes.length; ++i) {
+          const note = this.board.notes[i];
+          // create mapping from note to translated text
+          this.notesTranslation[note.id] = data.result[i];
+        }
+      });
+    }
   }
 
   // hashtable which has translation for every note
@@ -92,7 +95,7 @@ export class BoardComponent implements OnInit {
   private fetchBoardData(boardId: string) {
     // load board with the key
     this.boardApiService.getBoard(boardId).subscribe(board => {
-      this.board = board;
+      this.board = _.merge(this.board, board);
       this.updateBoardAbstractGrid();
       // pass essential board's data to the sidenav
       const sidenavData: BoardData = {

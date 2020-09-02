@@ -5,14 +5,17 @@
       <mat-list-item *ngFor="let userWithRole of usersWithRole">
         <mat-icon color="primary" matListIcon>account_circle</mat-icon>
         <div matLine> {{ userWithRole.user.nickname }} </div>
-        <div mat-line> {{ userWithRole.user.email }} <p class="mat-small"> {{ userWithRole.role }} </p> </div>
+        <div mat-line> {{ userWithRole.user.email }} <p class="mat-small"> {{ userWithRole.role }} </p>
+        </div>
         <!-- adminView set to true because UsersAPI not integrated yet -->
-        <button mat-icon-button *ngIf="currentUser.id !== userWithRole.user.id && currentUser.role !== 'USER' && userWithRole.role !== 'OWNER' " color="primary" (click) = 'removeUser(userWithRole)' aria-label="Open add user dialog">
+        <button mat-icon-button *ngIf="canDelete(userWithRole)" color="primary" (click)='removeUser(userWithRole)'
+          aria-label="Open add user dialog">
           <mat-icon>delete</mat-icon>
-        </button>   
+        </button>
       </mat-list-item>
       <mat-list-item>
-        <button *ngIf="adminView" mat-mini-fab color="primary" (click) = 'openAddUserDialog()' aria-label="Open add user dialog">
+        <button *ngIf="['ADMIN','OWNER'].includes(currentUserRole)" mat-mini-fab color="primary"
+          (click)='openAddUserDialog()' aria-label="Open add user dialog">
           <mat-icon>add</mat-icon>
         </button>
       </mat-list-item>

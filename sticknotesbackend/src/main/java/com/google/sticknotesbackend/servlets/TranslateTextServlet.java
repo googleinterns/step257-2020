@@ -33,13 +33,13 @@ public class TranslateTextServlet extends AppAbstractServlet {
     }
     JsonObject body = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = {"text", "targetLanguage"};
+      String[] requiredFields = {"texts", "targetLanguage"};
       validateRequestData(body, response, requiredFields);
     } catch (PayloadValidationException ex) {
       badRequest(ex.getMessage(), response);
     }
     // get list of texts that has to be translated
-    JsonArray textsJsonArray = body.get("text").getAsJsonArray();
+    JsonArray textsJsonArray = body.get("texts").getAsJsonArray();
     ArrayList<String> texts = new ArrayList<>();
     for (JsonElement element: textsJsonArray) {
       texts.add(element.getAsString());

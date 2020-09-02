@@ -123,9 +123,9 @@ public class UserListServlet extends AppAbstractServlet {
 
   /**
    * doDelete needs two params passed in the request: board-id and id (role id),
-   * two params are needed because there is parent relationship between role and a board,
-   * because of that fact the role can't be identified only by it's id anymore, 
-   * it's key consists of parent key and it's id
+   * two params are needed because there is parent relationship between role and a
+   * board, because of that fact the role can't be identified only by it's id
+   * anymore, it's key consists of parent key and it's id
    */
   @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -146,7 +146,7 @@ public class UserListServlet extends AppAbstractServlet {
     Long boardRoleId = Long.valueOf(boardRoleIdParam);
     Long boardId = Long.valueOf(boardIdParam);
     Key<Whiteboard> boardKey = Key.create(Whiteboard.class, boardId);
-    UserBoardRole boardRole = ofy().load().type(UserBoardRole.class)
+    UserBoardRole boardRole = ofy().load().type(UserBoardRole.class).ancestor(boardKey)
         .filterKey(Key.create(boardKey, UserBoardRole.class, boardRoleId)).first().now();
     if (boardRole == null) {
       badRequest("Role with a given id not found.", response);
