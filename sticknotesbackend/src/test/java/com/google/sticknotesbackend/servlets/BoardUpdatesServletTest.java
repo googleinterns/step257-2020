@@ -71,7 +71,6 @@ public class BoardUpdatesServletTest extends NotesboardTestBase {
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestData.toString())));
     // do request
     boardUpdatesServlet.doPost(mockRequest, mockResponse);
-    System.out.println(responseWriter.toString());
     assertThat(responseWriter.toString()).isEqualTo(boardUpdatesServlet.getBoardUpdateGsonParser().toJson(board));
   }
 }
