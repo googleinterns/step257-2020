@@ -106,12 +106,13 @@ export class BoardComponent implements OnInit {
       // pass essential board's data to the sidenav
       this.emitDataToSidenav(board);
       // create hashtable of notes content in original language
-      this.board.notes.forEach(note => {
-        this.notesOriginalContent[note.id] = note.content;
-      })
+      this.updateOriginalNotesContentMap(board);
     });
   }
 
+  /**
+   * Fetches an updated content of notes and board from the server
+   */
   private fetchUpdate() {
     if (this.board) {
       // generate notes update request
@@ -123,14 +124,19 @@ export class BoardComponent implements OnInit {
       this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((newNotes) => {
         const notesWithUpdatedContent = [];
         // server returns array of notes that have been changed, find local copy of that notes and update them
+        // merge notes
+        const ids = new Set(this.board.notes.map(n => n.id));
+        this.board.notes = [...this.board.notes, ...newNotes.filter(n => !ids.has(n.id))];
+        // update map of original notes texts
+        this.updateOriginalNotesContentMap(this.board);
+        // update abstract grid
+        this.updateBoardAbstractGrid();
         for (const newNote of newNotes) {
           // if content of the existing note was updated and translation is enabled, add notes content to translation array
           if (this.notesTargetLanguage && newNote.content !== this.notesOriginalContent[newNote.id]) {
             notesWithUpdatedContent.push(newNote);
           }
         }
-        // merge notes
-        this.board.notes = _.merge(this.board.notes, newNotes);
         // if any notes must be translated, execute translation
         if (notesWithUpdatedContent.length) {
           const snackbarRef = this.snackBar.open("Translating new notes ...", "Ok");
@@ -364,6 +370,9 @@ export class BoardComponent implements OnInit {
     return "0";
   }
 
+  /**
+   * Sends data used in the sidenav data to the sidenav
+   */
   private emitDataToSidenav(board: Board) {
     const sidenavData: BoardData = {
       id: board.id,
@@ -375,5 +384,15 @@ export class BoardComponent implements OnInit {
       creator: board.creator
     };
     this.boardLoaded.emit(sidenavData);
+  }
+
+  /**
+   * Updates the map of content of the notes
+   */
+  private updateOriginalNotesContentMap(board: Board) {
+    // create hashtable of notes content in original language
+    this.board.notes.forEach(note => {
+      this.notesOriginalContent[note.id] = note.content;
+    });
   }
 }
