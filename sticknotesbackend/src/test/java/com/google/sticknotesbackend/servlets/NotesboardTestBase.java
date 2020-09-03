@@ -137,7 +137,7 @@ public abstract class NotesboardTestBase {
   /**
    * Creates a mock user and stores the user in the datastore
    */
-  protected User createUser() {
+  private User createUser() {
     // creating mock user with random email and nickname to avoid data duplication
     String uuid = UUID.randomUUID().toString();
     String userEmail = uuid + "@google.com";
