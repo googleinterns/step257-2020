@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Vector2 } from '../utility/vector';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { noSpacesValidator } from '../utility/util';
+import { onlySpacesValidator } from '../utility/util';
 import { CreateNoteApiData, Note, NotePopupData } from '../interfaces';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
@@ -13,28 +13,42 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './new-note.component.html',
   styleUrls: ['./new-note.component.css']
 })
-export class NewNoteComponent implements OnInit {
+export class NewNoteComponent {
+  // Position of the board in the grid, used in "create" mode
   private position: Vector2;
+  // id of the board for which note is created
   private boardId: string;
-  // this component can be in 2 states: editing the existing note or creating a new one
+  // This component can be in 2 states: editing the existing note or creating a new one
   private mode: State;
-  // this object stores the note the user edits in the moment
+  // This object stores the note the user edits in the moment
   private editableNote: Note = null;
+  // Text displayed in the "submit" button
   public submitButtonText: string;
-  // to disable button when the data is being sent to the server
+  // To disable button when the data is being sent to the server
   public sendingData = false;
 
+  // Form used in .html file, has a note content field and colors field
   public newNoteForm = new FormGroup({
     content: new FormControl('', [
+      // note must not be empty
       Validators.required,
-      noSpacesValidator,
-      Validators.maxLength(128) // just random number
+      // must not be of spaces only
+      onlySpacesValidator,
+      // must not have content longer than 256 characters
+      Validators.maxLength(256) // just random number
     ]),
-    options: new FormControl('1', [
+    // used in a radio buttons group
+    // '1' means to select the first radio button as default
+    colors: new FormControl('1', [
+      // must not be empty
       Validators.required
     ])
   });
 
+  /**
+   * Depending on the state, parses the data passed from the caller component in the appropriate way and
+   * initializes the component's fields
+   */
   constructor(@Inject(MAT_DIALOG_DATA) private data: NotePopupData,
     private notesApiService: NotesApiService,
     private dialogRef: MatDialogRef<NewNoteComponent>,
@@ -51,23 +65,23 @@ export class NewNoteComponent implements OnInit {
       // editing existing note
       this.editableNote = data.noteData as Note;
       this.newNoteForm.controls.content.setValue(this.editableNote.content);
-      this.newNoteForm.controls.options.setValue(this.getValueByHex(this.editableNote.color));
+      this.newNoteForm.controls.colors.setValue(this.getValueByHex(this.editableNote.color));
       this.submitButtonText = 'Update';
       this.mode = State.EDIT;
     }
   }
 
-  ngOnInit(): void {
-  }
-
-  // creates new note
+  /**
+   * Creates a new note - validates the form and sends the POST request to the server
+   * Passes the created note back to the caller component 
+   */
   private createNote(): void {
     if (this.newNoteForm.valid) {
       // disable button
       this.sendingData = true;
       // construct note payload
       const noteContent = this.newNoteForm.controls.content.value;
-      const noteColor = this.getColorHexValue(this.newNoteForm.controls.options.value);
+      const noteColor = this.getColorHexValue(this.newNoteForm.controls.colors.value);
       const noteData: CreateNoteApiData = {
         x: this.position.x,
         y: this.position.y,
@@ -89,14 +103,17 @@ export class NewNoteComponent implements OnInit {
     }
   }
 
-  // updates the note
+  /**
+   * Updates an existing note - checks that the form is valid and sends data to the server
+   * Passes the updated note back to the caller component 
+   */
   private updateNote(): void {
     if (this.newNoteForm.valid) {
       // disable button
       this.sendingData = true;
       // update editableNote object fields
       this.editableNote.content = this.newNoteForm.controls.content.value;
-      this.editableNote.color = this.getColorHexValue(this.newNoteForm.controls.options.value);
+      this.editableNote.color = this.getColorHexValue(this.newNoteForm.controls.colors.value);
       this.notesApiService.updateNote(this.editableNote).subscribe(note => {
         this.dialogRef.close(note);
       }, err => {
@@ -108,6 +125,9 @@ export class NewNoteComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles "submit" button click. Depending on the current state of the component, either creates or updates the note
+   */
   public handleSubmit(): void {
     if (this.mode === State.EDIT) {
       this.updateNote();
@@ -116,6 +136,9 @@ export class NewNoteComponent implements OnInit {
     }
   }
 
+  /**
+   * Converts radio button value to color hex value
+   */
   public getColorHexValue(val: string): string {
     switch (val) {
       case '1': {
@@ -132,6 +155,9 @@ export class NewNoteComponent implements OnInit {
     }
   }
 
+  /**
+   * Converts color hex value to radio button value
+   */
   public getValueByHex(color: string): string {
     switch (color) {
       case '#ffff99': {
