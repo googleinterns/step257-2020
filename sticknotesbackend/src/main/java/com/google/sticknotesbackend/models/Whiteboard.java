@@ -10,15 +10,18 @@ import java.util.ArrayList;
 @Entity
 @Cache(expirationSeconds = 600) // expire cache after ten minutes
 public class Whiteboard {
+  // used by load group in order to not load notes
+  public static class WithoutNotesAndCreator {}
+
   public @Id Long id;
   public Long creationDate; // it's a timestamp
   public Long lastUpdated; // time when board was last updated
-  private @Load Ref<User> creator;
+  private @Load(unless=WithoutNotesAndCreator.class) Ref<User> creator;
   public String title;
   public int rows;
   public int cols;
   public String backgroundImg;
-  public @Load ArrayList<Ref<Note>> notes = new ArrayList<Ref<Note>>();
+  public @Load(unless=WithoutNotesAndCreator.class) ArrayList<Ref<Note>> notes = new ArrayList<Ref<Note>>();
 
   public Whiteboard() {
     this.rows = -1;
