@@ -37,6 +37,7 @@ public class TranslateTextServlet extends AppAbstractServlet {
       validateRequestData(body, response, requiredFields);
     } catch (PayloadValidationException ex) {
       badRequest(ex.getMessage(), response);
+      return;
     }
     // get list of texts that has to be translated
     JsonArray textsJsonArray = body.get("texts").getAsJsonArray();
