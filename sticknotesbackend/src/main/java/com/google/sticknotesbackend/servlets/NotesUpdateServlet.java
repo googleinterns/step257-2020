@@ -23,7 +23,7 @@ import com.google.sticknotesbackend.models.UpdateQueryData;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.google.sticknotesbackend.serializers.NoteSerializer;
 
-@WebServlet("api/notes-update/")
+@WebServlet("api/notes-updates/")
 public class NotesUpdateServlet extends AppAbstractServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
