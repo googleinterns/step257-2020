@@ -2,6 +2,7 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -11,6 +12,7 @@ import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.google.sticknotesbackend.serializers.WhiteboardWithoutNotesSerializer;
+import com.googlecode.objectify.Key;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -47,7 +49,8 @@ public class BoardUpdatesServlet extends BoardAbstractServlet {
     // get client's last updated value from the datastore
     Long clientsValue = jsonObject.get("lastUpdated").getAsLong();
     // check if board in datastore has newer timestamp than the client's board
-    Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
+    Key<Whiteboard> boardKey = Key.create(Whiteboard.class, boardId);
+    Whiteboard board = ofy().load().group(Whiteboard.WithoutNotesAndCreator.class).key(boardKey).now();
     if (board.lastUpdated != clientsValue) {
       // send update
       Gson gson = getBoardUpdateGsonParser();

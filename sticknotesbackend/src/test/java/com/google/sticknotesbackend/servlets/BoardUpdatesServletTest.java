@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.googlecode.objectify.Ref;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -54,6 +55,8 @@ public class BoardUpdatesServletTest extends NotesboardTestBase {
   @Test
   public void testUpdatesSentIfTimestampsAreNotEqual() throws IOException, ServletException {
     Whiteboard board = createBoard();
+    board.notes.add(Ref.create(createNote()));
+    board.notes.add(Ref.create(createNote()));
     User user = createUserSafe();
     logIn(user);
     board.setCreator(user);
@@ -68,6 +71,7 @@ public class BoardUpdatesServletTest extends NotesboardTestBase {
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestData.toString())));
     // do request
     boardUpdatesServlet.doPost(mockRequest, mockResponse);
+    System.out.println(responseWriter.toString());
     assertThat(responseWriter.toString()).isEqualTo(boardUpdatesServlet.getBoardUpdateGsonParser().toJson(board));
   }
 }
