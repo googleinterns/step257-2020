@@ -23,7 +23,7 @@ export class BoardComponent implements OnInit {
   @Output() boardLoaded = new EventEmitter<BoardData>(true);
 
   /**
-   * Used by board-container component to pass update board data
+   * Used by board-container component to pass updated board data
    */
   @Input()
   set boardUpdatedData(data: BoardData) {
@@ -104,16 +104,7 @@ export class BoardComponent implements OnInit {
       this.board = _.merge(this.board, board);
       this.updateBoardAbstractGrid();
       // pass essential board's data to the sidenav
-      const sidenavData: BoardData = {
-        id: board.id,
-        title: board.title,
-        creationDate: board.creationDate,
-        backgroundImg: board.backgroundImg,
-        rows: board.rows,
-        cols: board.cols,
-        creator: board.creator
-      };
-      this.boardLoaded.emit(sidenavData);
+      this.emitDataToSidenav(board);
       // create hashtable of notes content in original language
       this.board.notes.forEach(note => {
         this.notesOriginalContent[note.id] = note.content;
@@ -169,6 +160,8 @@ export class BoardComponent implements OnInit {
           this.board.rows = newBoard.rows;
           this.board.title = newBoard.title;
           this.board.lastUpdated = newBoard.lastUpdated;
+          // update sidebar data
+          this.emitDataToSidenav(this.board);
         }
       });
     }
@@ -369,5 +362,18 @@ export class BoardComponent implements OnInit {
       return this.board.lastUpdated;
     }
     return "0";
+  }
+
+  private emitDataToSidenav(board: Board) {
+    const sidenavData: BoardData = {
+      id: board.id,
+      title: board.title,
+      creationDate: board.creationDate,
+      backgroundImg: board.backgroundImg,
+      rows: board.rows,
+      cols: board.cols,
+      creator: board.creator
+    };
+    this.boardLoaded.emit(sidenavData);
   }
 }
