@@ -24,7 +24,7 @@
                   <mat-icon class="note-icon">edit</mat-icon>
                 </button>
               </div>
-              <mat-icon *ngIf="canModifyNote(note)" [discdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+              <mat-icon *ngIf="canModifyNote(note)" cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
             </div>
             <p>{{note.creator.email}}</p>
             <p>{{getNoteContent(note)}}</p>
