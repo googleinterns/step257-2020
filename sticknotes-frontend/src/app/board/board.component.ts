@@ -108,16 +108,12 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     // fetch board roles, first emitted value is default, second is actual array
     this.boardUsersApiService.getBoardUsersSubject().subscribe(roles => {
-      console.log('emitted in subject');
       this.boardRoles = roles;
-      console.log(roles);
     });
 
     // fetch current user
     this.userService.getUser().subscribe(user => {
-      console.log('emitted in getuser');
       this.currentUser = user;
-      console.log(this.currentUser);
     });
   }
 
