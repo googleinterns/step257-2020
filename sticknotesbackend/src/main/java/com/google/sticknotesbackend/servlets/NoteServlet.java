@@ -66,6 +66,7 @@ public class NoteServlet extends NoteAbstractServlet {
         .now();
     note.setCreator(user);
     note.creationDate = System.currentTimeMillis();
+    note.lastUpdated = System.currentTimeMillis();
     // save the note and set id
     note.id = ofy().save().entity(note).now().getId();
     // add reference to the note at this board
