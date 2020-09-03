@@ -66,7 +66,6 @@ public class NotesUpdateServlet extends AppAbstractServlet {
 
     response.getWriter().println(jsonResponse);
     response.setStatus(OK);
-    return;
   }
 
   private Gson getNoteGsonParser() {

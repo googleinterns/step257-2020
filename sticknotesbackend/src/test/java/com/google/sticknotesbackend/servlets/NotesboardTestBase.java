@@ -130,7 +130,7 @@ public abstract class NotesboardTestBase {
     note.setCreator(createUser());
     note.lastUpdated = System.currentTimeMillis();
     note.creationDate = System.currentTimeMillis();
-    ofy().save().entity(note).now().getId();
+    ofy().save().entity(note).now();
     return note;
   }
 
