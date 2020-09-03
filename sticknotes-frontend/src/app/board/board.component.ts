@@ -11,6 +11,7 @@ import { State } from '../enums/state.enum';
 import { BoardApiService } from '../services/board-api.service';
 import { TranslateService } from '../services/translate.service';
 import _ from 'lodash';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-board',
@@ -63,6 +64,8 @@ export class BoardComponent implements OnInit {
   // hashtable which has translation for every note
   // note.id mapped to note translation
   private notesTranslation = {};
+  // another hashtable that stores the original version of notes content
+  private notesOriginalContent = {}
   private notesTargetLanguage = null;
   private boardGrid: number[][];
   public board: Board;
@@ -73,7 +76,8 @@ export class BoardComponent implements OnInit {
     private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private notesApiService: NotesApiService,
-    private translateService: TranslateService) {
+    private translateService: TranslateService,
+    private snackBar: MatSnackBar) {
   }
 
   ngOnInit(): void {
@@ -110,6 +114,10 @@ export class BoardComponent implements OnInit {
         creator: board.creator
       };
       this.boardLoaded.emit(sidenavData);
+      // create hashtable of notes content in original language
+      this.board.notes.forEach(note => {
+        this.notesOriginalContent[note.id] = note.content;
+      })
     });
   }
 
@@ -120,33 +128,21 @@ export class BoardComponent implements OnInit {
       this.board.notes.forEach(note => {
         notesTimestamps.push({ id: note.id, lastUpdated: this.getNoteLastUpdated(note)});
       });
-      console.log(notesTimestamps);
       // send a request
       this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((newNotes) => {
         const notesWithUpdatedContent = [];
         // server returns array of notes that have been changed, find local copy of that notes and update them
         for (const newNote of newNotes) {
-          // lets have this n^2 algo for now, will imrove it later
-          let note = this.board.notes.find(note => note.id === newNote.id);
-          // if existing note is updated, 
-          if (note) {
-            // if content was changed and translation is enabled, redo translation
-            if (this.notesTargetLanguage && note.content !== newNote.content) {
-              notesWithUpdatedContent.push(note);
-            }
-            // update remaing note's data
-            note = _.merge(note, newNote);
-          } else {
-            // if new note, just add to the board notes array
-            this.board.notes.push(newNote);
-            // if translation is enabled, add note to the list of notes that have to be translated
-            if (this.notesTargetLanguage) {
-              notesWithUpdatedContent.push(newNote);
-            }
+          // if content of the existing note was updated and translation is enabled, add notes content to translation array
+          if (this.notesTargetLanguage && newNote.content !== this.notesOriginalContent[newNote.id]) {
+            notesWithUpdatedContent.push(newNote);
           }
         }
+        // merge notes
+        this.board.notes = _.merge(this.board.notes, newNotes);
         // if any notes must be translated, execute translation
         if (notesWithUpdatedContent.length) {
+          const snackbarRef = this.snackBar.open("Translating new notes ...", "Ok");
           const textsToTranslate = [];
           notesWithUpdatedContent.forEach(note => {
             textsToTranslate.push(note.content);
@@ -157,6 +153,8 @@ export class BoardComponent implements OnInit {
               const note = notesWithUpdatedContent[i];
               this.notesTranslation[note.id] = data.result[i];
             }
+            // close dialgo saying that notes are being translated after translation is completed
+            snackbarRef.dismiss();
           });
         }
       });
