@@ -11,7 +11,7 @@ import { tap } from 'rxjs/operators';
 export class BoardUsersApiService {
   // UserBoardRole array is used in many places, so to share data across components
   // subject is used
-  private userBoardRolesSubject = new BehaviorSubject<UserBoardRole[]>([]);
+  private userBoardRolesSubject = new BehaviorSubject<UserBoardRole[]>(null);
   constructor(private http: HttpClient) {
   }
 

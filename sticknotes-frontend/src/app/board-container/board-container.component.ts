@@ -40,7 +40,8 @@ export class BoardContainerComponent {
   constructor(private router: Router, private dialog: MatDialog, private boardUsersApiService: BoardUsersApiService, private userService: UserService) { 
     forkJoin([
       this.userService.getUser().pipe(take(1)),
-      this.boardUsersApiService.getBoardUsersSubject()
+      // first emitted default value of behavior subject, second is actual rules
+      this.boardUsersApiService.getBoardUsersSubject().pipe(take(2))
     ]).subscribe(([user, roles]) => {
       const role = roles.find(r => r.user.id === user.id);
       this.canEditBoard = (role && (role.role === 'OWNER' || role.role === 'ADMIN'));
