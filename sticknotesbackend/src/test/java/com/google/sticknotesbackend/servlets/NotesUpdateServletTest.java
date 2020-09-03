@@ -10,6 +10,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.gson.JsonArray;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.UpdateQueryData;
+import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
 import com.google.gson.JsonObject;
@@ -38,11 +39,13 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
   }
 
   @Test
-  public void test() throws IOException {
+  public void testLastUpdatedNull() throws IOException {
     Gson gson = notesUpdateServlet.getNoteGsonParser();
     Whiteboard board = createBoard();
-
-    Note note = createNoteWithCreatorAndDates();
+    User creator = createUserSafe();
+    Note note = createNote();
+    note.setCreator(creator);
+    ofy().save().entity(note);
 
     board.notes.add(Ref.create(note));
 
