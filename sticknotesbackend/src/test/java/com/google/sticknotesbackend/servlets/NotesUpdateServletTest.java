@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.gson.JsonArray;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.UpdateQueryData;
@@ -14,6 +15,8 @@ import com.googlecode.objectify.Ref;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +51,7 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     board.notes.add(Ref.create(note3));
     board.notes.add(Ref.create(note4));
 
-    Gson gson = new Gson();
+    Gson gson = notesUpdateServlet.getNoteGsonParser();
     JsonObject requestBody = new JsonObject();
     JsonArray requestArray = new JsonArray();
 
@@ -64,6 +67,15 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestBody.toString())));
 
     notesUpdateServlet.doPost(mockRequest, mockResponse);
+
+    JsonArray expectedResponse = new JsonArray();
+
+    // veryfing response
+    verify(mockResponse).setContentType("application/json");
+    verify(mockResponse).setStatus(OK);
+
+    JsonArray actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonArray.class);
+    assertEquals(expectedResponse, actualResponse);
   }
 
   @Test
@@ -80,7 +92,7 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     board.notes.add(Ref.create(note3));
     board.notes.add(Ref.create(note4));
 
-    Gson gson = new Gson();
+    Gson gson = notesUpdateServlet.getNoteGsonParser();
     JsonObject requestBody = new JsonObject();
     JsonArray requestArray = new JsonArray();
 
@@ -92,11 +104,23 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
 
     note4.lastUpdated+=1;
 
+    ofy().save().entity(note4).now();
+
     requestBody.add("notes", requestArray);
     requestBody.addProperty("boardId", board.id.toString());
 
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestBody.toString())));
 
     notesUpdateServlet.doPost(mockRequest, mockResponse);
+
+    JsonArray expectedResponse = new JsonArray();
+    expectedResponse.add(gson.toJsonTree(note4));
+
+    // veryfing response
+    verify(mockResponse).setContentType("application/json");
+    verify(mockResponse).setStatus(OK);
+
+    JsonArray actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonArray.class);
+    assertEquals(expectedResponse, actualResponse);
   }
 }

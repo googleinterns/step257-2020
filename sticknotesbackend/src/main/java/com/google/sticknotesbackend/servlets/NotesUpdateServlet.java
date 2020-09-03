@@ -71,11 +71,12 @@ public class NotesUpdateServlet extends AppAbstractServlet {
     //creates list of notes to return
     String jsonResponse = getNoteGsonParser().toJson(notesMap.values());
 
+    response.setContentType("application/json");
     response.getWriter().println(jsonResponse);
     response.setStatus(OK);
   }
 
-  private Gson getNoteGsonParser() {
+  public Gson getNoteGsonParser() {
     GsonBuilder gson = new GsonBuilder();
     gson.registerTypeAdapter(Note.class, new NoteSerializer());
     Gson parser = gson.create();
