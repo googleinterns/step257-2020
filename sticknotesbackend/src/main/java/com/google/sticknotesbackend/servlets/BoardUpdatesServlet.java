@@ -2,16 +2,14 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Whiteboard;
-import com.google.sticknotesbackend.serializers.WhiteboardWithoutNotesSerializer;
 import com.googlecode.objectify.Key;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -23,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  * Provides endpoint for retrieving board updates
  */
 @WebServlet("api/board-updates/")
-public class BoardUpdatesServlet extends BoardAbstractServlet {
+public class BoardUpdatesServlet extends AppAbstractServlet{
   /**
    * Returns updated board object if board was updated and client doesn't have the newest version of the board.
    * If client has the most up-to-date version, returns empty JSON object {}
@@ -53,21 +51,10 @@ public class BoardUpdatesServlet extends BoardAbstractServlet {
     Whiteboard board = ofy().load().group(Whiteboard.WithoutNotesAndCreator.class).key(boardKey).now();
     if (board.lastUpdated != clientsValue) {
       // send update
-      Gson gson = getBoardUpdateGsonParser();
+      Gson gson = JsonParsers.getBoardUpdateGsonParser();
       response.getWriter().print(gson.toJson(board));
     } else {
       response.getWriter().print("{}");
     }
-  }
-
-  /**
-   * Generates a Gson object that uses custom WhiteboardWithoutNotesSerializer when
-   * serializing Whiteboard objects.
-   */
-  public Gson getBoardUpdateGsonParser() {
-    GsonBuilder gson = new GsonBuilder();
-    gson.registerTypeAdapter(Whiteboard.class, new WhiteboardWithoutNotesSerializer());
-    Gson parser = gson.create();
-    return parser;
   }
 }

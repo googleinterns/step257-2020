@@ -8,13 +8,11 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.cloud.translate.Translate;
-import com.google.cloud.translate.TranslateOptions;
-import com.google.cloud.translate.Translation;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
@@ -31,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
  * "id" - retrieve a board
  */
 @WebServlet("api/board/")
-public class BoardServlet extends BoardAbstractServlet {
+public class BoardServlet extends AppAbstractServlet {
   /**
    * Retrieves a board with the given url param "id"
    */
@@ -53,7 +51,7 @@ public class BoardServlet extends BoardAbstractServlet {
         handleBadPermission(perm, response);
         return;
       }
-      Gson gson = getBoardGsonParser();
+      Gson gson = JsonParsers.getBoardGsonParser();
       response.getWriter().print(gson.toJson(board));
     } else {
       badRequest("No id parameter", response);
@@ -82,7 +80,7 @@ public class BoardServlet extends BoardAbstractServlet {
       return;
     }
     // construct a gson that uses custom Whiteboard serializer
-    Gson gson = getBoardGsonParser();
+    Gson gson = JsonParsers.getBoardGsonParser();
     Whiteboard board = gson.fromJson(jsonPayload, Whiteboard.class);
     board.creationDate = System.currentTimeMillis();
     board.lastUpdated = System.currentTimeMillis();

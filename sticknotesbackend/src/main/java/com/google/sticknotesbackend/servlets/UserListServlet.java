@@ -1,26 +1,25 @@
 package com.google.sticknotesbackend.servlets;
 
-import java.io.IOException;
-import java.util.List;
-
 import static com.googlecode.objectify.ObjectifyService.ofy;
+
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.gson.JsonObject;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import com.google.sticknotesbackend.serializers.UserBoardRoleSerializer;
-import com.googlecode.objectify.Key;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.googlecode.objectify.Key;
+import java.io.IOException;
+import java.util.List;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("api/board/users/")
 public class UserListServlet extends AppAbstractServlet {
@@ -39,7 +38,7 @@ public class UserListServlet extends AppAbstractServlet {
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
       if (board != null) {
         List<UserBoardRole> boardUsers = ofy().load().type(UserBoardRole.class).ancestor(board).list();
-        Gson userBoardRoleParser = getBoardRoleGsonParser();
+        Gson userBoardRoleParser = JsonParsers.getBoardRoleGsonParser();
 
         String responseJson = userBoardRoleParser.toJson(boardUsers);
 
@@ -72,7 +71,7 @@ public class UserListServlet extends AppAbstractServlet {
 
     Long boardId = Long.parseLong(boardIdParam);
 
-    Gson gson = getBoardRoleGsonParser();
+    Gson gson = JsonParsers.getBoardRoleGsonParser();
     JsonObject body = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     if (!body.has("email") || !body.has("role")) {
       badRequest("Request has to contain 'email' and 'role' property", response);
@@ -162,12 +161,5 @@ public class UserListServlet extends AppAbstractServlet {
     ofy().delete().entity(boardRole).now();
     response.setStatus(OK);
     return;
-  }
-
-  public Gson getBoardRoleGsonParser() {
-    GsonBuilder gson = new GsonBuilder();
-    gson.registerTypeAdapter(UserBoardRole.class, new UserBoardRoleSerializer());
-    Gson parser = gson.create();
-    return parser;
   }
 }
