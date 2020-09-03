@@ -29,8 +29,6 @@ public class WhiteboardWithoutNotesSerializer implements JsonSerializer<Whiteboa
     board.addProperty("rows", src.rows);
     board.addProperty("cols", src.cols);
     board.addProperty("backgroundImg", src.backgroundImg);
-    // Creator is the nested element of the JSON object
-    board.add("creator", new Gson().toJsonTree(src.getCreator()));
     return board;
   }
 }
