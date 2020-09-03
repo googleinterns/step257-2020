@@ -24,7 +24,7 @@ import com.google.sticknotesbackend.models.Whiteboard;
 import com.google.sticknotesbackend.serializers.NoteSerializer;
 
 /**
- * This servlet as a backend of live update of notes.
+ * This servlet is a backend of note live update feature.
  * Client is sending list of queries that are used to check if the note is up to date so
  * request contains following body: "notes":[{"id":231,"lastUpdated":32141424334},{"id":232,"lastUpdated":32141424322},...]
  * response contains list of notes that have been recognized as updated or are new in the board
