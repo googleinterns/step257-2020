@@ -160,7 +160,7 @@ export class BoardComponent implements OnInit {
       });
 
       // pull board updates
-      const boardRequestData = {id: this.board.id, lastUpdated: this.board.lastUpdated};
+      const boardRequestData = {id: this.board.id, lastUpdated: this.boardLastUpdated};
       this.boardApiService.getUpdatedBoard(boardRequestData).subscribe(newBoard => {
         // if there is an update
         if (newBoard) {
@@ -360,6 +360,13 @@ export class BoardComponent implements OnInit {
   private getNoteLastUpdated(note: Note): string {
     if (note.lastUpdated) {
       return note.lastUpdated;
+    }
+    return "0";
+  }
+
+  get boardLastUpdated() {
+    if (this.board && this.board.lastUpdated) {
+      return this.board.lastUpdated;
     }
     return "0";
   }
