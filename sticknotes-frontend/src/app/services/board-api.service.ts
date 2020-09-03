@@ -38,4 +38,11 @@ export class BoardApiService {
   public myBoardsList(): Observable<BoardPreview[]> {
     return this.http.get<BoardPreview[]>('api/myboards/');
   }
+
+  /**
+   * Returns the updated board if there is any update
+   */
+  public getUpdatedBoard(data: any): Observable<Board> {
+    return this.http.post<Board>('api/board-updates/', data);
+  }
 }

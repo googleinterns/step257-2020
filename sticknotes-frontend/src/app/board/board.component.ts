@@ -1,8 +1,8 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board, BoardData } from '../interfaces';
+import { Note, Board, BoardData, NoteUpdateRequest } from '../interfaces';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -11,18 +11,19 @@ import { State } from '../enums/state.enum';
 import { BoardApiService } from '../services/board-api.service';
 import { TranslateService } from '../services/translate.service';
 import _ from 'lodash';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, OnDestroy {
 
   @Output() boardLoaded = new EventEmitter<BoardData>(true);
 
   /**
-   * Used by board-container component to pass update board data
+   * Used by board-container component to pass updated board data
    */
   @Input()
   set boardUpdatedData(data: BoardData) {
@@ -44,6 +45,7 @@ export class BoardComponent implements OnInit {
   set notesLanguage(notesTargetLanguage: string) {
     // do translation here
     if (notesTargetLanguage && this.board.notes) {
+      this.notesTargetLanguage = notesTargetLanguage;
       const texts = [];
       this.board.notes.forEach(note => {
         texts.push(note.content);
@@ -62,16 +64,26 @@ export class BoardComponent implements OnInit {
   // hashtable which has translation for every note
   // note.id mapped to note translation
   private notesTranslation = {};
+  // another hashtable that stores the original version of notes content
+  private notesOriginalContent = {}
+  private notesTargetLanguage = null;
   private boardGrid: number[][];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
+  private intervalFun: any = null;
 
   constructor(private boardApiService: BoardApiService,
     private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private notesApiService: NotesApiService,
-    private translateService: TranslateService) {
+    private translateService: TranslateService,
+    private snackBar: MatSnackBar) {
+  }
+
+  // destroys setInterval
+  ngOnDestroy(): void {
+    clearInterval(this.intervalFun);
   }
 
   ngOnInit(): void {
@@ -80,10 +92,10 @@ export class BoardComponent implements OnInit {
       const boardId = params.get('id'); // get board id from route param
       // load board with the key
       this.fetchBoardData(boardId);
-      // fetch board data each 5 seconds from the server
-      setInterval(() => {
-        this.fetchBoardData(boardId);
-      }, 5000);
+      // fetch updates data each 2 seconds from the server
+      this.intervalFun = setInterval(() => {
+        this.fetchUpdate();
+      }, 2000);
     });
   }
 
@@ -98,18 +110,75 @@ export class BoardComponent implements OnInit {
       this.board = _.merge(this.board, board);
       this.updateBoardAbstractGrid();
       // pass essential board's data to the sidenav
-      const sidenavData: BoardData = {
-        id: board.id,
-        title: board.title,
-        creationDate: board.creationDate,
-        backgroundImg: board.backgroundImg,
-        rows: board.rows,
-        cols: board.cols,
-        creator: board.creator
-      };
-      this.boardLoaded.emit(sidenavData);
+      this.emitDataToSidenav(board);
+      // create hashtable of notes content in original language
+      this.updateOriginalNotesContentMap(board);
     });
   }
+
+  /**
+   * Fetches an updated content of notes and board from the server
+   */
+  private fetchUpdate() {
+    if (this.board) {
+      // generate notes update request
+      const notesTimestamps: NoteUpdateRequest[] = [];
+      this.board.notes.forEach(note => {
+        notesTimestamps.push({ id: note.id, lastUpdated: this.getNoteLastUpdated(note)});
+      });
+      // send a request
+      this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((newNotes) => {
+        const notesWithUpdatedContent = [];
+        // server returns array of notes that have been changed, find local copy of that notes and update them
+        // merge notes
+        const ids = new Set(this.board.notes.map(n => n.id));
+        this.board.notes = [...this.board.notes, ...newNotes.filter(n => !ids.has(n.id))];
+        // update map of original notes texts
+        this.updateOriginalNotesContentMap(this.board);
+        // update abstract grid
+        this.updateBoardAbstractGrid();
+        for (const newNote of newNotes) {
+          // if content of the existing note was updated and translation is enabled, add notes content to translation array
+          if (this.notesTargetLanguage && newNote.content !== this.notesOriginalContent[newNote.id]) {
+            notesWithUpdatedContent.push(newNote);
+          }
+        }
+        // if any notes must be translated, execute translation
+        if (notesWithUpdatedContent.length) {
+          const snackbarRef = this.snackBar.open("Translating new notes ...", "Ok");
+          const textsToTranslate = [];
+          notesWithUpdatedContent.forEach(note => {
+            textsToTranslate.push(note.content);
+          });
+          // send array of note content to the translate api and update local translation hashtable
+          this.translateService.translateArray(textsToTranslate, this.notesTargetLanguage).subscribe(data => {
+            for (let i = 0; i < notesWithUpdatedContent.length; ++i) {
+              const note = notesWithUpdatedContent[i];
+              this.notesTranslation[note.id] = data.result[i];
+            }
+            // close dialgo saying that notes are being translated after translation is completed
+            snackbarRef.dismiss();
+          });
+        }
+      });
+
+      // pull board updates
+      const boardRequestData = {id: this.board.id, lastUpdated: this.boardLastUpdated};
+      this.boardApiService.getUpdatedBoard(boardRequestData).subscribe(newBoard => {
+        // if there is an update
+        if (newBoard) {
+          this.board.backgroundImg = newBoard.backgroundImg;
+          this.board.cols = newBoard.cols;
+          this.board.rows = newBoard.rows;
+          this.board.title = newBoard.title;
+          this.board.lastUpdated = newBoard.lastUpdated;
+          // update sidebar data
+          this.emitDataToSidenav(this.board);
+        }
+      });
+    }
+  }
+
   // updates the z-index of the note
   public onNoteDragStart(cdkDragStart: CdkDragStart): void {
     const elementRef = cdkDragStart.source.element.nativeElement;
@@ -291,5 +360,45 @@ export class BoardComponent implements OnInit {
       return this.notesTranslation[note.id];
     }
     return note.content;
+  }
+
+  private getNoteLastUpdated(note: Note): string {
+    if (note.lastUpdated) {
+      return note.lastUpdated;
+    }
+    return "0";
+  }
+
+  get boardLastUpdated() {
+    if (this.board && this.board.lastUpdated) {
+      return this.board.lastUpdated;
+    }
+    return "0";
+  }
+
+  /**
+   * Sends data used in the sidenav data to the sidenav
+   */
+  private emitDataToSidenav(board: Board) {
+    const sidenavData: BoardData = {
+      id: board.id,
+      title: board.title,
+      creationDate: board.creationDate,
+      backgroundImg: board.backgroundImg,
+      rows: board.rows,
+      cols: board.cols,
+      creator: board.creator
+    };
+    this.boardLoaded.emit(sidenavData);
+  }
+
+  /**
+   * Updates the map of content of the notes
+   */
+  private updateOriginalNotesContentMap(board: Board) {
+    // create hashtable of notes content in original language
+    this.board.notes.forEach(note => {
+      this.notesOriginalContent[note.id] = note.content;
+    });
   }
 }
