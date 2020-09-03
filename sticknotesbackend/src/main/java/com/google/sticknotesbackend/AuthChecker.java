@@ -94,7 +94,9 @@ public class AuthChecker {
     return Permission.NOAUTH;
   }
 
-  // permission for adding/removing are the same
+  /**
+   * Permission for adding/removing are the same
+   */
   public static Permission userListModifyPermission(Role role, Whiteboard board) {
     UserService userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {

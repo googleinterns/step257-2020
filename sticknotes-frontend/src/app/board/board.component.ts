@@ -9,6 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
 import { BoardApiService } from '../services/board-api.service';
+import { TranslateService } from '../services/translate.service';
 import _ from 'lodash';
 
 @Component({
@@ -37,17 +38,30 @@ export class BoardComponent implements OnInit {
   }
 
   /**
-   * Input used to set target language of notes
+   * Input used to set target language of notes and translate notes
    */
   @Input()
   set notesLanguage(notesTargetLanguage: string) {
-    this.notesTargetLanguage = notesTargetLanguage;
-    if (this.board) {
-      this.fetchBoardData(this.board.id);
+    // do translation here
+    if (notesTargetLanguage && this.board.notes) {
+      const texts = [];
+      this.board.notes.forEach(note => {
+        texts.push(note.content);
+      });
+      // do a request to translate api
+      this.translateService.translateArray(texts, notesTargetLanguage).subscribe(data => {
+        for (let i = 0; i < this.board.notes.length; ++i) {
+          const note = this.board.notes[i];
+          // create mapping from note to translated text
+          this.notesTranslation[note.id] = data.result[i];
+        }
+      });
     }
   }
 
-  private notesTargetLanguage: string = null;
+  // hashtable which has translation for every note
+  // note.id mapped to note translation
+  private notesTranslation = {};
   private boardGrid: number[][];
   public board: Board;
   public readonly NOTE_WIDTH = 200;
@@ -56,7 +70,8 @@ export class BoardComponent implements OnInit {
   constructor(private boardApiService: BoardApiService,
     private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
-    private notesApiService: NotesApiService) {
+    private notesApiService: NotesApiService,
+    private translateService: TranslateService) {
   }
 
   ngOnInit(): void {
@@ -79,8 +94,7 @@ export class BoardComponent implements OnInit {
    */
   private fetchBoardData(boardId: string) {
     // load board with the key
-    this.boardApiService.getBoard(boardId, this.notesTargetLanguage).subscribe(board => {
-      // this.board = board;
+    this.boardApiService.getBoard(boardId).subscribe(board => {
       this.board = _.merge(this.board, board);
       this.updateBoardAbstractGrid();
       // pass essential board's data to the sidenav
@@ -267,5 +281,15 @@ export class BoardComponent implements OnInit {
 
   public getNoteCreationDate(note: Note) {
     return new Date(Number(note.creationDate));
+  }
+
+  /**
+   * Returns translated note text if there is a translation or original note text
+   */
+  public getNoteContent(note: Note) {
+    if (this.notesTranslation && this.notesTranslation[note.id]) {
+      return this.notesTranslation[note.id];
+    }
+    return note.content;
   }
 }

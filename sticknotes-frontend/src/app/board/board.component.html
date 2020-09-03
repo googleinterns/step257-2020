@@ -27,7 +27,7 @@
               <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
             </div>
             <p>{{note.creator.email}}</p>
-            <p>{{note.content}}</p>
+            <p>{{getNoteContent(note)}}</p>
             <img class="note-image" *ngIf="note.image" [src]="note.image" alt="Image attached to the note">
             <p>{{getNoteCreationDate(note) | amCalendar}}</p>
           </mat-card-content>
