@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
@@ -18,7 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, OnDestroy {
 
   @Output() boardLoaded = new EventEmitter<BoardData>(true);
 
@@ -71,6 +71,7 @@ export class BoardComponent implements OnInit {
   public board: Board;
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
+  private intervalFun: any = null;
 
   constructor(private boardApiService: BoardApiService,
     private dialog: MatDialog,
@@ -80,6 +81,11 @@ export class BoardComponent implements OnInit {
     private snackBar: MatSnackBar) {
   }
 
+  // destroys setInterval
+  ngOnDestroy(): void {
+    clearInterval(this.intervalFun);
+  }
+
   ngOnInit(): void {
     // load board
     this.activatedRoute.paramMap.subscribe(params => {
@@ -87,7 +93,7 @@ export class BoardComponent implements OnInit {
       // load board with the key
       this.fetchBoardData(boardId);
       // fetch updates data each 2 seconds from the server
-      setInterval(() => {
+      this.intervalFun = setInterval(() => {
         this.fetchUpdate();
       }, 2000);
     });
