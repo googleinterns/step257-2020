@@ -123,17 +123,14 @@ public abstract class NotesboardTestBase {
   }
 
   /**
-   * Creates a note with creator
+   * Creates a note with creator and lastUpdated, creationDates
    */
-  protected Note createNoteWithCreator() {
-    String uuid = UUID.randomUUID().toString();
-    Note note = new Note();
-    note.content = uuid + " note content";
-    note.x = 1;
-    note.y = 1;
-    note.color = "#000000";
-    note.id = ofy().save().entity(note).now().getId();
+  protected Note createNoteWithCreatorAndDates() {
+    Note note = createNote();
     note.setCreator(createUser());
+    note.lastUpdated = System.currentTimeMillis();
+    note.creationDate = System.currentTimeMillis();
+    ofy().save().entity(note).now().getId();
     return note;
   }
 

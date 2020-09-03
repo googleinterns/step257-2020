@@ -32,10 +32,6 @@ public class Note {
   public Note() {
     this.x = -1;
     this.y = -1;
-
-    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-    creationDate = timestamp.getTime();
-    lastUpdated = timestamp.getTime();
   }
 
   public void setCreator(User user) {

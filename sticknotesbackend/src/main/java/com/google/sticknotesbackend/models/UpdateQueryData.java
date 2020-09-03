@@ -12,11 +12,4 @@ public class UpdateQueryData {
     this.id = id;
     this.lastUpdated = lastUpdated;
   }
-
-  public boolean wasUpdated(){
-    Note noteFromDatastore = ofy().load().type(Note.class).id(this.id).now();
-    if(noteFromDatastore != null)
-      return !noteFromDatastore.lastUpdated.equals(this.lastUpdated);
-    return false;
-  }
 }
