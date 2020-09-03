@@ -7,21 +7,20 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import com.google.gson.JsonElement;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import java.io.BufferedReader;
-
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,7 +77,7 @@ public class UserListServletTest extends NotesboardTestBase {
     userListServlet.doGet(mockRequest, mockResponse);
 
     // preparing expected response based on dataset initialized in datastore
-    Gson gson = userListServlet.getBoardRoleGsonParser();
+    Gson gson = JsonParsers.getBoardRoleGsonParser();
     JsonArray expectedResponse = new JsonArray();
     expectedResponse.add(gson.toJsonTree(userBoardRole1));
     expectedResponse.add(gson.toJsonTree(userBoardRole2));
@@ -120,7 +119,7 @@ public class UserListServletTest extends NotesboardTestBase {
     userListServlet.doGet(mockRequest, mockResponse);
 
     // preparing expected response based on dataset initialized in datastore
-    Gson gson = userListServlet.getBoardRoleGsonParser();
+    Gson gson = JsonParsers.getBoardRoleGsonParser();
     JsonArray expectedResponse = new JsonArray();
     expectedResponse.add(gson.toJsonTree(userBoardRole5));
     expectedResponse.add(gson.toJsonTree(userBoardRole6));
@@ -159,7 +158,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doGet(mockRequest, mockResponse);
 
-    Gson gson = userListServlet.getBoardRoleGsonParser();
+    Gson gson = JsonParsers.getBoardRoleGsonParser();
     JsonArray expectedResponse = new JsonArray();
 
     // veryfing status
@@ -300,7 +299,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doPost(mockRequest, mockResponse);
 
-    Gson gson = userListServlet.getBoardRoleGsonParser();
+    Gson gson = JsonParsers.getBoardRoleGsonParser();
 
     // checking response status
     verify(mockResponse).setStatus(OK);
@@ -338,7 +337,7 @@ public class UserListServletTest extends NotesboardTestBase {
 
     userListServlet.doPost(mockRequest, mockResponse);
 
-    Gson gson = userListServlet.getBoardRoleGsonParser();
+    Gson gson = JsonParsers.getBoardRoleGsonParser();
 
     // checking response status
     verify(mockResponse).setStatus(OK);

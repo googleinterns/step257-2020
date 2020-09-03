@@ -134,7 +134,7 @@ public class NoteServletTest extends NotesboardTestBase {
   }
 
   @Test
-  public void testCreateNoteOnTheTakenSlot() throws IOException, ServletException {
+  public void testCreateNoteOnTheTakenSlotFails() throws IOException, ServletException {
     User user = createUserSafe();
     logIn(user);
     // create a board and a note

@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
  * endpoint, we create a new endpoint for editing that has another URI.
  */
 @WebServlet("api/edit-board/")
-public class EditBoardServlet extends BoardAbstractServlet {
+public class EditBoardServlet extends AppAbstractServlet {
   /**
    * Edits a board, for now only title editing is supported, returns an updated
    * board. The JSON payload must include field "id" and a set of editable fields
@@ -41,7 +42,7 @@ public class EditBoardServlet extends BoardAbstractServlet {
       return;
     }
     // construct a gson object that uses custom Whiteboard serializer
-    Gson gson = getBoardGsonParser();
+    Gson gson = JsonParsers.getBoardGsonParser();
     Whiteboard editedBoard = gson.fromJson(jsonPayload, Whiteboard.class);
     // get board that is to be edited from datastore
     Whiteboard board = ofy().load().type(Whiteboard.class).id(editedBoard.id).now();

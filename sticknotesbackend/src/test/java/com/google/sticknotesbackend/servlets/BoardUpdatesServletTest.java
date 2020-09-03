@@ -5,6 +5,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
@@ -71,6 +72,6 @@ public class BoardUpdatesServletTest extends NotesboardTestBase {
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestData.toString())));
     // do request
     boardUpdatesServlet.doPost(mockRequest, mockResponse);
-    assertThat(responseWriter.toString()).isEqualTo(boardUpdatesServlet.getBoardUpdateGsonParser().toJson(board));
+    assertThat(responseWriter.toString()).isEqualTo(JsonParsers.getBoardUpdateGsonParser().toJson(board));
   }
 }
