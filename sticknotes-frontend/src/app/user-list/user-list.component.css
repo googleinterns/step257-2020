@@ -2,7 +2,8 @@ mat-card {
   margin-top: 16px;
 }
 mat-card-content {
-  height: 600px;
+  height: calc(100vh - 530px);
+  min-height: 180px;
   width: 250px;
   overflow: scroll;
 }
