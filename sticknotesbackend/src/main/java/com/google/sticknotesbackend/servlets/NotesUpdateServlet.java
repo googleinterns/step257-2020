@@ -63,7 +63,7 @@ public class NotesUpdateServlet extends AppAbstractServlet {
 
     //remove note from map if it was not updated
     for(UpdateQueryData query : notesQueryArray){
-      if(notesMap.containsKey(query.id) && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)){
+      if(notesMap.containsKey(query.id) && notesMap.get(query.id).lastUpdated != null && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)){
         notesMap.remove(query.id);
       }
     }

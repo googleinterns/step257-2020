@@ -38,6 +38,38 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
   }
 
   @Test
+  public void test() throws IOException {
+    Gson gson = notesUpdateServlet.getNoteGsonParser();
+    Whiteboard board = createBoard();
+
+    Note note = createNoteWithCreatorAndDates();
+
+    board.notes.add(Ref.create(note));
+
+    JsonObject requestBody = new JsonObject();
+    JsonArray requestArray = new JsonArray();
+
+
+    requestArray.add(gson.toJsonTree(new UpdateQueryData(note.id, (long)0)));
+
+    requestBody.add("notes", requestArray);
+    requestBody.addProperty("boardId", board.id.toString());
+
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestBody.toString())));
+
+    notesUpdateServlet.doPost(mockRequest, mockResponse);
+
+    JsonArray expectedResponse = new JsonArray();
+    expectedResponse.add(gson.toJsonTree(note));
+    // veryfing response
+    verify(mockResponse).setContentType("application/json");
+    verify(mockResponse).setStatus(OK);
+
+    JsonArray actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonArray.class);
+    assertEquals(expectedResponse, actualResponse);
+  }
+
+  @Test
   public void noUpdatesTest() throws IOException {
     Gson gson = notesUpdateServlet.getNoteGsonParser();
     Whiteboard board = createBoard();
