@@ -68,6 +68,7 @@ public class EditNoteServlet extends NoteAbstractServlet {
       note.content = editedNote.content;
     }
     note.image = editedNote.image;
+    note.lastUpdated = System.currentTimeMillis();
     // save note
     ofy().save().entity(note).now();
     // return updated note in the response
