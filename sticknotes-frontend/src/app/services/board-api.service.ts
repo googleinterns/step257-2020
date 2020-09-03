@@ -43,6 +43,6 @@ export class BoardApiService {
    * Returns the updated board if there is any update
    */
   public getUpdatedBoard(data: any): Observable<Board> {
-    return this.http.post<Board>('api/board-updates', data);
+    return this.http.post<Board>('api/board-updates/', data);
   }
 }
