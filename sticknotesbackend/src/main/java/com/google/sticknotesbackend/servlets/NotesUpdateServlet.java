@@ -16,7 +16,6 @@ import com.googlecode.objectify.Ref;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -50,8 +49,7 @@ public class NotesUpdateServlet extends AppAbstractServlet {
 
     // obtaining type of List<UpdateQueryData> for conversion from JsonArray to
     // List<UpdateQueryData>
-    Type queryListType = new TypeToken<List<UpdateQueryData>>() {
-    }.getType();
+    Type queryListType = new TypeToken<List<UpdateQueryData>>() {}.getType();
     List<UpdateQueryData> notesQueryArray = gson.fromJson(requestBody.get("notes").getAsJsonArray(), queryListType);
 
     // map to store notes from board
@@ -70,11 +68,11 @@ public class NotesUpdateServlet extends AppAbstractServlet {
      * the list from client but doesn't exist in the set of notes of board.
      */
     JsonArray removedNotes = new JsonArray();
-    // remove note from map if it was not updated
     for (UpdateQueryData query : notesQueryArray) {
       if(!notesMap.containsKey(query.id)){
         removedNotes.add(query.id);
       }
+      // remove note from map if it was not updated
       else if (notesMap.get(query.id).lastUpdated != null && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)) {
         notesMap.remove(query.id);
       }
@@ -83,7 +81,6 @@ public class NotesUpdateServlet extends AppAbstractServlet {
     JsonObject responseBody = new JsonObject();
     responseBody.add("removed-notes", removedNotes);
     responseBody.add("updated-notes", JsonParsers.getNoteGsonParser().toJsonTree(notesMap.values()));
-    // creates list of notes to return
     String jsonResponse = responseBody.toString();
 
     response.setContentType("application/json");
