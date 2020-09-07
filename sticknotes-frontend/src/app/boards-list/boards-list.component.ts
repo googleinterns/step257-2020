@@ -24,6 +24,9 @@ export class BoardsListComponent implements OnInit {
     this.userService.getUser().subscribe(user => this.user = user);
   }
 
+  /**
+   * Opens a NewBoardComponent in a dialog in a "create" mode
+   */
   public showNewBoardDialog(): void {
     this.dialog.open(NewBoardComponent, {
       width: '500px',
