@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angu
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board, BoardData, NoteUpdateRequest } from '../interfaces';
+import { Note, Board, BoardData, NoteUpdateRequest, UserBoardRole, User } from '../interfaces';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -12,6 +12,9 @@ import { BoardApiService } from '../services/board-api.service';
 import { TranslateService } from '../services/translate.service';
 import _ from 'lodash';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BoardUsersApiService } from '../services/board-users-api.service';
+import { UserService } from '../services/user.service';
+import { UserRole } from '../enums/user-role.enum';
 
 @Component({
   selector: 'app-board',
@@ -72,13 +75,18 @@ export class BoardComponent implements OnInit, OnDestroy {
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
   private intervalFun: any = null;
+  private boardRoles: UserBoardRole[] = [];
+  private currentUserRole: UserRole = null;
+  private currentUser: User = null;
 
   constructor(private boardApiService: BoardApiService,
     private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private notesApiService: NotesApiService,
     private translateService: TranslateService,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar,
+    private boardUsersApiService: BoardUsersApiService, 
+    private userService: UserService) {
   }
 
   // destroys setInterval
@@ -96,6 +104,16 @@ export class BoardComponent implements OnInit, OnDestroy {
       this.intervalFun = setInterval(() => {
         this.fetchUpdate();
       }, 2000);
+    });
+
+    // fetch board roles, first emitted value is default, second is actual array
+    this.boardUsersApiService.getBoardUsersSubject().subscribe(roles => {
+      this.boardRoles = roles;
+    });
+
+    // fetch current user
+    this.userService.getUser().subscribe(user => {
+      this.currentUser = user;
     });
   }
 
@@ -400,5 +418,25 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.board.notes.forEach(note => {
       this.notesOriginalContent[note.id] = note.content;
     });
+  }
+
+  /**
+   * Returns true if user can modify note.
+   * Returns false otherwise.
+   */
+  public canModifyNote(note: Note) {
+    if (this.currentUser && this.boardRoles) {
+      if (!this.currentUserRole) {
+        // save user's role if it is not saved yet
+        this.currentUserRole = this.boardRoles.find(role => role.user.id === this.currentUser.id).role;
+      }
+      // if user is owner or admin, return true
+      if (this.currentUserRole === 'ADMIN' || this.currentUserRole === 'OWNER') {
+        return true;
+      }
+      // if user is author of the note also return true
+      return this.currentUser.id === note.creator.id;
+    }
+    return false;
   }
 }
