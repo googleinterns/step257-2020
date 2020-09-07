@@ -127,12 +127,37 @@ export class BoardComponent implements OnInit, OnDestroy {
         notesTimestamps.push({ id: note.id, lastUpdated: this.getNoteLastUpdated(note)});
       });
       // send a request
-      this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((newNotes) => {
+      this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((response) => {
+        
+        const newNotes = response.updatedNotes;
+        const removedNotes = response.removedNotes;
         const notesWithUpdatedContent = [];
+
+        // server returns array of notes that have been removed, this notes have to be removed also here
+        removedNotes.forEach(id => {
+          const index = this.board.notes.findIndex((note) => id === Number(note.id));
+          if(index >= 0 && index < this.board.notes.length){
+            this.board.notes.splice(index, 1);
+          }
+        });
         // server returns array of notes that have been changed, find local copy of that notes and update them
-        // merge notes
+        // insert notes that are new
         const ids = new Set(this.board.notes.map(n => n.id));
-        this.board.notes = [...this.board.notes, ...newNotes.filter(n => !ids.has(n.id))];
+        newNotes.forEach(note => {
+          // if note is new, add it to the board
+          if (!ids.has(note.id)) {
+            this.board.notes.push(note);
+          } else {
+            // otherwise if it was changed, change it is local copy
+            // find index of updated note
+            const index = this.board.notes.findIndex((n) => n.id === note.id);
+            if (index) {
+              // if not with such id is found, update it
+              this.board.notes[index] = _.merge(this.board.notes[index], note);
+            }
+          }
+        });
+
         // update map of original notes texts
         this.updateOriginalNotesContentMap(this.board);
         // update abstract grid
@@ -208,13 +233,11 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   // updates boardGrid with the positions of notes
   public updateBoardAbstractGrid(): void {
-    if (!this.boardGrid) {
-      this.boardGrid = [];
-      for (let i = 0; i < this.board.rows; ++i) {
-        this.boardGrid[i] = [];
-        for (let j = 0; j < this.board.cols; ++j) {
-          this.boardGrid[i][j] = 0;
-        }
+    this.boardGrid = [];
+    for (let i = 0; i < this.board.rows; ++i) {
+      this.boardGrid[i] = [];
+      for (let j = 0; j < this.board.cols; ++j) {
+        this.boardGrid[i][j] = 0;
       }
     }
 

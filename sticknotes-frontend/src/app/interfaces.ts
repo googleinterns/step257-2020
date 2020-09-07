@@ -64,6 +64,11 @@ export interface BoardData {
   backgroundImg: string | null;
 }
 
+export interface NotesUpdateData {
+  removedNotes: number[];
+  updatedNotes: Note[];
+}
+
 /**
  * A set of mutable board fields
  */
