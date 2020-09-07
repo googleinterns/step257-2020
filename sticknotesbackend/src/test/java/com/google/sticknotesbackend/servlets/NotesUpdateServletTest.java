@@ -59,8 +59,8 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     expectedRemovedNotes.add(2354);
 
     JsonObject expectedResponse = new JsonObject();
-    expectedResponse.add("removed-notes", expectedRemovedNotes);
-    expectedResponse.add("updated-notes", new JsonArray());
+    expectedResponse.add("removedNotes", expectedRemovedNotes);
+    expectedResponse.add("updatedNotes", new JsonArray());
     // veryfing response
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
@@ -96,8 +96,8 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     expectedUpdatedNotes.add(gson.toJsonTree(note));
 
     JsonObject expectedResponse = new JsonObject();
-    expectedResponse.add("removed-notes", new JsonArray());
-    expectedResponse.add("updated-notes", expectedUpdatedNotes);
+    expectedResponse.add("removedNotes", new JsonArray());
+    expectedResponse.add("updatedNotes", expectedUpdatedNotes);
     // veryfing response
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
@@ -138,8 +138,8 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     notesUpdateServlet.doPost(mockRequest, mockResponse);
 
     JsonObject expectedResponse = new JsonObject();
-    expectedResponse.add("removed-notes", new JsonArray());
-    expectedResponse.add("updated-notes", new JsonArray());
+    expectedResponse.add("removedNotes", new JsonArray());
+    expectedResponse.add("updatedNotes", new JsonArray());
     // veryfing response
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
@@ -187,8 +187,8 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     expectedUpdatedNotes.add(gson.toJsonTree(note4));
 
     JsonObject expectedResponse = new JsonObject();
-    expectedResponse.add("removed-notes", new JsonArray());
-    expectedResponse.add("updated-notes", expectedUpdatedNotes);
+    expectedResponse.add("removedNotes", new JsonArray());
+    expectedResponse.add("updatedNotes", expectedUpdatedNotes);
 
     // veryfing response
     verify(mockResponse).setContentType("application/json");
@@ -229,8 +229,8 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     expectedUpdatedNotes.add(gson.toJsonTree(newNote));
 
     JsonObject expectedResponse = new JsonObject();
-    expectedResponse.add("removed-notes", new JsonArray());
-    expectedResponse.add("updated-notes", expectedUpdatedNotes);
+    expectedResponse.add("removedNotes", new JsonArray());
+    expectedResponse.add("updatedNotes", expectedUpdatedNotes);
     // veryfing response
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
