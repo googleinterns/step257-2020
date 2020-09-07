@@ -36,25 +36,20 @@ public class MyBoardsListServletTest extends NotesboardTestBase {
   @Test
   public void testMyBoardsGetSuccess() throws IOException, ServletException {
     // create 3 board, 1 user and 2 user roles
-    User boardsCreator = new User("randomuser@google.com", "googler");
-    boardsCreator.id = ofy().save().entity(boardsCreator).now().getId();
-    Whiteboard board1 = new Whiteboard("Test board 1");
+    User boardsCreator = createUser();
+    Whiteboard board1 = createBoard();
     board1.setCreator(boardsCreator);
-    board1.id = ofy().save().entity(board1).now().getId();
-    Whiteboard board2 = new Whiteboard("Test board 1");
+    ofy().save().entity(board1).now();
+    Whiteboard board2 = createBoard();
     board2.setCreator(boardsCreator);
-    board2.id = ofy().save().entity(board2).now().getId();
-    Whiteboard board3 = new Whiteboard("Test board 1");
+    ofy().save().entity(board2).now();
+    Whiteboard board3 = createBoard();
     board3.setCreator(boardsCreator);
-    board3.id = ofy().save().entity(board3).now().getId();
-    User user = new User("googler@google.com", "nick");
-    user.googleAccId = "10";
-    user.id = ofy().save().entity(user).now().getId();
+    ofy().save().entity(board3).now();
+    User user = createUser();
     // only add user to the first and second board
-    UserBoardRole role1 = new UserBoardRole(Role.USER, board1, user);
-    role1.id = ofy().save().entity(role1).now().getId();
-    UserBoardRole role2 = new UserBoardRole(Role.USER, board2, user);
-    role2.id = ofy().save().entity(role2).now().getId();
+    createRole(board1, user, Role.USER);
+    createRole(board2, user, Role.USER);
     // log user in
     logIn(user);
     // do a request

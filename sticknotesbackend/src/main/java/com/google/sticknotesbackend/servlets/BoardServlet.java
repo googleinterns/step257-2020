@@ -6,9 +6,13 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.User;
@@ -39,6 +43,13 @@ public class BoardServlet extends BoardAbstractServlet {
         response.sendError(BAD_REQUEST);
         return;
       }
+      // check if user can access the board
+      Permission perm = AuthChecker.boardAccessPermission(boardId);
+      System.out.println(perm);
+      if (!perm.equals(Permission.GRANTED)) {
+        handleBadPermission(perm, response);
+        return;
+      }
       Gson gson = getBoardGsonParser();
       response.getWriter().print(gson.toJson(board));
     } else {
@@ -52,10 +63,16 @@ public class BoardServlet extends BoardAbstractServlet {
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // authorization check
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      unauthorized(response);
+      return;
+    }
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = { "title" };
+      String[] requiredFields = {"title"};
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -66,18 +83,20 @@ public class BoardServlet extends BoardAbstractServlet {
     Gson gson = getBoardGsonParser();
     Whiteboard board = gson.fromJson(jsonPayload, Whiteboard.class);
     board.creationDate = System.currentTimeMillis();
-    // for now I create a dummy user entity, later user entity will be retrieved
-    // from datastore
-    User dummyUser = new User("googler@google.com", "nickname");
-    ofy().save().entity(dummyUser).now();
-    board.setCreator(dummyUser);
+    // at this point we can assume that users is logged in (so also present in datastore)
+    // get google id of the current user
+    String googleAccId = userService.getCurrentUser().getUserId();
+    // get the user with this id
+    User user = ofy().load().type(User.class).filter("googleAccId", googleAccId).first().now();
+    // ofy().save().entity(user).now();
+    board.setCreator(user);
     board.rows = 4;
     board.cols = 6;
     // when the board is saved, get the auto generated id and assign to the board
     // field
     board.id = ofy().save().entity(board).now().getId();
     // automatically adding user with role ADMIN(will be changed to OWNER)
-    UserBoardRole userBoardRole = new UserBoardRole(Role.ADMIN, board, dummyUser);
+    UserBoardRole userBoardRole = new UserBoardRole(Role.ADMIN, board, user);
     ofy().save().entity(userBoardRole).now();
     // return JSON of the new created board
     response.getWriter().print(gson.toJson(board));

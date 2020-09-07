@@ -5,6 +5,8 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
 import java.io.IOException;
@@ -27,7 +29,7 @@ public class EditNoteServlet extends NoteAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = { "id" };
+      String[] requiredFields = {"id"};
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -42,6 +44,12 @@ public class EditNoteServlet extends NoteAbstractServlet {
     if (note == null) {
       response.getWriter().println("Note with given id does not exist");
       response.sendError(BAD_REQUEST);
+      return;
+    }
+    // if user doesn't have enough permissions to modify note, return 40* response
+    Permission perm = AuthChecker.noteModifyPermission(note);
+    if (!perm.equals(Permission.GRANTED)) {
+      handleBadPermission(perm, response);
       return;
     }
     // assign updated fields to the note retrieved from the datastore
@@ -59,9 +67,7 @@ public class EditNoteServlet extends NoteAbstractServlet {
     if (editedNote.content != null) {
       note.content = editedNote.content;
     }
-    if (editedNote.image != null) {
-      note.image = editedNote.image;
-    }
+    note.image = editedNote.image;
     // save note
     ofy().save().entity(note).now();
     // return updated note in the response
