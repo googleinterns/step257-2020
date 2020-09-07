@@ -48,6 +48,12 @@ export class BoardComponent implements OnInit, OnDestroy {
   set notesLanguage(notesTargetLanguage: string) {
     // do translation here
     if (notesTargetLanguage && this.board.notes) {
+      if (notesTargetLanguage === "original") {
+        // user wants to reset the translation, erase the hashmap of translated content
+        this.notesTargetLanguage = null;
+        this.notesTranslation = {};
+        return;
+      }
       this.notesTargetLanguage = notesTargetLanguage;
       const texts = [];
       this.board.notes.forEach(note => {
