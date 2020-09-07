@@ -79,8 +79,8 @@ public class NotesUpdateServlet extends AppAbstractServlet {
     }
 
     JsonObject responseBody = new JsonObject();
-    responseBody.add("removed-notes", removedNotes);
-    responseBody.add("updated-notes", JsonParsers.getNoteGsonParser().toJsonTree(notesMap.values()));
+    responseBody.add("removedNotes", removedNotes);
+    responseBody.add("updatedNotes", JsonParsers.getNoteGsonParser().toJsonTree(notesMap.values()));
     String jsonResponse = responseBody.toString();
 
     response.setContentType("application/json");
