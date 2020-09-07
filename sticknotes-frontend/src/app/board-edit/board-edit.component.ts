@@ -55,7 +55,8 @@ export class BoardEditComponent implements OnInit {
         rows: this.editBoardForm.controls.rows.value,
         id: this.boardData.id,
         backgroundImg: this.boardData.backgroundImg,
-        creationDate: this.boardData.creationDate
+        creationDate: this.boardData.creationDate,
+        creator: this.boardData.creator
       }
       // send data to the server
       this.boardApiService.updateBoard(updatePayload).subscribe(() => {

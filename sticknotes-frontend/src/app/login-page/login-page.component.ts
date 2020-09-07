@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-login-page',
@@ -7,9 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginPageComponent implements OnInit {
 
-  constructor() { }
+  public loginUrl = null;
+
+  constructor(private http: HttpClient, @Inject(DOCUMENT) private document: Document) {
+    this.http.get(`api/login-url/`, {responseType: 'text'}).subscribe((loginUrl: string) => {
+      this.loginUrl = loginUrl;
+    })
+  }
 
   ngOnInit(): void {
   }
 
+  goToUrl(): void {
+    this.document.location.href = this.loginUrl;
+  }
 }

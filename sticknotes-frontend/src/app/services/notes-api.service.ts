@@ -24,7 +24,15 @@ export class NotesApiService {
    * Returns updated note
    */
   public updateNote(note: Note): Observable<Note> {
-    return this.http.post<Note>('api/edit-note/', note);
+    const updateNoteData = {
+      x: note.x,
+      y: note.y,
+      color: note.color,
+      content: note.content,
+      image: note.image,
+      id: note.id
+    }
+    return this.http.post<Note>('api/edit-note/', updateNoteData);
   }
 
   /**

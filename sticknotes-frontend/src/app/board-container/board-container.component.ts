@@ -119,4 +119,11 @@ export class BoardContainerComponent implements OnInit {
       })
     }
   }
+
+  get boardCreator() {
+    if (this.boardData.creator.nickname != "---") {
+      return this.boardData.creator.nickname;
+    }
+    return this.boardData.creator.email;
+  }
 }

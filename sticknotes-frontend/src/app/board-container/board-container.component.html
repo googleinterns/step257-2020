@@ -15,7 +15,7 @@
             </div>
             <h3>{{boardData.rows}} X {{boardData.cols}} board</h3>
             <!-- amCalendar is a moment js pipe used to make date human readable -->
-            <h3>Created {{getBoardCreatedDate() | amCalendar}}</h3>
+            <h3>Created {{getBoardCreatedDate() | amCalendar}} by {{ boardCreator }}</h3>
           </mat-card-content>
         </mat-card>
       </div>

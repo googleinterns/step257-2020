@@ -26,7 +26,7 @@
               </div>
               <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
             </div>
-            <p>{{note.creator}}</p>
+            <p>{{note.creator.email}}</p>
             <p>{{note.content}}</p>
             <!-- amCalendar is a moment js pipe used to make date human readable -->
             <p>{{getNoteCreationDate(note) | amCalendar}}</p>
