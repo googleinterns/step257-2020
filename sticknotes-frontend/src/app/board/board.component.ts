@@ -85,7 +85,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     private notesApiService: NotesApiService,
     private translateService: TranslateService,
     private snackBar: MatSnackBar,
-    private boardUsersApiService: BoardUsersApiService, 
+    private boardUsersApiService: BoardUsersApiService,
     private userService: UserService) {
   }
 
@@ -142,11 +142,13 @@ export class BoardComponent implements OnInit, OnDestroy {
       // generate notes update request
       const notesTimestamps: NoteUpdateRequest[] = [];
       this.board.notes.forEach(note => {
-        notesTimestamps.push({ id: note.id, lastUpdated: this.getNoteLastUpdated(note)});
+        notesTimestamps.push({ id: note.id, lastUpdated: this.getNoteLastUpdated(note) });
       });
       // send a request
       this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((response) => {
-        
+
+        console.log(response);
+
         const newNotes = response.updatedNotes;
         const removedNotes = response.removedNotes;
         const notesWithUpdatedContent = [];
@@ -154,7 +156,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         // server returns array of notes that have been removed, this notes have to be removed also here
         removedNotes.forEach(id => {
           const index = this.board.notes.findIndex((note) => id === Number(note.id));
-          if(index >= 0 && index < this.board.notes.length){
+          if (index >= 0 && index < this.board.notes.length) {
             this.board.notes.splice(index, 1);
           }
         });
@@ -169,13 +171,12 @@ export class BoardComponent implements OnInit, OnDestroy {
             // otherwise if it was changed, change it is local copy
             // find index of updated note
             const index = this.board.notes.findIndex((n) => n.id === note.id);
-            if (index) {
+            if (index >= 0 && index < this.board.notes.length) {
               // if not with such id is found, update it
               this.board.notes[index] = _.merge(this.board.notes[index], note);
             }
           }
         });
-
         // update map of original notes texts
         this.updateOriginalNotesContentMap(this.board);
         // update abstract grid
@@ -206,7 +207,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       });
 
       // pull board updates
-      const boardRequestData = {id: this.board.id, lastUpdated: this.boardLastUpdated};
+      const boardRequestData = { id: this.board.id, lastUpdated: this.boardLastUpdated };
       this.boardApiService.getUpdatedBoard(boardRequestData).subscribe(newBoard => {
         // if there is an update
         if (newBoard) {
@@ -261,8 +262,8 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     if (this.board.notes) {
       this.board.notes.forEach(note => {
-        const i = Math.floor(note.y / this.NOTE_HEIGHT);
-        const j = Math.floor(note.x / this.NOTE_WIDTH);
+        const i = note.y;
+        const j = note.x;
         this.boardGrid[i][j] = 1;
       });
     }
