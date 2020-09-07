@@ -339,7 +339,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.boardGrid[note.y][note.x] = 1;
         this.notesOriginalContent[note.id] = note.content;
         if (this.notesTargetLanguage) {
-          const textsToTranslate = [];
+          const textsToTranslate = [note.content];
           // send array of note content to the translate api and update local translation hashtable
           this.translateService.translateArray(textsToTranslate, this.notesTargetLanguage).subscribe(data => {
             for (let i = 0; i < data.result.length; ++i) {
