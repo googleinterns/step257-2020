@@ -28,6 +28,7 @@ export class BoardContainerComponent {
   public canEditBoard = false;
   // languages to which notes can be translated
   public translateLanguages = [
+    { value: "original", viewValue: "Original language"},
     { value: "en", viewValue: "English" },
     { value: "hr", viewValue: "Hrvatski" },
     { value: "pl", viewValue: "Polski" },
