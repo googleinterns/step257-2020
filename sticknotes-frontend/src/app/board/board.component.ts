@@ -158,6 +158,8 @@ export class BoardComponent implements OnInit, OnDestroy {
             this.board.notes.splice(index, 1);
           }
         });
+        // update map of original notes texts
+        this.updateOriginalNotesContentMap(this.board);
         // server returns array of notes that have been changed, find local copy of that notes and update them
         // insert notes that are new
         const ids = new Set(this.board.notes.map(n => n.id));
@@ -175,8 +177,6 @@ export class BoardComponent implements OnInit, OnDestroy {
             }
           }
         });
-        // update map of original notes texts
-        this.updateOriginalNotesContentMap(this.board);
         // update abstract grid
         this.updateBoardAbstractGrid();
         for (const newNote of newNotes) {
