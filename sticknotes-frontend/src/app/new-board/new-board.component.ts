@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatDialogRef } from '@angular/material/dialog';
-import { noSpacesValidator } from '../utility/util';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { onlySpacesValidator } from '../utility/util';
 import { BoardApiService } from '../services/board-api.service';
 
 @Component({
@@ -14,8 +14,11 @@ export class NewBoardComponent {
   public sendingData = false;
   public newBoardForm = new FormGroup({
     boardTitle: new FormControl('', [
+      // boardTitle field uses two validators
+      // checks that field is not empty
       Validators.required,
-      noSpacesValidator
+      // checks if field has anything else from spaces only
+      onlySpacesValidator
     ])
   });
 

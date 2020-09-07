@@ -45,15 +45,25 @@ export class BoardContainerComponent {
     }
   }
 
+  /**
+   * Navigates user to the main menu
+   */
   public backToBoards(): void {
     this.router.navigateByUrl('/boards');
   }
 
+  /**
+   * Listens for the @Output Board of the board.component.ts
+   */
   public receiveBoardData(boardData: BoardData): void {
     // when board data is emitted, add info about the board to the sidenav
     this.boardData = boardData;
   }
 
+  /**
+   * Opens edit board dialog by opening the NewBoardComponent in "edit" mode
+   * When editing is done, receives the edited board and updates the board data
+   */
   public openEditBoardDialog() {
     const dialogRef = this.dialog.open(BoardEditComponent, {
       width: '500px',
@@ -68,6 +78,9 @@ export class BoardContainerComponent {
     });
   }
 
+  /**
+   * Converts a timestamp received from server to the TS Date object
+   */
   public getBoardCreatedDate(): Date {
     if (this.boardData) {
       return new Date(Number(this.boardData.creationDate));

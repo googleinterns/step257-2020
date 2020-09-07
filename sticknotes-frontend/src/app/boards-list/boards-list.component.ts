@@ -22,6 +22,9 @@ export class BoardsListComponent implements OnInit {
     });
   }
 
+  /**
+   * Opens a NewBoardComponent in a dialog in a "create" mode
+   */
   public showNewBoardDialog(): void {
     this.dialog.open(NewBoardComponent);
   }
