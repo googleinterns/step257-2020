@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Board, BoardData, Note, BoardPreview, BoardUpdateData } from '../interfaces';
 
 @Injectable({
@@ -44,5 +44,12 @@ export class BoardApiService {
    */
   public getUpdatedBoard(data: any): Observable<Board> {
     return this.http.post<Board>('api/board-updates/', data);
+  }
+
+  /**
+   * Deletes the board
+   */
+  public deleteBoard(boardId: string): Observable<void> {
+    return this.http.delete<void>(`api/board/?id=${boardId}`);
   }
 }

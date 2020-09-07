@@ -13,7 +13,7 @@ mat-card {
   max-height: 40vh;
 }
 
-mat-icon {
+.add-note-icon {
   font-size: 5vw;
   width: 5vw;
   height: 5vw;
@@ -30,4 +30,28 @@ mat-icon {
 .boards-list-container h1{
   margin-top: 50px;
   margin-bottom: 50px;
+}
+
+.delete-board-btn {
+  height: 24px;
+  width: 24px;
+}
+
+.buttons-group {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.delete-note-icon {
+  font-size: 24px;
+  height: 24px;
+  width: 24px;
+  vertical-align: unset !important;
+}
+
+.board-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(20vw - 52px);
 }
