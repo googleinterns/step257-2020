@@ -35,7 +35,7 @@ public class AuthChecker {
       // otherwise find user's role
       List<UserBoardRole> roles = ofy().load().type(UserBoardRole.class).ancestor(board).filter("user", user).list();
       for (UserBoardRole role : roles) {
-        if (role.role.equals(Role.ADMIN)) {
+        if (role.role == Role.ADMIN || role.role == Role.OWNER) {
           return Permission.GRANTED;
         }
       }
@@ -85,7 +85,7 @@ public class AuthChecker {
       List<UserBoardRole> boardRoles = ofy().load().type(UserBoardRole.class).filter("boardId", note.boardId)
           .filter("user", user).list();
       for (UserBoardRole role : boardRoles) {
-        if (role.role.equals(Role.ADMIN)) {
+        if (role.role == Role.ADMIN || role.role == Role.OWNER) {
           return Permission.GRANTED;
         }
       }
