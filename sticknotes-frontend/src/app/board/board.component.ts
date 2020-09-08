@@ -131,7 +131,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   private fetchBoardData(boardId: string) {
     // load board with the key
     this.boardApiService.getBoard(boardId).subscribe(board => {
-      this.board = _.merge(this.board, board);
+      this.board = board;
       this.updateBoardAbstractGrid();
       // pass essential board's data to the sidenav
       this.emitDataToSidenav(board);
@@ -263,7 +263,6 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.boardGrid[i][j] = 0;
       }
     }
-
     if (this.board.notes) {
       this.board.notes.forEach(note => {
         const i = note.y;

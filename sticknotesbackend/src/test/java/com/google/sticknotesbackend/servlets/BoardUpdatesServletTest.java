@@ -50,7 +50,7 @@ public class BoardUpdatesServletTest extends NotesboardTestBase {
     when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestData.toString())));
     // do request
     boardUpdatesServlet.doPost(mockRequest, mockResponse);
-    assertThat(responseWriter.toString()).isEqualTo("{}");
+    assertThat(responseWriter.toString()).isEqualTo("");
   }
 
   @Test

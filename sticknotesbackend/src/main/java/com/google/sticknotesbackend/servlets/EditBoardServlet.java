@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
 import com.google.sticknotesbackend.JsonParsers;
+import com.google.sticknotesbackend.SmartStorage;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
@@ -90,9 +91,7 @@ public class EditBoardServlet extends AppAbstractServlet {
         }
       }
     }
-    board.lastUpdated = System.currentTimeMillis();
-    // save the board
-    ofy().save().entity(board).now();
+    SmartStorage.updateBoard(board);
     // servlet default will return 200
   }
 }

@@ -1,5 +1,7 @@
 package com.google.sticknotesbackend.models;
 
+import java.io.Serializable;
+
 import com.google.sticknotesbackend.enums.Role;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
@@ -9,7 +11,7 @@ import com.googlecode.objectify.annotation.Load;
 import com.googlecode.objectify.annotation.Parent;
 
 @Entity
-public class UserBoardRole {
+public class UserBoardRole implements Serializable {
   public static class OnlyUser {
   }
 
