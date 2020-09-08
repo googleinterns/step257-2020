@@ -20,7 +20,24 @@ import java.util.List;
  */
 public class AuthChecker {
   /**
-   * Checks if current user can modify(edit/delete) the given board
+   * Checks if current user can remove the given board
+   */
+  public static Permission boardDeletePermission(Whiteboard board) {
+    // check that user is authenticated
+    UserService userService = UserServiceFactory.getUserService();
+    if (userService.isUserLoggedIn()) {
+      User user = ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first()
+          .now();
+      // only if user is owner of the board access is granted
+      if (user.googleAccId.equals(board.getCreator().googleAccId)) {
+        return Permission.GRANTED;
+      }
+      return Permission.FORBIDDEN;
+    }
+    return Permission.NOAUTH;
+  }
+  /**
+   * Checks if current user can modify(edit) the given board
    */
   public static Permission boardModifyPermission(Whiteboard board) {
     // check that user is authenticated

@@ -4,6 +4,7 @@ import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Load;
 
 @Cache
@@ -17,7 +18,9 @@ public class Note {
   public int x;
   public int y;
   public String color;
-  @Load Ref<User> creator;
+  @Load
+  Ref<User> creator;
+  @Index
   public Long boardId; // the id of the parent board
 
   public Note(User user, String content, String color, int x, int y) {

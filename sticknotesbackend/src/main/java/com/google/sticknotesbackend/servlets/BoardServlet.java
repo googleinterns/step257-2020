@@ -16,6 +16,7 @@ import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
+import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
@@ -58,6 +59,40 @@ public class BoardServlet extends AppAbstractServlet {
     }
   }
 
+  @Override
+  public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String boardIdParam = request.getParameter("id");
+    if (boardIdParam != null) {
+      long boardId = Long.parseLong(boardIdParam);
+      Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
+      if (board == null) {
+        badRequest("Board with this id doesn't exist", response);
+        return;
+      }
+      // check if user has enough permissions to modify the board
+      Permission perm = AuthChecker.boardDeletePermission(board);
+      if (!perm.equals(Permission.GRANTED)) {
+        handleBadPermission(perm, response);
+        return;
+      }
+      // to delete board we need to delete all roles connected with that board, and
+      // all notes that are on the board
+
+      // deleting all roles
+      ofy().delete().keys(ofy().load().ancestor(board).keys().list()).now();
+
+      // deleting all notes which "boardId" property is equal to deleted board
+      ofy().delete().entities(ofy().load().type(Note.class).filter("boardId", board.id).iterable()).now();
+
+      // deleting board itself
+      ofy().delete().entity(board).now();
+
+      response.setStatus(NO_CONTENT);
+    } else {
+      badRequest("No id parameter", response);
+    }
+  }
+
   /**
    * Creates a new board. Required field is "title"
    */
@@ -72,7 +107,7 @@ public class BoardServlet extends AppAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = {"title"};
+      String[] requiredFields = { "title" };
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -84,7 +119,8 @@ public class BoardServlet extends AppAbstractServlet {
     Whiteboard board = gson.fromJson(jsonPayload, Whiteboard.class);
     board.creationDate = System.currentTimeMillis();
     board.lastUpdated = System.currentTimeMillis();
-    // at this point we can assume that users is logged in (so also present in datastore)
+    // at this point we can assume that users is logged in (so also present in
+    // datastore)
     // get google id of the current user
     String googleAccId = userService.getCurrentUser().getUserId();
     // get the user with this id
