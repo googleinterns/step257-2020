@@ -16,6 +16,8 @@ public class WhiteboardPreviewSerializer implements JsonSerializer<Whiteboard> {
     // add only id and title board fields to the JSON objects
     board.addProperty("id", src.id);
     board.addProperty("title", src.title);
+    // add owner id
+    board.addProperty("ownerId", src.getCreator().id);
     return board;
   }
 }
