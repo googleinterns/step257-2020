@@ -46,7 +46,7 @@ public class BoardUpdatesServlet extends AppAbstractServlet{
     Long clientsValue = jsonObject.get("lastUpdated").getAsLong();
     // get board with given id
     Whiteboard board = SmartStorage.getWhiteboardLite(boardId);
-    if (board != null && board.lastUpdated != clientsValue) {
+    if (board != null && !board.lastUpdated.equals(clientsValue)) {
       // send update
       Gson gson = JsonParsers.getBoardUpdateGsonParser();
       response.getWriter().print(gson.toJson(board));
