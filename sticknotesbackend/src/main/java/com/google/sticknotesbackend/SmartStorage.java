@@ -68,7 +68,7 @@ public class SmartStorage {
       cache.put(cacheKey, board);
       return board;
     }
-    return null;
+    return board;
   }
 
   /**
