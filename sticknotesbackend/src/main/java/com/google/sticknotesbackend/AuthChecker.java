@@ -67,15 +67,23 @@ public class AuthChecker {
   public static Permission boardAccessPermission(Long boardId) {
     UserService userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {
-      // get current user
-      User user = ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first()
-          .now();
-      // find the first role with the user and board
-      UserBoardRole role = ofy().load().type(UserBoardRole.class).ancestor(Key.create(Whiteboard.class, boardId))
-          .filter("user", user).first().now();
-      if (role != null) {
-        return Permission.GRANTED;
+      // check if permission exists in cache
+      // get user's google acc id
+      String googleAccId = userService.getCurrentUser().getUserId();
+      Permission perm = Cacher.getPermission(Long.toString(boardId), googleAccId);
+      if (perm == null) {
+        // permission is not in cache yet, so load it and put into cache
+        // get current user
+        User user = ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first()
+            .now();
+        // find the first role with the user and board
+        UserBoardRole role = ofy().load().type(UserBoardRole.class).ancestor(Key.create(Whiteboard.class, boardId))
+            .filter("user", user).first().now();
+        if (role != null) {
+          return Permission.GRANTED;
+        }
       }
+      
       return Permission.FORBIDDEN;
     }
     return Permission.NOAUTH;
