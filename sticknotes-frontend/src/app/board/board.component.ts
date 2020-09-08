@@ -383,6 +383,12 @@ export class BoardComponent implements OnInit, OnDestroy {
           this.boardGrid[note.y][note.x] = 0;
           // remove note from local array
           this.board.notes.splice(indexOfNote, 1);
+          // remove note from content map
+          this.notesOriginalContent[note.id] = null;
+          // remove note from translation map if there is one
+          if (this.notesTargetLanguage) {
+            this.notesTranslation[note.id] = null;
+          }
         });
       }
     }
