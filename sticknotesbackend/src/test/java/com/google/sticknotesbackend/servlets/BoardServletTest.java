@@ -2,19 +2,23 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.googlecode.objectify.ObjectifyService.ofy;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Role;
+import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
+import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +41,80 @@ public class BoardServletTest extends NotesboardTestBase {
     responseWriter = new StringWriter();
     when(mockResponse.getWriter()).thenReturn(new PrintWriter(responseWriter));
     boardServlet = new BoardServlet();
+  }
+
+  @Test
+  public void testBoardDeleteBoardNotExisting() throws Exception {
+    // creating mock user and log-in
+    User user = createUserSafe();
+    logIn(user);
+
+    // create mocked request
+    when(mockRequest.getParameter("id")).thenReturn("-1");
+
+    boardServlet.doDelete(mockRequest, mockResponse);
+
+    verify(mockResponse).sendError(BAD_REQUEST);
+  }
+
+  @Test
+  public void testBoardDeleteUserNotPermitted() throws Exception {
+    // creating mock user and log-in
+    User user = createUserSafe();
+    logIn(user);
+
+    // create mock board
+    Whiteboard board = createBoard();
+    board.setCreator(createUserSafe());
+
+    // create mocked request
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id));
+
+    boardServlet.doDelete(mockRequest, mockResponse);
+
+    verify(mockResponse).sendError(FORBIDDEN);
+  }
+
+  @Test
+  public void testBoardDeleteSuccess() throws Exception {
+    // creating mock user and log-in
+    User user = createUserSafe();
+    logIn(user);
+
+    // create mock board
+    Whiteboard board = createBoard();
+    board.setCreator(user);
+
+    Note note1 = createNoteWithCreatorAndDates();
+    Note note2 = createNoteWithCreatorAndDates();
+    Note note3 = createNoteWithCreatorAndDates();
+
+    UserBoardRole role1 = createRole(board, createUserSafe(), Role.ADMIN);
+    UserBoardRole role2 = createRole(board, createUserSafe(), Role.ADMIN);
+    UserBoardRole role3 = createRole(board, createUserSafe(), Role.ADMIN);
+
+    note1.boardId = board.id;
+    note2.boardId = board.id;
+    note3.boardId = board.id;
+
+    ofy().save().entity(note1).now();
+    ofy().save().entity(note2).now();
+    ofy().save().entity(note3).now();
+
+    // create mocked request
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(board.id));
+
+    boardServlet.doDelete(mockRequest, mockResponse);
+
+    verify(mockResponse).setStatus(NO_CONTENT);
+
+    assertNull(ofy().load().type(Whiteboard.class).id(board.id).now());
+    assertNull(ofy().load().type(Note.class).id(note1.id).now());
+    assertNull(ofy().load().type(Note.class).id(note2.id).now());
+    assertNull(ofy().load().type(Note.class).id(note3.id).now());
+    assertNull(ofy().load().type(UserBoardRole.class).id(role1.id).now());
+    assertNull(ofy().load().type(UserBoardRole.class).id(role2.id).now());
+    assertNull(ofy().load().type(UserBoardRole.class).id(role3.id).now());
   }
 
   @Test
