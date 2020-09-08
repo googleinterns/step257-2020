@@ -344,15 +344,8 @@ export class BoardComponent implements OnInit, OnDestroy {
         // update grid
         this.boardGrid[note.y][note.x] = 1;
         this.notesOriginalContent[note.id] = note.content;
-        if (this.notesTargetLanguage) {
-          const textsToTranslate = [note.content];
-          // send array of note content to the translate api and update local translation hashtable
-          this.translateService.translateArray(textsToTranslate, this.notesTargetLanguage).subscribe(data => {
-            for (let i = 0; i < data.result.length; ++i) {
-              this.notesTranslation[note.id] = data.result[i];
-            }
-          });
-        }
+        // translate new note if translation is enabled
+        this.translateNote(note);
       }
     });
   }
@@ -367,8 +360,14 @@ export class BoardComponent implements OnInit, OnDestroy {
       if (newNote) {
         const updateNote = this.board.notes.find(n => n.id === newNote.id);
         if (updateNote) {
-          updateNote.content = newNote.content;
-          updateNote.color = newNote.color;
+          // if translation is enabled and content has changed, do translation
+          if (newNote.content !== this.notesOriginalContent[note.id]) {
+            // also update a hashtable of notes original content
+            this.notesOriginalContent[note.id] = newNote.content;
+            this.translateNote(newNote);
+          }
+          // update all other note fields
+          _.merge(updateNote, newNote);
         }
       }
     });
@@ -381,9 +380,15 @@ export class BoardComponent implements OnInit, OnDestroy {
       if (indexOfNote !== -1) {
         this.notesApiService.deleteNote(note.id).subscribe(() => {
           // set 0 to the position of the note
-          this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
+          this.boardGrid[note.y][note.x] = 0;
           // remove note from local array
           this.board.notes.splice(indexOfNote, 1);
+          // remove note from content map
+          this.notesOriginalContent[note.id] = null;
+          // remove note from translation map if there is one
+          if (this.notesTargetLanguage) {
+            this.notesTranslation[note.id] = null;
+          }
         });
       }
     }
@@ -476,5 +481,20 @@ export class BoardComponent implements OnInit, OnDestroy {
       return this.currentUser.id === note.creator.id;
     }
     return false;
+  }
+
+  /**
+   * Helper function that translates a single note and updates the local translation hash map
+   */
+  private translateNote(note: Note): void {
+    if (this.notesTargetLanguage) {
+      const textsToTranslate = [note.content];
+      // send array of note content to the translate api and update local translation hashtable
+      this.translateService.translateArray(textsToTranslate, this.notesTargetLanguage).subscribe(data => {
+        for (let i = 0; i < data.result.length; ++i) {
+          this.notesTranslation[note.id] = data.result[i];
+        }
+      });
+    }
   }
 }
