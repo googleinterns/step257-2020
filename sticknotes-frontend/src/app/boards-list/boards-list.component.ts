@@ -3,10 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { NewBoardComponent } from '../new-board/new-board.component';
 import { BoardApiService } from '../services/board-api.service';
 import { UserService } from '../services/user.service';
-import { BoardPreview, User } from '../interfaces';
+import { BoardPreview } from '../interfaces';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BoardUsersApiService } from '../services/board-users-api.service';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-boards-list',
@@ -15,13 +13,13 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 })
 export class BoardsListComponent implements OnInit {
   public myBoards: BoardPreview[] = null;
-  //temporary solution before we introduce guards
+  public logoutUrl: string;
   private currentUserId: string;
 
   constructor(private dialog: MatDialog,
-              private boardApiService: BoardApiService,
-              private userService: UserService,
-              private snackbar: MatSnackBar) { }
+    private boardApiService: BoardApiService,
+    private userService: UserService,
+    private snackbar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.boardApiService.myBoardsList().subscribe(boards => {
@@ -31,7 +29,11 @@ export class BoardsListComponent implements OnInit {
     // fetch id of the current user in order to check if some board was created by this user or not
     this.userService.getUser().subscribe(user => {
       this.currentUserId = user.id;
-    })
+    });
+    // fetch logout url
+    this.userService.getLogoutUrl().subscribe(data => {
+      this.logoutUrl = data.url;
+    });
   }
 
   public showNewBoardDialog(): void {
@@ -54,7 +56,7 @@ export class BoardsListComponent implements OnInit {
     // ask user if they really want to delete a note
     const reallyWantToDelete = confirm(`Are you sure you want to delete board "${boardTitle}"?`);
     if (reallyWantToDelete) {
-      this.boardApiService.deleteBoard(boardId).subscribe(() => {        
+      this.boardApiService.deleteBoard(boardId).subscribe(() => {
         // remove board from the list
         const deletedBoardIndex = this.myBoards.findIndex(board => board.id === boardId);
         if (deletedBoardIndex >= 0 && deletedBoardIndex < this.myBoards.length) {
@@ -72,5 +74,14 @@ export class BoardsListComponent implements OnInit {
    */
   public canDeleteBoard(boardPreview: BoardPreview) {
     return boardPreview.ownerId === this.currentUserId;
+  }
+
+  /** 
+   * Logs user out of the app 
+   */
+  public logout() {
+    if (this.logoutUrl) {
+      window.location.href = this.logoutUrl;
+    }
   }
 }

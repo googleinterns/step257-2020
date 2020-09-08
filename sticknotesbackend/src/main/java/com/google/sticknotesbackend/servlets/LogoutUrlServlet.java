@@ -1,13 +1,12 @@
 package com.google.sticknotesbackend.servlets;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.google.gson.JsonObject;
 import java.io.IOException;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
 
 @WebServlet("api/logout-url/")
 public class LogoutUrlServlet extends AppAbstractServlet {
@@ -17,8 +16,10 @@ public class LogoutUrlServlet extends AppAbstractServlet {
     if (userService.isUserLoggedIn()) {
       String logoutUrl = userService.createLogoutURL("/");
       response.setStatus(OK);
-      response.setContentType("text/html");
-      response.getWriter().println(logoutUrl);
+      response.setContentType("application/json");
+      JsonObject jsonObject = new JsonObject();
+      jsonObject.addProperty("url", logoutUrl);
+      response.getWriter().println(jsonObject.toString());
       return;
     }
 

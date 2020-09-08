@@ -50,7 +50,7 @@ export class UserService {
     return this.http.get<{ url: string }>('api/login-url/');
   }
 
-  getLogoutUrl(): Observable<string> {
-    return this.http.get<string>('api/logout-url/');
+  getLogoutUrl(): Observable<{url: string}> {
+    return this.http.get<{url: string}>('api/logout-url/');
   }
 }
