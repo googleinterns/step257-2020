@@ -22,7 +22,7 @@ export class BoardContainerComponent {
   public iconName = 'menu';
   // used to receive data from the board and to send updates to the board component
   public boardData: BoardData = null;
-  public translateFormControl = new FormControl('', [Validators.required]);
+  public translateFormControl = new FormControl("original", [Validators.required]);
   public targetLanguage: string = null;
   // flag for storing user's permission to edit the board
   public canEditBoard = false;
