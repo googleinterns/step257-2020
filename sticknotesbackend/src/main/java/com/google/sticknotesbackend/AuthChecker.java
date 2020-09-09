@@ -10,7 +10,6 @@ import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
-import com.googlecode.objectify.Key;
 
 import java.util.List;
 
@@ -67,12 +66,10 @@ public class AuthChecker {
   public static Permission boardAccessPermission(Long boardId) {
     UserService userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {
-      // get current user
-      User user = ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first()
-          .now();
-      // find the first role with the user and board
-      UserBoardRole role = ofy().load().type(UserBoardRole.class).ancestor(Key.create(Whiteboard.class, boardId))
-          .filter("user", user).first().now();
+      // get user's google acc id
+      String googleAccId = userService.getCurrentUser().getUserId();
+      // get users role
+      UserBoardRole role = FastStorage.getUserBoardRole(boardId, googleAccId);
       if (role != null) {
         return Permission.GRANTED;
       }
