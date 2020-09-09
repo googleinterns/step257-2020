@@ -2,13 +2,12 @@
   <mat-card-title> Users </mat-card-title>
   <mat-card-content>
     <mat-list>
-      <mat-list-item *ngFor="let userWithRole of usersWithRole">
+      <mat-list-item *ngFor="let userWithRole of usersWithRole" (click)="openEditUserDialog(userWithRole)">
         <mat-icon color="primary" matListIcon>account_circle</mat-icon>
         <div matLine> {{ userWithRole.user.nickname }} </div>
         <div mat-line> {{ userWithRole.user.email }} <p class="mat-small"> {{ userWithRole.role }} </p>
         </div>
-        <!-- adminView set to true because UsersAPI not integrated yet -->
-        <button mat-icon-button *ngIf="canDelete(userWithRole)" color="primary" (click)='removeUser(userWithRole)'
+        <button mat-icon-button *ngIf="canDelete(userWithRole)" color="primary" (click)="removeUser(userWithRole)"
           aria-label="Open add user dialog">
           <mat-icon>delete</mat-icon>
         </button>

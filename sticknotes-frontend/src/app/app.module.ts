@@ -30,6 +30,7 @@ import { BoardEditComponent } from './board-edit/board-edit.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
+import { EditUserComponent } from './edit-user/edit-user.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
     NewNoteComponent,
     RangeLoopPipe,
     AddUserComponent,
-    BoardEditComponent
+    BoardEditComponent,
+    EditUserComponent
   ],
   imports: [
     BrowserModule,
