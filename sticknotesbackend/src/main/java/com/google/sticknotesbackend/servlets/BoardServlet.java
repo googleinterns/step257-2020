@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.FastStorage;
 import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
@@ -85,7 +86,7 @@ public class BoardServlet extends AppAbstractServlet {
       ofy().delete().entities(ofy().load().type(Note.class).filter("boardId", board.id).iterable()).now();
 
       // deleting board itself
-      ofy().delete().entity(board).now();
+      FastStorage.removeBoard(board);
 
       response.setStatus(NO_CONTENT);
     } else {
@@ -137,7 +138,7 @@ public class BoardServlet extends AppAbstractServlet {
     ofy().save().entity(userBoardRole).now();
     // return JSON of the new created board
     response.getWriter().print(gson.toJson(board));
-    // set 204 created status codes
+    // set 201 created status codes
     response.setStatus(CREATED);
   }
 }

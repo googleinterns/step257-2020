@@ -3,7 +3,6 @@ package com.google.sticknotesbackend;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
-import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
@@ -17,9 +16,10 @@ import javax.cache.CacheFactory;
 import javax.cache.CacheManager;
 
 /**
- * This class handles all operations with objectify and cache, ensures data consistency
+ * This class provides a few methods that speed up datastore read operations by using Memcache.
+ * Basically this is an additional layer between code and datastore that uses cache.
  */
-public class SmartStorage {
+public class FastStorage {
   private static Cache cacheInstance;
   private static Cache getCacheInstance() {
     if (cacheInstance == null) {
@@ -91,5 +91,27 @@ public class SmartStorage {
       cache.put(cacheKey, role);
     }
     return role;
+  }
+
+  /**
+   * Removes role from cache and from datastore
+   * @param role
+   */
+  public static void removeUserBoardRole(UserBoardRole role) {
+    Cache cache = getCacheInstance();
+    String cacheKey = Long.toString(role.boardId) + "-" + role.getUser().googleAccId;
+    cache.remove(cacheKey);
+    ofy().delete().entity(role).now();
+  }
+
+  /**
+   * Removes board with given id from cache and from datastore
+   * @param boardId
+   */
+  public static void removeBoard(Whiteboard board) {
+    Cache cache = getCacheInstance();
+    String cacheKey = Long.toString(board.id);
+    cache.remove(cacheKey);
+    ofy().delete().entity(board).now();
   }
 }

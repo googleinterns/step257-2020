@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
 import com.google.sticknotesbackend.JsonParsers;
-import com.google.sticknotesbackend.SmartStorage;
+import com.google.sticknotesbackend.FastStorage;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Whiteboard;
@@ -45,7 +45,7 @@ public class BoardUpdatesServlet extends AppAbstractServlet{
     // get client's last updated value from the datastore
     Long clientsValue = jsonObject.get("lastUpdated").getAsLong();
     // get board with given id
-    Whiteboard board = SmartStorage.getWhiteboardLite(boardId);
+    Whiteboard board = FastStorage.getWhiteboardLite(boardId);
     if (board != null && !board.lastUpdated.equals(clientsValue)) {
       // send update
       Gson gson = JsonParsers.getBoardUpdateGsonParser();

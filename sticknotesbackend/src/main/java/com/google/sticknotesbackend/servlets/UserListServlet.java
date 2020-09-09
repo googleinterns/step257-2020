@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.FastStorage;
 import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.enums.Role;
@@ -158,7 +159,7 @@ public class UserListServlet extends AppAbstractServlet {
       return;
     }
 
-    ofy().delete().entity(boardRole).now();
+    FastStorage.removeUserBoardRole(boardRole);
     response.setStatus(OK);
     return;
   }
