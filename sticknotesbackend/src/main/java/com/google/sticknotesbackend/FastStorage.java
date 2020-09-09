@@ -66,7 +66,6 @@ public class FastStorage {
       board = ofy().load().group(Whiteboard.WithoutNotesAndCreator.class).key(boardKey).now();
       // save board in cache for future use
       cache.put(cacheKey, board);
-      return board;
     }
     return board;
   }
@@ -80,7 +79,7 @@ public class FastStorage {
     String cacheKey = Long.toString(boardId) + "-" + googleAccId;
     UserBoardRole role = (UserBoardRole)cache.get(cacheKey);
     if (role == null) {
-      // permission is not in cache yet, so load it and put into cache
+      // role is not in cache yet, so load it and put into cache
       // get current user
       User user = ofy().load().type(User.class).filter("googleAccId", googleAccId).first().now();
       // find the first role with the user and board
