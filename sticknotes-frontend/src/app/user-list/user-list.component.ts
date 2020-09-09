@@ -44,6 +44,19 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  canEdit(userBoardRole: UserBoardRole): boolean {
+    if (this.currentUser && this.currentUserRole) {
+      if (this.currentUserRole === UserRole.OWNER && this.currentUser.id !== userBoardRole.user.id) {
+        return true;
+      }
+      if (this.currentUserRole === UserRole.ADMIN && userBoardRole.role === UserRole.USER) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
   canDelete(userBoardRole: UserBoardRole): boolean {
     if (this.currentUser && this.currentUserRole) {
       if (this.currentUserRole === UserRole.OWNER && this.currentUser.id !== userBoardRole.user.id) {
@@ -67,12 +80,14 @@ export class UserListComponent implements OnInit {
   }
 
   openEditUserDialog(userBoardRole: UserBoardRole): void {
-    const dialogRef = this.dialog.open(EditUserComponent, { data: { boardId: this.boardId, role: userBoardRole.role, roleId: userBoardRole.id } });
-    dialogRef.afterClosed().subscribe(newRole => {
-      if (newRole) {
-        userBoardRole.role = newRole; //in case of error newRole is old role
-      }
-    });
+    if (this.canEdit(userBoardRole)) {
+      const dialogRef = this.dialog.open(EditUserComponent, { data: { boardId: this.boardId, role: userBoardRole.role, roleId: userBoardRole.id } });
+      dialogRef.afterClosed().subscribe(newRole => {
+        if (newRole) {
+          userBoardRole.role = newRole; //in case of error newRole is old role
+        }
+      });
+    }
   }
 
   removeUser(userBoardRole: UserBoardRole): void {
