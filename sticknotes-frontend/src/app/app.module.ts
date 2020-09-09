@@ -31,6 +31,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { EditUserComponent } from './edit-user/edit-user.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,8 @@ import { EditUserComponent } from './edit-user/edit-user.component';
     MomentModule,
     MatSnackBarModule,
     MatSelectModule,
-    MaterialFileInputModule
+    MaterialFileInputModule,
+    MatTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]
