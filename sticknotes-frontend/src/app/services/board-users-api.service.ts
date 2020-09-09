@@ -32,4 +32,8 @@ export class BoardUsersApiService {
   public removeUser(boardId: string, userRoleKey: string): Observable<void> {
     return this.http.delete<void>(`api/board/users/?id=${userRoleKey}&board-id=${boardId}`);
   }
+
+  public editUserRole(boardId: string, userRoleKey: string, newRole: string): Observable<void> {
+    return this.http.post<void>('api/edit-role/',{boardId: boardId, roleId: userRoleKey, newRole: newRole});
+  }
 }
