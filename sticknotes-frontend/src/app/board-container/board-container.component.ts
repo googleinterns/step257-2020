@@ -1,13 +1,12 @@
 /**
  * A main view of the app, container that holds the board
  */
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
 import { BoardData } from '../interfaces';
 import { MatDialog } from '@angular/material/dialog';
 import { BoardEditComponent } from '../board-edit/board-edit.component';
-import { Note } from '../interfaces';
 import { FormControl, Validators } from '@angular/forms';
 import { BoardApiService } from '../services/board-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -45,15 +44,25 @@ export class BoardContainerComponent {
     }
   }
 
+  /**
+   * Navigates user to the main menu
+   */
   public backToBoards(): void {
     this.router.navigateByUrl('/boards');
   }
 
+  /**
+   * Listens for the @Output Board of the board.component.ts
+   */
   public receiveBoardData(boardData: BoardData): void {
     // when board data is emitted, add info about the board to the sidenav
     this.boardData = boardData;
   }
 
+  /**
+   * Opens edit board dialog by opening the NewBoardComponent in "edit" mode
+   * When editing is done, receives the edited board and updates the board data
+   */
   public openEditBoardDialog() {
     const dialogRef = this.dialog.open(BoardEditComponent, {
       width: '500px',
@@ -68,6 +77,9 @@ export class BoardContainerComponent {
     });
   }
 
+  /**
+   * Converts a timestamp received from server to the TS Date object
+   */
   public getBoardCreatedDate(): Date {
     if (this.boardData) {
       return new Date(Number(this.boardData.creationDate));
