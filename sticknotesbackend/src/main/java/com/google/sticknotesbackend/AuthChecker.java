@@ -19,6 +19,33 @@ import java.util.List;
  */
 public class AuthChecker {
   /**
+   * Checks if current user can edit the given role, 
+   * Owner - can edit everyones role 
+   * Admin - can upgrade user role to admin but can't downgrade other admins
+   * User - can do nothing
+   */
+  public static Permission editRolePermission(Long boardId, Role editedRole) {
+    // check that user is authenticated
+    UserService userService = UserServiceFactory.getUserService();
+    if (userService.isUserLoggedIn()) {
+      // get current user
+      User user = ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first()
+          .now();
+      // find the first role with the user and board
+      UserBoardRole role = ofy().load().type(UserBoardRole.class).ancestor(Key.create(Whiteboard.class, boardId))
+          .filter("user", user).first().now();
+      if (role != null) {
+        if(role.role == Role.OWNER || (role.role == Role.ADMIN && editedRole == Role.USER)){
+          return Permission.GRANTED;
+        }
+      }
+      return Permission.FORBIDDEN;
+    }
+
+    return Permission.NOAUTH;
+  }
+
+  /**
    * Checks if current user can remove the given board
    */
   public static Permission boardDeletePermission(Whiteboard board) {
@@ -35,6 +62,7 @@ public class AuthChecker {
     }
     return Permission.NOAUTH;
   }
+
   /**
    * Checks if current user can modify(edit) the given board
    */
