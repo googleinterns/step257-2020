@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.JsonParsers;
+import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.UpdateQueryData;
 import com.google.sticknotesbackend.models.User;
@@ -41,7 +42,10 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
   @Test
   public void testRemovedNote() throws IOException {
     Gson gson = JsonParsers.getNoteGsonParser();
+    User user = createUserSafe();
     Whiteboard board = createBoard();
+    createRole(board, user, Role.USER);
+    logIn(user);
 
     JsonObject requestBody = new JsonObject();
     JsonArray requestArray = new JsonArray();
@@ -72,7 +76,10 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
   @Test
   public void testLastUpdatedNull() throws IOException {
     Gson gson = JsonParsers.getNoteGsonParser();
+    User user = createUserSafe();
     Whiteboard board = createBoard();
+    createRole(board, user, Role.USER);
+    logIn(user);
     User creator = createUserSafe();
     Note note = createNote();
     note.setCreator(creator);
@@ -109,7 +116,10 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
   @Test
   public void noUpdatesTest() throws IOException {
     Gson gson = JsonParsers.getNoteGsonParser();
+    User user = createUserSafe();
     Whiteboard board = createBoard();
+    createRole(board, user, Role.USER);
+    logIn(user);
 
     Note note1 = createNoteWithCreatorAndDates();
     Note note2 = createNoteWithCreatorAndDates();
@@ -151,7 +161,10 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
   @Test
   public void oneUpdateTest() throws IOException {
     Gson gson = JsonParsers.getNoteGsonParser();
+    User user = createUserSafe();
     Whiteboard board = createBoard();
+    createRole(board, user, Role.USER);
+    logIn(user);
 
     Note note1 = createNoteWithCreatorAndDates();
     Note note2 = createNoteWithCreatorAndDates();
@@ -201,7 +214,11 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
   @Test
   public void newNoteTest() throws IOException {
     Gson gson = JsonParsers.getNoteGsonParser();
+    
+    User user = createUserSafe();
     Whiteboard board = createBoard();
+    createRole(board, user, Role.USER);
+    logIn(user);
 
     Note note1 = createNoteWithCreatorAndDates();
     Note note2 = createNoteWithCreatorAndDates();
