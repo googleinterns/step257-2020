@@ -1,0 +1,10 @@
+<div class="edit-user-form-container">
+  <h2 class="mat-subheading-2">Edit User Role: </h2>
+  <form [formGroup]="editUserForm">
+    <mat-radio-group formControlName="role">
+      <mat-radio-button color="primary" value="{{userRole.USER}}">User</mat-radio-button>
+      <mat-radio-button color="primary" value="{{userRole.ADMIN}}">Admin</mat-radio-button>
+    </mat-radio-group>
+  </form>
+  <button mat-raised-button color="primary" (click)="editUser()">Edit</button>
+</div>
