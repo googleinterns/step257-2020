@@ -10,7 +10,6 @@ import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
-import com.googlecode.objectify.Key;
 
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class AuthChecker {
       // get user's google acc id
       String googleAccId = userService.getCurrentUser().getUserId();
       // get users role
-      UserBoardRole role = SmartStorage.getUserBoardRole(boardId, googleAccId);
+      UserBoardRole role = FastStorage.getUserBoardRole(boardId, googleAccId);
       if (role != null) {
         return Permission.GRANTED;
       }

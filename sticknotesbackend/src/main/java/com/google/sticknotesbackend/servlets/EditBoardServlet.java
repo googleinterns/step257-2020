@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
 import com.google.sticknotesbackend.JsonParsers;
-import com.google.sticknotesbackend.SmartStorage;
+import com.google.sticknotesbackend.FastStorage;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
@@ -91,7 +91,7 @@ public class EditBoardServlet extends AppAbstractServlet {
         }
       }
     }
-    SmartStorage.updateBoard(board);
+    FastStorage.updateBoard(board);
     // servlet default will return 200
   }
 }
