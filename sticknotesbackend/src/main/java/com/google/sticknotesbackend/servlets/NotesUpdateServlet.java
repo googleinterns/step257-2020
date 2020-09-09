@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.google.sticknotesbackend.JsonParsers;
+import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.UpdateQueryData;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
+import com.google.sticknotesbackend.AuthChecker;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +49,12 @@ public class NotesUpdateServlet extends AppAbstractServlet {
     }
     Long boardId = requestBody.get("boardId").getAsLong();
 
+    // check that user has enough rights to pull notes update
+    Permission perm = AuthChecker.boardAccessPermission(boardId);
+    if (perm != Permission.GRANTED) {
+      handleBadPermission(perm, response);
+      return;
+    }
     // obtaining type of List<UpdateQueryData> for conversion from JsonArray to
     // List<UpdateQueryData>
     Type queryListType = new TypeToken<List<UpdateQueryData>>() {}.getType();
