@@ -22,7 +22,7 @@ export class NewNoteComponent {
   // This component can be in 2 states: editing the existing note or creating a new one
   private mode: State;
   // This object stores the note the user edits in the moment
-  private editableNote: Note = null;
+  public editableNote: Note = null;
   // Text displayed in the "submit" button
   public submitButtonText: string;
   // To disable button when the data is being sent to the server
