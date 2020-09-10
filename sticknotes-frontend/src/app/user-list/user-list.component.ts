@@ -1,3 +1,7 @@
+/**
+ * This component is displayed on the side bar and contains
+ * list of board users
+ */
 import { Component, OnInit, Input } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { BoardUsersApiService } from '../services/board-users-api.service';
@@ -25,7 +29,10 @@ export class UserListComponent implements OnInit {
     private boardUsersService: BoardUsersApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar) { }
-
+  /**
+   * When component is initialized, list of users and current user is fetched from the service.
+   * With that two values role of current user is determined.
+   */
   ngOnInit(): void {
     forkJoin(
       [
@@ -44,6 +51,13 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  /**
+   * 
+   * @param userBoardRole role to edit
+   * 
+   * Based on current user role and the role that user wants to edit, function
+   * determines if user is permitted to perform operation of edition.
+   */
   canEdit(userBoardRole: UserBoardRole): boolean {
     if (this.currentUser && this.currentUserRole) {
       if (this.currentUserRole === UserRole.OWNER && this.currentUser.id !== userBoardRole.user.id) {
@@ -57,6 +71,13 @@ export class UserListComponent implements OnInit {
     return false;
   }
 
+  /**
+   * 
+   * @param userBoardRole role to delete
+   * 
+   * Based on current user role and the role that user wants to delete, function
+   * determines if user is permitted to perform operation of deletion.
+   */  
   canDelete(userBoardRole: UserBoardRole): boolean {
     if (this.currentUser && this.currentUserRole) {
       if (this.currentUserRole === UserRole.OWNER && this.currentUser.id !== userBoardRole.user.id) {
@@ -70,6 +91,11 @@ export class UserListComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Function is used to open the dialog for adding user. After dialog is closed
+   * function catches data that dialog emits after being closed. The emitted data
+   * is newly created user, and this user is added to the list of users.
+   */
   openAddUserDialog(): void {
     const dialogRef = this.dialog.open(AddUserComponent, { data: { boardId: this.boardId } });
     dialogRef.afterClosed().subscribe(user => {
@@ -79,6 +105,15 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  /**
+   * 
+   * @param userBoardRole role to edit, the parameter is needed to set default 
+   *                      position of radio button in the edit role dialog.
+   * 
+   * Function is used to open the dialog for editing user. After dialog is closed
+   * function catches data that dialog emits after being closed. The emitted data
+   * is new role of the user, function updates role of user.  
+   */
   openEditUserDialog(userBoardRole: UserBoardRole): void {
     if (this.canEdit(userBoardRole)) {
       const dialogRef = this.dialog.open(EditUserComponent, { data: { boardId: this.boardId, role: userBoardRole.role, roleId: userBoardRole.id } });
@@ -90,6 +125,13 @@ export class UserListComponent implements OnInit {
     }
   }
 
+  /**
+   * 
+   * @param userBoardRole role to delete
+   * 
+   * Sends remove request using boardUsersService, if operation was successful
+   * also removes role from local list of user roles. 
+   */
   removeUser(userBoardRole: UserBoardRole): void {
     this.boardUsersService.removeUser(this.boardId, userBoardRole.id).subscribe(() => {
       this.snackBar.open("User removed successfully.", "Ok", {
