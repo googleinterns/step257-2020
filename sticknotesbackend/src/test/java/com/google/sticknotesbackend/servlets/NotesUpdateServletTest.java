@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.sticknotesbackend.FastStorage;
 import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.Note;
@@ -83,9 +84,9 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     User creator = createUserSafe();
     Note note = createNote();
     note.setCreator(creator);
-    ofy().save().entity(note);
-
+    FastStorage.updateNote(note);
     board.notes.add(Ref.create(note));
+    FastStorage.updateBoard(board);
 
     JsonObject requestBody = new JsonObject();
     JsonArray requestArray = new JsonArray();

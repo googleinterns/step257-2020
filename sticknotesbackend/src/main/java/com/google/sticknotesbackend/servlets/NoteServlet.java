@@ -54,11 +54,11 @@ public class NoteServlet extends AppAbstractServlet {
     Gson gson = JsonParsers.getNoteGsonParser();
     Note note = gson.fromJson(jsonPayload, Note.class);
     // get the board of the note
-    // check that the position of note doesn't clash with the position of other notes
+    // check that the position of note doesn't clash with the position of other
+    // notes
     Whiteboard board = ofy().load().type(Whiteboard.class).id(note.boardId).now();
-    for (Ref<Note> noteRef: board.notes) {
-      Note existingNote = noteRef.get();
-      FastStorage.getNote(noteRef.key().getRaw().getId());
+    for (Ref<Note> noteRef : board.notes) {
+      Note existingNote = FastStorage.getNote(noteRef.key().getRaw().getId());
       if (existingNote.x == note.x && existingNote.y == note.y) {
         badRequest("Coordinates already taken", response);
         return;
@@ -70,11 +70,9 @@ public class NoteServlet extends AppAbstractServlet {
     note.setCreator(user);
     note.creationDate = System.currentTimeMillis();
     note.lastUpdated = System.currentTimeMillis();
-    
+
     // save the note and set id
     FastStorage.updateNote(note);
-    
-    // note.id = ofy().save().entity(note).now().getId();
     // add reference to the note at this board
     board.notes.add(Ref.create(note));
     ofy().save().entity(board).now();
@@ -94,10 +92,9 @@ public class NoteServlet extends AppAbstractServlet {
     String noteIdParam = request.getParameter("id");
     if (noteIdParam != null) {
       Long noteId = Long.parseLong(noteIdParam);
-      
+
       // get note that is going to be deleted
-      Note note = FastStorage.getNote(noteId);//ofy().load().type(Note.class).id(noteId).now();
-      
+      Note note = FastStorage.getNote(noteId);
       // check if user has enough permissions to modify note
       Permission perm = AuthChecker.noteModifyPermission(note);
       if (!perm.equals(Permission.GRANTED)) {
@@ -111,10 +108,9 @@ public class NoteServlet extends AppAbstractServlet {
       // update noteBoard
       ofy().save().entity(noteBoard).now();
       // delete note from datastore
-      
-      // ofy().delete().type(Note.class).id(noteId).now();
+
       FastStorage.removeNote(note);
-      
+
       response.setStatus(NO_CONTENT);
     } else {
       // if note id was not passed as a URL param, return 400 bad request error

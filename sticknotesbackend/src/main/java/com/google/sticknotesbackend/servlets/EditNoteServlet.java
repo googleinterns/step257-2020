@@ -42,7 +42,7 @@ public class EditNoteServlet extends AppAbstractServlet {
     Gson gson = JsonParsers.getNoteGsonParser();
     Note editedNote = gson.fromJson(jsonPayload, Note.class);
     // load requested note from the datastore
-    Note note = FastStorage.getNote(editedNote.id);//ofy().load().type(Note.class).id(editedNote.id).now();
+    Note note = FastStorage.getNote(editedNote.id);
     if (note == null) {
       response.getWriter().println("Note with given id does not exist");
       response.sendError(BAD_REQUEST);
@@ -70,10 +70,8 @@ public class EditNoteServlet extends AppAbstractServlet {
       note.content = editedNote.content;
     }
     note.image = editedNote.image;
-    
-    // note.lastUpdated = System.currentTimeMillis();
-    // save note
-    // ofy().save().entity(note).now();
+
+    // update note
     FastStorage.updateNote(note);
     // return updated note in the response
     response.getWriter().print(gson.toJson(note));

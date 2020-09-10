@@ -59,7 +59,8 @@ public class NotesUpdateServlet extends AppAbstractServlet {
     }
     // obtaining type of List<UpdateQueryData> for conversion from JsonArray to
     // List<UpdateQueryData>
-    Type queryListType = new TypeToken<List<UpdateQueryData>>() {}.getType();
+    Type queryListType = new TypeToken<List<UpdateQueryData>>() {
+    }.getType();
     List<UpdateQueryData> notesQueryArray = gson.fromJson(requestBody.get("notes").getAsJsonArray(), queryListType);
 
     // map to store notes from board
@@ -79,11 +80,12 @@ public class NotesUpdateServlet extends AppAbstractServlet {
      */
     JsonArray removedNotes = new JsonArray();
     for (UpdateQueryData query : notesQueryArray) {
-      if(!notesMap.containsKey(query.id)){
+      if (!notesMap.containsKey(query.id)) {
         removedNotes.add(query.id);
       }
       // remove note from map if it was not updated
-      else if (notesMap.get(query.id).lastUpdated != null && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)) {
+      else if (notesMap.get(query.id).lastUpdated != null
+          && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)) {
         notesMap.remove(query.id);
       }
     }

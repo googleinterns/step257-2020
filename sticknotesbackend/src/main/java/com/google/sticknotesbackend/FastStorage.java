@@ -117,10 +117,9 @@ public class FastStorage {
     ofy().delete().entity(board).now();
   }
 
-
   public static Note getNote(Long noteId){
     Cache cache = getCacheInstance();
-    Note note = (Note)cache.get(noteId);
+    Note note = (Note)cache.get(Long.toString(noteId));
     if(note == null){
       note = ofy().load().type(Note.class).id(noteId).now();
       cache.put(Long.toString(note.id), note);

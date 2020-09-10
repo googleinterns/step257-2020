@@ -152,7 +152,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       });
       // send a request
       this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((response) => {
-
         const newNotes = response.updatedNotes;
         const removedNotes = response.removedNotes;
         const notesWithUpdatedContent = [];
