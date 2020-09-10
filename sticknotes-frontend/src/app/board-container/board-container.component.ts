@@ -59,7 +59,7 @@ export class BoardContainerComponent {
   }
 
   /** 
-   * toggles the side menu, changes the icon name accordingly to the state
+   * Toggles the side menu, changes the icon name accordingly to the state
    */
   public toggleMenu(drawer: MatDrawer): void {
     drawer.toggle();
