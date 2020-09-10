@@ -8,6 +8,9 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -35,26 +38,37 @@ public class BoardServlet extends BoardAbstractServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String boardIdParam = request.getParameter("id");
+    // optional language param
+    String languageCode = request.getParameter("lc");
     if (boardIdParam != null) {
       long boardId = Long.parseLong(boardIdParam);
+
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
       if (board == null) {
-        response.getWriter().println("Board with this id doesn't exist");
-        response.sendError(BAD_REQUEST);
+        badRequest("Board with this id doesn't exist", response);
         return;
       }
+
       // check if user can access the board
       Permission perm = AuthChecker.boardAccessPermission(boardId);
-      System.out.println(perm);
       if (!perm.equals(Permission.GRANTED)) {
         handleBadPermission(perm, response);
         return;
       }
+      // if translate language is set, translate all notes
+      if (languageCode != null) {
+        Translate translate = TranslateOptions.getDefaultInstance().getService();
+        board.notes.forEach(noteRef -> {
+          // translate each note
+          Translation translation = translate.translate(noteRef.get().content, Translate.TranslateOption.targetLanguage(languageCode));
+          noteRef.get().content = translation.getTranslatedText();
+        });
+      }
       Gson gson = getBoardGsonParser();
+      response.setCharacterEncoding("UTF-8");
       response.getWriter().print(gson.toJson(board));
     } else {
-      response.getWriter().println("No id parameter");
-      response.sendError(BAD_REQUEST);
+      badRequest("No id parameter", response);
     }
   }
 
@@ -72,7 +86,7 @@ public class BoardServlet extends BoardAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = {"title"};
+      String[] requiredFields = { "title" };
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -83,7 +97,8 @@ public class BoardServlet extends BoardAbstractServlet {
     Gson gson = getBoardGsonParser();
     Whiteboard board = gson.fromJson(jsonPayload, Whiteboard.class);
     board.creationDate = System.currentTimeMillis();
-    // at this point we can assume that users is logged in (so also present in datastore)
+    // at this point we can assume that users is logged in (so also present in
+    // datastore)
     // get google id of the current user
     String googleAccId = userService.getCurrentUser().getUserId();
     // get the user with this id
@@ -95,8 +110,8 @@ public class BoardServlet extends BoardAbstractServlet {
     // when the board is saved, get the auto generated id and assign to the board
     // field
     board.id = ofy().save().entity(board).now().getId();
-    // automatically adding user with role ADMIN(will be changed to OWNER)
-    UserBoardRole userBoardRole = new UserBoardRole(Role.ADMIN, board, user);
+    // automatically adding user with role OWNER
+    UserBoardRole userBoardRole = new UserBoardRole(Role.OWNER, board, user);
     ofy().save().entity(userBoardRole).now();
     // return JSON of the new created board
     response.getWriter().print(gson.toJson(board));

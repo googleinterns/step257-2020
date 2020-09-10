@@ -43,7 +43,7 @@ public class ImageUploadServlet extends HttpServlet {
     // upload file
     storage.create(blobInfo, bytes);
     // generate a link to the file
-    String linkToFile = "https://storage.cloud.google.com/" + bucketName + "/" + fileName; 
+    String linkToFile = "https://storage.cloud.google.com/" + bucketName + "/" + fileName;
     JsonObject responseJson = new JsonObject();
     responseJson.addProperty("fileUrl", linkToFile);
     response.getWriter().print(responseJson.toString());

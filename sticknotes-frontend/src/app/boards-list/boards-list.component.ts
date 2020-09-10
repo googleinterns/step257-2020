@@ -13,7 +13,6 @@ import { BoardPreview, User } from '../interfaces';
 export class BoardsListComponent implements OnInit {
   public myBoards: BoardPreview[] = null;
   //temporary solution before we introduce guards
-  public user: User = null;
 
   constructor(private dialog: MatDialog, private boardApiService: BoardApiService, private userService: UserService) { }
 
@@ -21,16 +20,13 @@ export class BoardsListComponent implements OnInit {
     this.boardApiService.myBoardsList().subscribe(boards => {
       this.myBoards = boards;
     });
-    this.userService.getUser().subscribe(user => this.user = user);
   }
 
   /**
    * Opens a NewBoardComponent in a dialog in a "create" mode
    */
   public showNewBoardDialog(): void {
-    this.dialog.open(NewBoardComponent, {
-      width: '500px',
-    });
+    this.dialog.open(NewBoardComponent);
   }
 
   /**

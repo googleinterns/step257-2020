@@ -34,15 +34,19 @@ export class BoardComponent implements OnInit {
       this.updateBoardAbstractGrid();
     }
   }
+
   /**
-   * Input property used by board-container to send translated notes
+   * Input used to set target language of notes
    */
   @Input()
-  set translatedNotes(notes: Note[]) {
-    if (notes) {
-      this.board.notes = notes;
+  set notesLanguage(notesTargetLanguage: string) {
+    this.notesTargetLanguage = notesTargetLanguage;
+    if (this.board) {
+      this.fetchBoardData(this.board.id);
     }
   }
+
+  private notesTargetLanguage: string = null;
   private boardGrid: number[][];
   public board: Board;
 
@@ -65,27 +69,38 @@ export class BoardComponent implements OnInit {
     this.activatedRoute.paramMap.subscribe(params => {
       const boardId = params.get('id'); // get board id from route param
       // load board with the key
-      this.boardApiService.getBoard(boardId).subscribe(board => {
-        this.board = board;
-        this.updateBoardAbstractGrid();
-        // pass essential board's data to the sidenav
-        const sidenavData: BoardData = {
-          id: board.id,
-          title: board.title,
-          creationDate: board.creationDate,
-          backgroundImg: board.backgroundImg,
-          rows: board.rows,
-          cols: board.cols,
-          creator: board.creator
-        };
-        this.boardLoaded.emit(sidenavData);
-      });
+      this.fetchBoardData(boardId);
+      // fetch board data each 5 seconds from the server
+      setInterval(() => {
+        this.fetchBoardData(boardId);
+      }, 5000);
     });
   }
 
   /**
-   * Updates the z-index of the note, so it appears on the top of all other notes while dragging
+   * Fetches the board data from the server.
+   * Initializes local variable board, sends data to the sidenav,
+   * updates abstract grid
    */
+  private fetchBoardData(boardId: string) {
+    // load board with the key
+    this.boardApiService.getBoard(boardId, this.notesTargetLanguage).subscribe(board => {
+      this.board = board;
+      this.updateBoardAbstractGrid();
+      // pass essential board's data to the sidenav
+      const sidenavData: BoardData = {
+        id: board.id,
+        title: board.title,
+        creationDate: board.creationDate,
+        backgroundImg: board.backgroundImg,
+        rows: board.rows,
+        cols: board.cols,
+        creator: board.creator
+      };
+      this.boardLoaded.emit(sidenavData);
+    });
+  }
+  // updates the z-index of the note
   public onNoteDragStart(cdkDragStart: CdkDragStart): void {
     const elementRef = cdkDragStart.source.element.nativeElement;
     elementRef.style.setProperty('z-index', '10');

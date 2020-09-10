@@ -35,10 +35,10 @@ export class UserListComponent implements OnInit {
     ).subscribe(([user, users]) => {
       this.currentUser = user;
       this.usersWithRole = users;
-      const index = users.findIndex(userWithRole => user.id === userWithRole.user.id && userWithRole.role === UserRole.ADMIN);
+      const index = users.findIndex(userWithRole => user.id === userWithRole.user.id && (userWithRole.role !== UserRole.USER));
       if (index === -1) {
         this.adminView = false;
-      }else{
+      } else{
         this.adminView = true;
       }
     });

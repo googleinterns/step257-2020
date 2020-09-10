@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Board, BoardData, Note, BoardPreview } from '../interfaces';
+import { Board, BoardData, Note, BoardPreview, BoardUpdateData } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +11,11 @@ export class BoardApiService {
   constructor(private http: HttpClient) { }
 
   /**
-   * Retrieves the board with the given ID from the server
+   * Fetches the board and adds translation language if language code is not null
    */
-  public getBoard(boardId: string): Observable<Board> {
+  public getBoard(boardId: string, targetLanguageCode: string | null): Observable<Board> {
+    if (targetLanguageCode)
+      return this.http.get<Board>(`api/board/?id=${boardId}&lc=${targetLanguageCode}`);
     return this.http.get<Board>(`api/board/?id=${boardId}`);
   }
 
@@ -25,14 +27,14 @@ export class BoardApiService {
   }
 
   public updateBoard(data: BoardData): Observable<void> {
-    return this.http.post<void>('api/edit-board/', data);
-  }
-
-  /**
-   * Executes a request to translate notes of the board with id = boardId to language with targetLanguageCode
-   */
-  public translateNotesOfBoard(boardId: string, targetLanguageCode: string): Observable<Note[]> {
-    return this.http.get<Note[]>(`api/board/notes/?id=${boardId}&lc=${targetLanguageCode}`);
+    const updateData: BoardUpdateData = {
+      id: data.id,
+      title: data.title,
+      rows: data.rows,
+      cols: data.cols,
+      backgroundImg: data.backgroundImg
+    };
+    return this.http.post<void>('api/edit-board/', updateData);
   }
 
   /**

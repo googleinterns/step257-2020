@@ -17,40 +17,25 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './board-container.component.html',
   styleUrls: ['./board-container.component.css']
 })
-export class BoardContainerComponent implements OnInit {
+export class BoardContainerComponent {
   public iconName = 'menu';
   // used to receive data from the board and to send updates to the board component
   public boardData: BoardData = null;
   public translateFormControl = new FormControl('', [Validators.required]);
-  public translatedNotes: Note[] = null;
+  public targetLanguage: string = null;
   // languages to which notes can be translated
   public translateLanguages = [
-    { value: "ua", viewValue: "Українська" },
+    { value: "en", viewValue: "English" },
+    { value: "hr", viewValue: "Hrvatski" },
     { value: "pl", viewValue: "Polski" },
     { value: "ro", viewValue: "Română" },
-    { value: "hr", viewValue: "Hrvatski" },
-    { value: "zn", viewValue: "中文" },
-    { value: "en", viewValue: "English" },
-    { value: "te", viewValue: "తెలుగు" }
+    { value: "te", viewValue: "తెలుగు" },
+    { value: "uk", viewValue: "Українська" },
+    { value: "zh", viewValue: "中文" },
   ];
   constructor(private router: Router, private dialog: MatDialog, private boardApiService: BoardApiService, private snackBar: MatSnackBar) { }
 
-  ngOnInit(): void {
-    // sort languages
-    this.translateLanguages.sort((a, b) => {
-      if (a.value > b.value) {
-        return 1;
-      }
-      if (a.value < b.value) {
-        return -1;
-      }
-      return 0;
-    });
-  }
-
-  /**
-   * Opens/closes the side menu, changes the icon accordingly to the state
-   */
+  // toggles the side menu, changes the icon name accordingly to the state
   public toggleMenu(drawer: MatDrawer): void {
     drawer.toggle();
     if (this.iconName === 'menu') {
@@ -107,16 +92,9 @@ export class BoardContainerComponent implements OnInit {
    */
   public translateNotes(): void {
     if (this.translateFormControl.valid) {
-      // get the target language
-      const targetLanguage = this.translateFormControl.value;
-      this.boardApiService.translateNotesOfBoard(this.boardData.id, targetLanguage).subscribe(notes => {
-        this.translatedNotes = notes;
-      }, err => {
-        // display error snackbar for 2 seconds
-        this.snackBar.open("Server error occurred when translating notes", "Ok", {
-          duration: 2000,
-        });
-      })
+      // get the target language and 
+      // send target language to the board component
+      this.targetLanguage = this.translateFormControl.value;
     }
   }
 

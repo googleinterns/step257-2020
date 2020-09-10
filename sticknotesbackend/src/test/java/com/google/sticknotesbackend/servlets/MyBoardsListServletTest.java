@@ -31,6 +31,7 @@ public class MyBoardsListServletTest extends NotesboardTestBase {
     responseWriter = new StringWriter();
     when(mockResponse.getWriter()).thenReturn(new PrintWriter(responseWriter));
     myBoardsListServlet = new MyBoardsListServlet();
+    clearDatastore();
   }
 
   @Test

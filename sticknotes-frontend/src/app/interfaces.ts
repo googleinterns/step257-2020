@@ -49,7 +49,6 @@ export interface Note extends CreateNoteApiData {
 }
 
 /**
- * Except for "id", editable fields of the board
  * Used to store updated data of the board when user edits the board and to display the board
  * data in the sidenav
  */
@@ -57,6 +56,17 @@ export interface BoardData {
   readonly id: string;
   readonly creationDate: string;
   readonly creator: User;
+  title: string;
+  rows: number;
+  cols: number;
+  backgroundImg: string | null;
+}
+
+/**
+ * A set of mutable board fields
+ */
+export interface BoardUpdateData {
+  readonly id: string;
   title: string;
   rows: number;
   cols: number;
