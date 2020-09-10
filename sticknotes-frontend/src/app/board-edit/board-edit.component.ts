@@ -4,7 +4,7 @@ import { noSpacesValidator } from '../utility/util';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BoardApiService } from '../services/board-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BoardData } from '../interfaces';
+import { BoardDescription } from '../interfaces';
 
 @Component({
   selector: 'app-board-edit',
@@ -30,7 +30,7 @@ export class BoardEditComponent implements OnInit {
     ])
   });
   constructor(
-    @Inject(MAT_DIALOG_DATA) private boardData: BoardData, 
+    @Inject(MAT_DIALOG_DATA) private boardData: BoardDescription, 
     private dialogRef: MatDialogRef<BoardEditComponent>,
     private boardApiService: BoardApiService,
     private snackBar: MatSnackBar) { }
@@ -49,7 +49,7 @@ export class BoardEditComponent implements OnInit {
   public updateBoard() {
     if (this.editBoardForm.valid) {
       this.sendingData = true;
-      const updatePayload: BoardData = {
+      const updatePayload: BoardDescription = {
         title: this.editBoardForm.controls.boardTitle.value,
         cols: this.editBoardForm.controls.cols.value,
         rows: this.editBoardForm.controls.rows.value,

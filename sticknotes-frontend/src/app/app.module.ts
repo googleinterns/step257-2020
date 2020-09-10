@@ -21,7 +21,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { BoardComponent } from './board/board.component';
 import { BoardsListComponent } from './boards-list/boards-list.component';
 import { NewNoteComponent } from './new-note/new-note.component';
-import { RangeLoopPipe } from './pipes';
+import { RangeLoopPipe, NoteContentPipe } from './pipes';
 import { MatRadioModule } from '@angular/material/radio';
 import { HttpClientModule } from '@angular/common/http';
 import { MomentModule } from 'ngx-moment';
@@ -45,6 +45,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     BoardsListComponent,
     NewNoteComponent,
     RangeLoopPipe,
+    NoteContentPipe,
     AddUserComponent,
     BoardEditComponent,
     EditUserComponent
