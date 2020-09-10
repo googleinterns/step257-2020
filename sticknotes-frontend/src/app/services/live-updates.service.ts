@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BoardDataService } from './board-data.service';
+import { SharedBoardService } from './shared-board.service';
 import { Board, NoteUpdateRequest, Note } from '../interfaces';
 import _ from 'lodash';
 import { NotesApiService } from './notes-api.service';
@@ -16,7 +16,7 @@ export class LiveUpdatesService {
   private intervalFunction: any = null;
   // interval between updates requests in milliseconds
   private readonly UPDATE_INTERVAL = 2000;
-  constructor(private boardDataService: BoardDataService, private notesApiService: NotesApiService, private boardApiService: BoardApiService) { }
+  constructor(private sharedBoard: SharedBoardService, private notesApiService: NotesApiService, private boardApiService: BoardApiService) { }
 
   /**
    * Sets a board for which updates must be fetched.
@@ -81,7 +81,7 @@ export class LiveUpdatesService {
         // update board fields
         this.board = _.merge(this.board, board);
         // emit updated board
-        this.boardDataService.updateBoard(this.board);
+        this.sharedBoard.updateBoard(this.board);
       });
     }
   }

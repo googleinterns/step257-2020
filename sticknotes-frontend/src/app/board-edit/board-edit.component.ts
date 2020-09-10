@@ -5,6 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BoardApiService } from '../services/board-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BoardDescription } from '../interfaces';
+import { SharedBoardService } from '../services/shared-board.service';
 
 @Component({
   selector: 'app-board-edit',
@@ -33,7 +34,8 @@ export class BoardEditComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) private boardData: BoardDescription, 
     private dialogRef: MatDialogRef<BoardEditComponent>,
     private boardApiService: BoardApiService,
-    private snackBar: MatSnackBar) { }
+    private snackBar: MatSnackBar,
+    private sharedBoard: SharedBoardService) { }
 
   ngOnInit(): void {
     // prepopulate board data values in the formgroup
@@ -60,8 +62,9 @@ export class BoardEditComponent implements OnInit {
       }
       // send data to the server
       this.boardApiService.updateBoard(updatePayload).subscribe(() => {
-        // if update successfully, return updated data back to the caller component
-        this.dialogRef.close(updatePayload);
+        // if update successfull, send updated data to the shared board and close dialog
+        this.sharedBoard.updateBoard(updatePayload);
+        this.dialogRef.close();
         this.snackBar.open("Successfully updated!", "Ok", {
           duration: 2000,
         });

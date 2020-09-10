@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { BoardDataService } from './board-data.service';
+import { SharedBoardService } from './shared-board.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,9 +31,9 @@ export class TranslateService {
     { value: "zh", viewValue: "中文" },
   ];
 
-  constructor(private http: HttpClient, private boardDataService: BoardDataService) {
+  constructor(private http: HttpClient, private sharedBoard: SharedBoardService) {
     // create subscription on board updates and translation updates
-    combineLatest([this.boardDataService.boardObservable(), this.notesTargetLanguage.asObservable()]).subscribe(([board, lng]) => {
+    combineLatest([this.sharedBoard.boardObservable(), this.notesTargetLanguage.asObservable()]).subscribe(([board, lng]) => {
       // when notes are updated, translation may be required to run again if some notes' contents were updated
       if (!board) {
         return;

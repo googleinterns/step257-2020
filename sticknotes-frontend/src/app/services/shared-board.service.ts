@@ -7,7 +7,7 @@ import _ from 'lodash';
 @Injectable({
   providedIn: 'root'
 })
-export class BoardDataService {
+export class SharedBoardService {
   /**
    * Board object that will be shared across all services who need board data
    */

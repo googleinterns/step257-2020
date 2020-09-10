@@ -4,7 +4,6 @@
 import { Component } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
-import { BoardDescription } from '../interfaces';
 import { MatDialog } from '@angular/material/dialog';
 import { BoardEditComponent } from '../board-edit/board-edit.component';
 import { FormControl, Validators } from '@angular/forms';
@@ -13,7 +12,7 @@ import { BoardUsersApiService } from '../services/board-users-api.service';
 import { UserService } from '../services/user.service';
 import { take } from 'rxjs/operators';
 import { TranslateService } from '../services/translate.service';
-import { BoardDataService } from '../services/board-data.service';
+import { SharedBoardService } from '../services/shared-board.service';
 
 @Component({
   selector: 'app-board-container',
@@ -31,7 +30,7 @@ export class BoardContainerComponent {
   constructor(private router: Router,
     private dialog: MatDialog,
     private boardUsersApiService: BoardUsersApiService,
-    private boardDataService: BoardDataService,
+    private sharedBoard: SharedBoardService,
     private userService: UserService,
     public translateService: TranslateService) {
     forkJoin([
@@ -44,7 +43,7 @@ export class BoardContainerComponent {
     });
 
     // subscribe to board data changes
-    this.boardDataService.boardObservable().subscribe(board => {
+    this.sharedBoard.boardObservable().subscribe(board => {
       if (board) {
         this.boardData = {
           id: board.id,
@@ -59,7 +58,9 @@ export class BoardContainerComponent {
     });
   }
 
-  // toggles the side menu, changes the icon name accordingly to the state
+  /** 
+   * toggles the side menu, changes the icon name accordingly to the state
+   */
   public toggleMenu(drawer: MatDrawer): void {
     drawer.toggle();
     if (this.iconName === 'menu') {
@@ -73,15 +74,12 @@ export class BoardContainerComponent {
     this.router.navigateByUrl('/boards');
   }
 
+  /**
+   * Opens edit board component in a dialog
+   */
   public openEditBoardDialog() {
-    const dialogRef = this.dialog.open(BoardEditComponent, {
+    this.dialog.open(BoardEditComponent, {
       data: this.boardData
-    });
-    dialogRef.afterClosed().subscribe((data: BoardDescription) => {
-      // if board was edited
-      if (data) {
-        this.boardDataService.updateBoard(data);
-      }
     });
   }
 

@@ -8,7 +8,7 @@ import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FileUploadService } from '../services/file-upload.service';
-import { BoardDataService } from '../services/board-data.service';
+import { SharedBoardService } from '../services/shared-board.service';
 
 @Component({
   selector: 'app-new-note',
@@ -43,7 +43,7 @@ export class NewNoteComponent implements OnInit {
     private dialogRef: MatDialogRef<NewNoteComponent>,
     private snackBar: MatSnackBar,
     private fileUploadService: FileUploadService,
-    private boardDataService: BoardDataService) {
+    private sharedBoard: SharedBoardService) {
     if (data.mode === State.CREATE) {
       // creating new note
       const noteData = data.noteData as { position: Vector2, boardId: string };
@@ -133,8 +133,8 @@ export class NewNoteComponent implements OnInit {
   private sendNoteCreateData(payload: CreateNoteApiData) {
     // service returns a new note object
     this.notesApiService.createNote(payload).subscribe(note => {
-      // successfully created, close the dialog and send new note to the board data service
-      this.boardDataService.newNote(note);
+      // successfully created, close the dialog and send new note to the shared board service
+      this.sharedBoard.newNote(note);
       this.dialogRef.close();
     }, err => {
       // something went wrong
@@ -150,8 +150,8 @@ export class NewNoteComponent implements OnInit {
    */
   private sendNoteUpdateData(payload: Note) {
     this.notesApiService.updateNote(payload).subscribe(note => {
-      // successfully updated, close the dialog and send new note to the board data service
-      this.boardDataService.updateNote(note);
+      // successfully updated, close the dialog and send new note to the shared board service
+      this.sharedBoard.updateNote(note);
       this.dialogRef.close();
     }, err => {
       // something went wrong
@@ -204,7 +204,7 @@ export class NewNoteComponent implements OnInit {
 
   /**
    * Removes image from editableNote.
-   * Possible to send a request to cloud storage to delete a file indeed
+   * Maybe need to send a request to cloud storage to delete a file indeed
    */
   public removeImage() {
     this.editableNote.image = null;

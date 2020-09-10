@@ -14,7 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { BoardUsersApiService } from '../services/board-users-api.service';
 import { UserService } from '../services/user.service';
 import { UserRole } from '../enums/user-role.enum';
-import { BoardDataService } from '../services/board-data.service';
+import { SharedBoardService } from '../services/shared-board.service';
 
 @Component({
   selector: 'app-board',
@@ -34,7 +34,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   constructor(private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private notesApiService: NotesApiService,
-    private boardDataService: BoardDataService,
+    private sharedBoard: SharedBoardService,
     private snackBar: MatSnackBar,
     private boardUsersApiService: BoardUsersApiService,
     private liveUpdatesService: LiveUpdatesService,
@@ -51,9 +51,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.activatedRoute.paramMap.subscribe(params => {
       const boardId = params.get('id'); // get board id from route param
       // load board with the key
-      this.boardDataService.loadBoard(boardId);
+      this.sharedBoard.loadBoard(boardId);
       // subscribe to changes of the board
-      this.boardDataService.boardObservable().subscribe(board => {
+      this.sharedBoard.boardObservable().subscribe(board => {
         if (board) {
           this.board = board;
           this.updateBoardAbstractGrid();
@@ -208,8 +208,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       this.notesApiService.deleteNote(note.id).subscribe(() => {
         // set 0 to the position of the note
         this.boardGrid[note.y][note.x] = 0;
-        // send update to board data service
-        this.boardDataService.deleteNote(note);
+        // update shared board
+        this.sharedBoard.deleteNote(note);
       });
     }
   }
