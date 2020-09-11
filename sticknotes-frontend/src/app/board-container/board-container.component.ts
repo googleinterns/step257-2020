@@ -1,13 +1,12 @@
 /**
  * A main view of the app, container that holds the board
  */
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
 import { BoardData } from '../interfaces';
 import { MatDialog } from '@angular/material/dialog';
 import { BoardEditComponent } from '../board-edit/board-edit.component';
-import { Note } from '../interfaces';
 import { FormControl, Validators } from '@angular/forms';
 import { BoardApiService } from '../services/board-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';

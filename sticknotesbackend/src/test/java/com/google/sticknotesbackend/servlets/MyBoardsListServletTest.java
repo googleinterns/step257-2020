@@ -37,7 +37,7 @@ public class MyBoardsListServletTest extends NotesboardTestBase {
   @Test
   public void testMyBoardsGetSuccess() throws IOException, ServletException {
     // create 3 board, 1 user and 2 user roles
-    User boardsCreator = createUser();
+    User boardsCreator = createUserSafe();
     Whiteboard board1 = createBoard();
     board1.setCreator(boardsCreator);
     ofy().save().entity(board1).now();
@@ -47,7 +47,7 @@ public class MyBoardsListServletTest extends NotesboardTestBase {
     Whiteboard board3 = createBoard();
     board3.setCreator(boardsCreator);
     ofy().save().entity(board3).now();
-    User user = createUser();
+    User user = createUserSafe();
     // only add user to the first and second board
     createRole(board1, user, Role.USER);
     createRole(board2, user, Role.USER);
