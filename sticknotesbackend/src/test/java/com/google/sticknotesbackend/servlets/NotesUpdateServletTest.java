@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.sticknotesbackend.FastStorage;
 import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.Note;
@@ -82,11 +81,11 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     createRole(board, user, Role.USER);
     logIn(user);
     User creator = createUserSafe();
-    Note note = createNoteNotSave();
+    Note note = createNote();
     note.setCreator(creator);
-    FastStorage.updateNote(note);
+    ofy().save().entity(note);
+
     board.notes.add(Ref.create(note));
-    FastStorage.updateBoard(board);
 
     JsonObject requestBody = new JsonObject();
     JsonArray requestArray = new JsonArray();
@@ -167,22 +166,15 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     createRole(board, user, Role.USER);
     logIn(user);
 
-    Note note1 = createNoteWithCreatorAndDatesNotSave();
-    Note note2 = createNoteWithCreatorAndDatesNotSave();
-    Note note3 = createNoteWithCreatorAndDatesNotSave();
-    Note note4 = createNoteWithCreatorAndDatesNotSave();
-
-    FastStorage.updateNote(note1);
-    FastStorage.updateNote(note2);
-    FastStorage.updateNote(note3);
-    FastStorage.updateNote(note4);
+    Note note1 = createNoteWithCreatorAndDates();
+    Note note2 = createNoteWithCreatorAndDates();
+    Note note3 = createNoteWithCreatorAndDates();
+    Note note4 = createNoteWithCreatorAndDates();
 
     board.notes.add(Ref.create(note1));
     board.notes.add(Ref.create(note2));
     board.notes.add(Ref.create(note3));
     board.notes.add(Ref.create(note4));
-
-    FastStorage.updateBoard(board);
 
     JsonObject requestBody = new JsonObject();
     JsonArray requestArray = new JsonArray();
@@ -195,7 +187,7 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
 
     note4.lastUpdated+=1;
 
-    FastStorage.updateNote(note4);
+    ofy().save().entity(note4).now();
 
     requestBody.add("notes", requestArray);
     requestBody.addProperty("boardId", board.id.toString());
