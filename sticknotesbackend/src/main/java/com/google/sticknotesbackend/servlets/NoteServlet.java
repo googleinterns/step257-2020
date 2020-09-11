@@ -104,7 +104,7 @@ public class NoteServlet extends AppAbstractServlet {
       // get note board
       Whiteboard noteBoard = ofy().load().type(Whiteboard.class).id(note.boardId).now();
       // remove note from the list of noteBoard notes
-      noteBoard.notes.removeIf(noteRef -> noteRef.get().id == note.id);
+      noteBoard.notes.removeIf(noteRef -> noteRef.getKey().getId() == note.id);
       // update noteBoard
       ofy().save().entity(noteBoard).now();
       // delete note from datastore

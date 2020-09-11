@@ -82,7 +82,7 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     createRole(board, user, Role.USER);
     logIn(user);
     User creator = createUserSafe();
-    Note note = createNote();
+    Note note = createNoteNotSave();
     note.setCreator(creator);
     FastStorage.updateNote(note);
     board.notes.add(Ref.create(note));
@@ -167,15 +167,22 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     createRole(board, user, Role.USER);
     logIn(user);
 
-    Note note1 = createNoteWithCreatorAndDates();
-    Note note2 = createNoteWithCreatorAndDates();
-    Note note3 = createNoteWithCreatorAndDates();
-    Note note4 = createNoteWithCreatorAndDates();
+    Note note1 = createNoteWithCreatorAndDatesNotSave();
+    Note note2 = createNoteWithCreatorAndDatesNotSave();
+    Note note3 = createNoteWithCreatorAndDatesNotSave();
+    Note note4 = createNoteWithCreatorAndDatesNotSave();
+
+    FastStorage.updateNote(note1);
+    FastStorage.updateNote(note2);
+    FastStorage.updateNote(note3);
+    FastStorage.updateNote(note4);
 
     board.notes.add(Ref.create(note1));
     board.notes.add(Ref.create(note2));
     board.notes.add(Ref.create(note3));
     board.notes.add(Ref.create(note4));
+
+    FastStorage.updateBoard(board);
 
     JsonObject requestBody = new JsonObject();
     JsonArray requestArray = new JsonArray();
@@ -188,7 +195,7 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
 
     note4.lastUpdated+=1;
 
-    ofy().save().entity(note4).now();
+    FastStorage.updateNote(note4);
 
     requestBody.add("notes", requestArray);
     requestBody.addProperty("boardId", board.id.toString());

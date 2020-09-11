@@ -122,7 +122,7 @@ public class FastStorage {
     Note note = (Note)cache.get(Long.toString(noteId));
     if(note == null){
       note = ofy().load().type(Note.class).id(noteId).now();
-      cache.put(Long.toString(note.id), note);
+      cache.put(Long.toString(noteId), note);
     }
     return note;
   }

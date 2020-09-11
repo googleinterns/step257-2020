@@ -111,14 +111,33 @@ public abstract class NotesboardTestBase {
   /**
    * Creates a note and stores it in the datastore
    */
-  protected Note createNote() {
+  protected Note createNoteNotSave() {
     String uuid = UUID.randomUUID().toString();
     Note note = new Note();
     note.content = uuid + " note content";
     note.x = 1;
     note.y = 1;
     note.color = "#000000";
-    note.id = ofy().save().entity(note).now().getId();
+    return note;
+  }
+
+  /**
+   * Creates a note and stores it in the datastore
+   */
+  protected Note createNote() {
+    Note note = createNoteNotSave();
+    ofy().save().entity(note).now();
+    return note;
+  }
+
+  /**
+   * Creates a note with creator and lastUpdated, creationDates
+   */
+  protected Note createNoteWithCreatorAndDatesNotSave() {
+    Note note = createNoteNotSave();
+    note.setCreator(createUser());
+    note.lastUpdated = System.currentTimeMillis();
+    note.creationDate = System.currentTimeMillis();
     return note;
   }
 
@@ -126,10 +145,7 @@ public abstract class NotesboardTestBase {
    * Creates a note with creator and lastUpdated, creationDates
    */
   protected Note createNoteWithCreatorAndDates() {
-    Note note = createNote();
-    note.setCreator(createUser());
-    note.lastUpdated = System.currentTimeMillis();
-    note.creationDate = System.currentTimeMillis();
+    Note note = createNoteWithCreatorAndDatesNotSave();
     ofy().save().entity(note).now();
     return note;
   }
