@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import com.google.sticknotesbackend.AuthChecker;
 import com.google.sticknotesbackend.FastStorage;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
