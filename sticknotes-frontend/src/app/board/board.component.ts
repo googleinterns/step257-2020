@@ -41,7 +41,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     private userService: UserService) {
   }
 
-  // stop live updates
+  /**
+   * Stop live updates
+   */
   ngOnDestroy(): void {
     this.liveUpdatesService.unregisterBoard();
   }
@@ -76,13 +78,17 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
   }
 
-  // updates the z-index of the note
+  /**
+   * Updates the z-index of the note
+   */
   public onNoteDragStart(cdkDragStart: CdkDragStart): void {
     const elementRef = cdkDragStart.source.element.nativeElement;
     elementRef.style.setProperty('z-index', '10');
   }
 
-  // moves a note to a proper position after it was released, resets z-index
+  /**
+   * Moves a note to a proper position after it was released, resets z-index
+   */
   public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note): void {
     const elementRef = cdkDragEnd.source.element.nativeElement;
     // reset z-index
@@ -103,7 +109,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.notesApiService.updateNote(note).subscribe();
   }
 
-  // updates boardGrid with the positions of notes
+  /**
+   * Updates boardGrid with the positions of notes
+   */
   public updateBoardAbstractGrid(): void {
     this.boardGrid = [];
     for (let i = 0; i < this.board.rows; ++i) {
@@ -121,7 +129,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
   }
 
-  // returns the closes available position to the given x and y
+  /**
+   * Returns the closes available position to the given x and y
+   */
   public getClosestFreeSlot(note: Note, x: number, y: number): Vector2 {
     // get the closest cells indices
     const closePoints = [];
@@ -188,7 +198,7 @@ export class BoardComponent implements OnInit, OnDestroy {
    * Dialog sends new note to the board data service
    */
   public openNewNoteDialog(x: number, y: number): void {
-    const dialogRef = this.dialog.open(NewNoteComponent, {
+    this.dialog.open(NewNoteComponent, {
       data: { mode: State.CREATE, noteData: { position: new Vector2(x, y), boardId: this.board.id } }
     });
   }
