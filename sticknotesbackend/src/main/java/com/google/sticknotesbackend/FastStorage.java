@@ -6,7 +6,10 @@ import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.google.sticknotesbackend.models.Note;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Ref;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -112,5 +115,30 @@ public class FastStorage {
     String cacheKey = Long.toString(board.id);
     cache.remove(cacheKey);
     ofy().delete().entity(board).now();
+  }
+
+  public static Note getNote(Long noteId){
+    Cache cache = getCacheInstance();
+    Note note = (Note)cache.get(Long.toString(noteId));
+    if(note == null){
+      note = ofy().load().type(Note.class).id(noteId).now();
+      cache.put(Long.toString(noteId), note);
+    }
+    return note;
+  }
+
+  public static void updateNote(Note note){
+    note.lastUpdated = System.currentTimeMillis();
+    ofy().save().entity(note).now();
+
+    Cache cache = getCacheInstance();
+    cache.put(Long.toString(note.id), note);
+  }
+
+  public static void removeNote(Note note){
+    Cache cache = getCacheInstance();
+    String cacheKey = Long.toString(note.id);
+    cache.remove(cacheKey);
+    ofy().delete().entity(note).now();
   }
 }
