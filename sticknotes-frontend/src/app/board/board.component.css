@@ -77,3 +77,11 @@ mat-card-content {
   overflow-y: scroll;
   height: 240px;
 }
+
+.col-names {
+  height: 30px;
+  width: 100%;
+  background-color: aquamarine;
+  position: fixed;
+  top: 40px;
+}

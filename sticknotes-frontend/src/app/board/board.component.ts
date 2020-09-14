@@ -16,6 +16,9 @@ import { UserService } from '../services/user.service';
 import { UserRole } from '../enums/user-role.enum';
 import { SharedBoardService } from '../services/shared-board.service';
 
+/**
+ * Component for displaying grid and notes
+ */
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
@@ -180,7 +183,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * generates a correct style to position the note
+   * Generates a correct style to position the note
    */
   public getNoteStyle(note: Note): string {
     return `left:${note.x * this.NOTE_WIDTH}px;top:${note.y * this.NOTE_HEIGHT}px`;
@@ -230,7 +233,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   public getBoardWrapperStyle() {
     // if board is wider than 100% of the screen or higher than 100%, set fixed width and height
-    return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.board.cols}px); height: min(100% - 100px, ${this.NOTE_HEIGHT * this.board.rows}px)`; 
+    return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.board.cols}px); height: min(100% - 70px, ${this.NOTE_HEIGHT * this.board.rows}px)`; 
   }
 
   public getNoteCreationDate(note: Note) {

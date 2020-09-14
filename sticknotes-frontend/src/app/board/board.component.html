@@ -1,6 +1,9 @@
 <div class="flex-container" *ngIf="board">
   <h3>{{board.title}}</h3>
   <div class="board-wrapper" [style]="getBoardWrapperStyle()">
+    <div class="col-names">
+      
+    </div>
     <div class="board" [style]="getBoardWidth()">
       <div *ngFor="let y of board.rows | rangeLoop">
         <div *ngFor="let x of board.cols | rangeLoop" class="new-note-container" [style]="getSlotStyle(x, y)">
