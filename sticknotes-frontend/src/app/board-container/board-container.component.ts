@@ -22,12 +22,13 @@ export class BoardContainerComponent {
   public iconName = 'menu';
   // used to receive data from the board and to send updates to the board component
   public boardData: BoardData = null;
-  public translateFormControl = new FormControl('', [Validators.required]);
+  public translateFormControl = new FormControl("original", [Validators.required]);
   public targetLanguage: string = null;
   // flag for storing user's permission to edit the board
   public canEditBoard = false;
   // languages to which notes can be translated
   public translateLanguages = [
+    { value: "original", viewValue: "Original language"},
     { value: "en", viewValue: "English" },
     { value: "hr", viewValue: "Hrvatski" },
     { value: "pl", viewValue: "Polski" },

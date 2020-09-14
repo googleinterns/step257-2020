@@ -3,11 +3,20 @@
   <mat-grid-list gutterSize="10" cols="5" rowHeight="20vw">
     <mat-grid-tile *ngFor="let board of myBoards" appElevateOnHover [defaultElevation]="2" [raisedElevation]="24">
       <mat-card [routerLink]="getBoardLink(board)">
-        <mat-card-title>{{board.title}}</mat-card-title>
+        <mat-card-content>
+          <div class="buttons-group">
+            <button *ngIf="canDeleteBoard(board)" mat-icon-button class="delete-board-btn" (click)="deleteBoard($event, board.id, board.title)">
+              <mat-icon class="delete-note-icon">delete</mat-icon>
+            </button>
+          </div>
+          <div class="board-title">
+            <h2>{{board.title}}</h2>
+          </div>
+        </mat-card-content>
       </mat-card>
     </mat-grid-tile>
     <mat-grid-tile appElevateOnHover [defaultElevation]="2" [raisedElevation]="24" (click)="showNewBoardDialog()">
-      <mat-icon color="primary" aria-hidden="true" aria-label="Create new board">add</mat-icon>
+      <mat-icon class="add-note-icon" color="primary" aria-hidden="true" aria-label="Create new board">add</mat-icon>
     </mat-grid-tile>
   </mat-grid-list>
 </div>

@@ -48,6 +48,12 @@ export class BoardComponent implements OnInit, OnDestroy {
   set notesLanguage(notesTargetLanguage: string) {
     // do translation here
     if (notesTargetLanguage && this.board.notes) {
+      if (notesTargetLanguage === "original") {
+        // user wants to reset the translation, erase the hashmap of translated content
+        this.notesTargetLanguage = null;
+        this.notesTranslation = {};
+        return;
+      }
       this.notesTargetLanguage = notesTargetLanguage;
       const texts = [];
       this.board.notes.forEach(note => {
@@ -87,7 +93,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     private notesApiService: NotesApiService,
     private translateService: TranslateService,
     private snackBar: MatSnackBar,
-    private boardUsersApiService: BoardUsersApiService, 
+    private boardUsersApiService: BoardUsersApiService,
     private userService: UserService) {
   }
 
@@ -148,17 +154,41 @@ export class BoardComponent implements OnInit, OnDestroy {
       // generate notes update request
       const notesTimestamps: NoteUpdateRequest[] = [];
       this.board.notes.forEach(note => {
-        notesTimestamps.push({ id: note.id, lastUpdated: this.getNoteLastUpdated(note)});
+        notesTimestamps.push({ id: note.id, lastUpdated: this.getNoteLastUpdated(note) });
       });
       // send a request
-      this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((newNotes) => {
+      this.notesApiService.getUpdatedNotes(notesTimestamps, this.board.id).subscribe((response) => {
+
+        const newNotes = response.updatedNotes;
+        const removedNotes = response.removedNotes;
         const notesWithUpdatedContent = [];
-        // server returns array of notes that have been changed, find local copy of that notes and update them
-        // merge notes
-        const ids = new Set(this.board.notes.map(n => n.id));
-        this.board.notes = [...this.board.notes, ...newNotes.filter(n => !ids.has(n.id))];
+
+        // server returns array of notes that have been removed, this notes have to be removed also here
+        removedNotes.forEach(id => {
+          const index = this.board.notes.findIndex((note) => id === Number(note.id));
+          if (index >= 0 && index < this.board.notes.length) {
+            this.board.notes.splice(index, 1);
+          }
+        });
         // update map of original notes texts
         this.updateOriginalNotesContentMap(this.board);
+        // server returns array of notes that have been changed, find local copy of that notes and update them
+        // insert notes that are new
+        const ids = new Set(this.board.notes.map(n => n.id));
+        newNotes.forEach(note => {
+          // if note is new, add it to the board
+          if (!ids.has(note.id)) {
+            this.board.notes.push(note);
+          } else {
+            // otherwise if it was changed, change it is local copy
+            // find index of updated note
+            const index = this.board.notes.findIndex((n) => n.id === note.id);
+            if (index >= 0 && index < this.board.notes.length) {
+              // if not with such id is found, update it
+              this.board.notes[index] = _.merge(this.board.notes[index], note);
+            }
+          }
+        });
         // update abstract grid
         this.updateBoardAbstractGrid();
         for (const newNote of newNotes) {
@@ -187,7 +217,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       });
 
       // pull board updates
-      const boardRequestData = {id: this.board.id, lastUpdated: this.boardLastUpdated};
+      const boardRequestData = { id: this.board.id, lastUpdated: this.boardLastUpdated };
       this.boardApiService.getUpdatedBoard(boardRequestData).subscribe(newBoard => {
         // if there is an update
         if (newBoard) {
@@ -236,20 +266,18 @@ export class BoardComponent implements OnInit, OnDestroy {
    * Updates boardGrid with the positions of notes. If boardGrid doesn't exist yet, creates it.
    */
   public updateBoardAbstractGrid(): void {
-    if (!this.boardGrid) {
-      this.boardGrid = [];
-      for (let i = 0; i < this.board.rows; ++i) {
-        this.boardGrid[i] = [];
-        for (let j = 0; j < this.board.cols; ++j) {
-          this.boardGrid[i][j] = 0;
-        }
+    this.boardGrid = [];
+    for (let i = 0; i < this.board.rows; ++i) {
+      this.boardGrid[i] = [];
+      for (let j = 0; j < this.board.cols; ++j) {
+        this.boardGrid[i][j] = 0;
       }
     }
 
     if (this.board.notes) {
       this.board.notes.forEach(note => {
-        const i = Math.floor(note.y / this.NOTE_HEIGHT);
-        const j = Math.floor(note.x / this.NOTE_WIDTH);
+        const i = note.y;
+        const j = note.x;
         this.boardGrid[i][j] = 1;
       });
     }
@@ -334,6 +362,9 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.board.notes.push(note);
         // update grid
         this.boardGrid[note.y][note.x] = 1;
+        this.notesOriginalContent[note.id] = note.content;
+        // translate new note if translation is enabled
+        this.translateNote(note);
       }
     });
   }
@@ -353,8 +384,14 @@ export class BoardComponent implements OnInit, OnDestroy {
       if (newNote) {
         const updateNote = this.board.notes.find(n => n.id === newNote.id);
         if (updateNote) {
-          updateNote.content = newNote.content;
-          updateNote.color = newNote.color;
+          // if translation is enabled and content has changed, do translation
+          if (newNote.content !== this.notesOriginalContent[note.id]) {
+            // also update a hashtable of notes original content
+            this.notesOriginalContent[note.id] = newNote.content;
+            this.translateNote(newNote);
+          }
+          // update all other note fields
+          _.merge(updateNote, newNote);
         }
       }
     });
@@ -371,9 +408,15 @@ export class BoardComponent implements OnInit, OnDestroy {
       if (indexOfNote !== -1) {
         this.notesApiService.deleteNote(note.id).subscribe(() => {
           // set 0 to the position of the note
-          this.boardGrid[Math.floor(note.y / this.NOTE_HEIGHT)][Math.floor(note.x / this.NOTE_WIDTH)] = 0;
+          this.boardGrid[note.y][note.x] = 0;
           // remove note from local array
           this.board.notes.splice(indexOfNote, 1);
+          // remove note from content map
+          this.notesOriginalContent[note.id] = null;
+          // remove note from translation map if there is one
+          if (this.notesTargetLanguage) {
+            this.notesTranslation[note.id] = null;
+          }
         });
       }
     }
@@ -475,5 +518,20 @@ export class BoardComponent implements OnInit, OnDestroy {
       return this.currentUser.id === note.creator.id;
     }
     return false;
+  }
+
+  /**
+   * Helper function that translates a single note and updates the local translation hash map
+   */
+  private translateNote(note: Note): void {
+    if (this.notesTargetLanguage) {
+      const textsToTranslate = [note.content];
+      // send array of note content to the translate api and update local translation hashtable
+      this.translateService.translateArray(textsToTranslate, this.notesTargetLanguage).subscribe(data => {
+        for (let i = 0; i < data.result.length; ++i) {
+          this.notesTranslation[note.id] = data.result[i];
+        }
+      });
+    }
   }
 }

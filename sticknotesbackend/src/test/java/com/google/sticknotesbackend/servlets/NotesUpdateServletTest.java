@@ -39,6 +39,37 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
   }
 
   @Test
+  public void testRemovedNote() throws IOException {
+    Gson gson = JsonParsers.getNoteGsonParser();
+    Whiteboard board = createBoard();
+
+    JsonObject requestBody = new JsonObject();
+    JsonArray requestArray = new JsonArray();
+
+    requestArray.add(gson.toJsonTree(new UpdateQueryData((long)2354, (long)0)));
+
+    requestBody.add("notes", requestArray);
+    requestBody.addProperty("boardId", board.id.toString());
+
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(requestBody.toString())));
+
+    notesUpdateServlet.doPost(mockRequest, mockResponse);
+
+    JsonArray expectedRemovedNotes = new JsonArray();
+    expectedRemovedNotes.add(2354);
+
+    JsonObject expectedResponse = new JsonObject();
+    expectedResponse.add("removedNotes", expectedRemovedNotes);
+    expectedResponse.add("updatedNotes", new JsonArray());
+    // veryfing response
+    verify(mockResponse).setContentType("application/json");
+    verify(mockResponse).setStatus(OK);
+
+    JsonObject actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);
+    assertEquals(expectedResponse, actualResponse);
+  }
+
+  @Test
   public void testLastUpdatedNull() throws IOException {
     Gson gson = JsonParsers.getNoteGsonParser();
     Whiteboard board = createBoard();
@@ -52,7 +83,6 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
     JsonObject requestBody = new JsonObject();
     JsonArray requestArray = new JsonArray();
 
-
     requestArray.add(gson.toJsonTree(new UpdateQueryData(note.id, (long)0)));
 
     requestBody.add("notes", requestArray);
@@ -62,13 +92,17 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
 
     notesUpdateServlet.doPost(mockRequest, mockResponse);
 
-    JsonArray expectedResponse = new JsonArray();
-    expectedResponse.add(gson.toJsonTree(note));
+    JsonArray expectedUpdatedNotes = new JsonArray();
+    expectedUpdatedNotes.add(gson.toJsonTree(note));
+
+    JsonObject expectedResponse = new JsonObject();
+    expectedResponse.add("removedNotes", new JsonArray());
+    expectedResponse.add("updatedNotes", expectedUpdatedNotes);
     // veryfing response
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
 
-    JsonArray actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonArray.class);
+    JsonObject actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);
     assertEquals(expectedResponse, actualResponse);
   }
 
@@ -103,13 +137,14 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
 
     notesUpdateServlet.doPost(mockRequest, mockResponse);
 
-    JsonArray expectedResponse = new JsonArray();
-
+    JsonObject expectedResponse = new JsonObject();
+    expectedResponse.add("removedNotes", new JsonArray());
+    expectedResponse.add("updatedNotes", new JsonArray());
     // veryfing response
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
 
-    JsonArray actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonArray.class);
+    JsonObject actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);
     assertEquals(expectedResponse, actualResponse);
   }
 
@@ -148,14 +183,18 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
 
     notesUpdateServlet.doPost(mockRequest, mockResponse);
 
-    JsonArray expectedResponse = new JsonArray();
-    expectedResponse.add(gson.toJsonTree(note4));
+    JsonArray expectedUpdatedNotes = new JsonArray();
+    expectedUpdatedNotes.add(gson.toJsonTree(note4));
+
+    JsonObject expectedResponse = new JsonObject();
+    expectedResponse.add("removedNotes", new JsonArray());
+    expectedResponse.add("updatedNotes", expectedUpdatedNotes);
 
     // veryfing response
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
 
-    JsonArray actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonArray.class);
+    JsonObject actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);
     assertEquals(expectedResponse, actualResponse);
   }
 
@@ -186,14 +225,17 @@ public class NotesUpdateServletTest extends NotesboardTestBase {
 
     notesUpdateServlet.doPost(mockRequest, mockResponse);
 
-    JsonArray expectedResponse = new JsonArray();
-    expectedResponse.add(gson.toJsonTree(newNote));
+    JsonArray expectedUpdatedNotes = new JsonArray();
+    expectedUpdatedNotes.add(gson.toJsonTree(newNote));
 
+    JsonObject expectedResponse = new JsonObject();
+    expectedResponse.add("removedNotes", new JsonArray());
+    expectedResponse.add("updatedNotes", expectedUpdatedNotes);
     // veryfing response
     verify(mockResponse).setContentType("application/json");
     verify(mockResponse).setStatus(OK);
 
-    JsonArray actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonArray.class);
+    JsonObject actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);
     assertEquals(expectedResponse, actualResponse);
   }
 }

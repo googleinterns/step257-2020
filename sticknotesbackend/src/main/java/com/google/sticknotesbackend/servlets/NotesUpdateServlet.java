@@ -3,6 +3,7 @@ package com.google.sticknotesbackend.servlets;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -21,10 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * This servlet is a backend of note live update feature.
- * Client is sending list of queries that are used to check if the note is up to date so
- * request contains following body: "notes":[{"id":231,"lastUpdated":32141424334},{"id":232,"lastUpdated":32141424322},...]
- * response contains list of notes that have been recognized as updated or are new in the board
+ * This servlet is a backend of note live update feature. Client is sending list
+ * of queries that are used to check if the note is up to date so request
+ * contains following body:
+ * "notes":[{"id":231,"lastUpdated":32141424334},{"id":232,"lastUpdated":32141424322},...]
+ * response contains list of notes that have been recognized as updated or are
+ * new in the board
  */
 
 @WebServlet("api/notes-updates/")
@@ -34,21 +37,22 @@ public class NotesUpdateServlet extends AppAbstractServlet {
     Gson gson = new Gson();
     JsonObject requestBody = JsonParser.parseReader(request.getReader()).getAsJsonObject();
 
-    //validating request type
+    // validating request type
     try {
       String[] requiredFields = { "notes", "boardId" };
       validateRequestData(requestBody, response, requiredFields);
-    } catch(PayloadValidationException e) {
+    } catch (PayloadValidationException e) {
       badRequest(e.getMessage(), response);
       return;
     }
     Long boardId = requestBody.get("boardId").getAsLong();
 
-    //obtaining type of List<UpdateQueryData> for conversion from JsonArray to List<UpdateQueryData>
+    // obtaining type of List<UpdateQueryData> for conversion from JsonArray to
+    // List<UpdateQueryData>
     Type queryListType = new TypeToken<List<UpdateQueryData>>() {}.getType();
     List<UpdateQueryData> notesQueryArray = gson.fromJson(requestBody.get("notes").getAsJsonArray(), queryListType);
 
-    //map to store notes from board
+    // map to store notes from board
     HashMap<Long, Note> notesMap = new HashMap<>();
     Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
     if (board != null) {
@@ -58,15 +62,26 @@ public class NotesUpdateServlet extends AppAbstractServlet {
       }
     }
 
-    //remove note from map if it was not updated
-    for(UpdateQueryData query : notesQueryArray){
-      if(notesMap.containsKey(query.id) && notesMap.get(query.id).lastUpdated != null && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)){
+    /*
+     * Except information about the updated notes we need to also return information
+     * about removed notes. Note is determined as removed from board if it exists in
+     * the list from client but doesn't exist in the set of notes of board.
+     */
+    JsonArray removedNotes = new JsonArray();
+    for (UpdateQueryData query : notesQueryArray) {
+      if(!notesMap.containsKey(query.id)){
+        removedNotes.add(query.id);
+      }
+      // remove note from map if it was not updated
+      else if (notesMap.get(query.id).lastUpdated != null && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)) {
         notesMap.remove(query.id);
       }
     }
 
-    //creates list of notes to return
-    String jsonResponse = JsonParsers.getNoteGsonParser().toJson(notesMap.values());
+    JsonObject responseBody = new JsonObject();
+    responseBody.add("removedNotes", removedNotes);
+    responseBody.add("updatedNotes", JsonParsers.getNoteGsonParser().toJsonTree(notesMap.values()));
+    String jsonResponse = responseBody.toString();
 
     response.setContentType("application/json");
     response.getWriter().println(jsonResponse);
