@@ -11,7 +11,6 @@ import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Key;
-
 import java.util.List;
 
 /**

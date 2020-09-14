@@ -51,10 +51,9 @@ export interface Note extends CreateNoteApiData {
 }
 
 /**
- * Used to store updated data of the board when user edits the board and to display the board
- * data in the sidenav
+ * All board fields except notes
  */
-export interface BoardData {
+export interface BoardDescription {
   readonly id: string;
   readonly creationDate: string;
   readonly creator: User;
@@ -64,7 +63,7 @@ export interface BoardData {
   backgroundImg: string | null;
 }
 
-export interface NotesUpdateData {
+export interface NotesUpdatesResponseData {
   removedNotes: number[];
   updatedNotes: Note[];
 }
@@ -80,6 +79,9 @@ export interface BoardUpdateData {
   backgroundImg: string | null;
 }
 
+/**
+ * A set of fields necessary to display a list of boards available to user
+ */
 export interface BoardPreview {
   readonly id: string;
   readonly title: string;

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CreateNoteApiData, Note, NoteUpdateRequest, NotesUpdateData } from '../interfaces';
+import { CreateNoteApiData, Note, NoteUpdateRequest, NotesUpdatesResponseData } from '../interfaces';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
@@ -33,11 +33,11 @@ export class NotesApiService {
   /**
    * Returns updated notes
    */
-  public getUpdatedNotes(data: NoteUpdateRequest[], boardId: string): Observable<NotesUpdateData> {
+  public getUpdatedNotes(data: NoteUpdateRequest[], boardId: string): Observable<NotesUpdatesResponseData> {
     const payload = {
       notes: data,
       boardId: boardId
     };
-    return this.http.post<NotesUpdateData>('api/notes-updates/', payload);
+    return this.http.post<NotesUpdatesResponseData>('api/notes-updates/', payload);
   }
 }
