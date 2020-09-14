@@ -5,7 +5,7 @@
       <div class="board-info" *ngIf="boardData">
         <mat-card class="mat-elevation-z12">
           <mat-card-title>Board info
-            <button mat-icon-button (click)="openEditBoardDialog()">
+            <button *ngIf="canEditBoard" mat-icon-button (click)="openEditBoardDialog()">
               <mat-icon>edit</mat-icon>
             </button>
           </mat-card-title>

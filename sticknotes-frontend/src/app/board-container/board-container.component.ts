@@ -4,12 +4,14 @@
 import { Component } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
-import { BoardData } from '../interfaces';
+import { BoardData, UserBoardRole } from '../interfaces';
 import { MatDialog } from '@angular/material/dialog';
 import { BoardEditComponent } from '../board-edit/board-edit.component';
 import { FormControl, Validators } from '@angular/forms';
-import { BoardApiService } from '../services/board-api.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, forkJoin } from 'rxjs';
+import { BoardUsersApiService } from '../services/board-users-api.service';
+import { UserService } from '../services/user.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-board-container',
@@ -22,6 +24,8 @@ export class BoardContainerComponent {
   public boardData: BoardData = null;
   public translateFormControl = new FormControl('', [Validators.required]);
   public targetLanguage: string = null;
+  // flag for storing user's permission to edit the board
+  public canEditBoard = false;
   // languages to which notes can be translated
   public translateLanguages = [
     { value: "en", viewValue: "English" },
@@ -32,7 +36,17 @@ export class BoardContainerComponent {
     { value: "uk", viewValue: "Українська" },
     { value: "zh", viewValue: "中文" },
   ];
-  constructor(private router: Router, private dialog: MatDialog) { }
+
+  constructor(private router: Router, private dialog: MatDialog, private boardUsersApiService: BoardUsersApiService, private userService: UserService) { 
+    forkJoin([
+      this.userService.getUser().pipe(take(1)),
+      // first emitted default value of behavior subject, second is actual rules
+      this.boardUsersApiService.getBoardUsersSubject().pipe(take(2))
+    ]).subscribe(([user, roles]) => {
+      const role = roles.find(r => r.user.id === user.id);
+      this.canEditBoard = (role && (role.role === 'OWNER' || role.role === 'ADMIN'));
+    });
+  }
 
   // toggles the side menu, changes the icon name accordingly to the state
   public toggleMenu(drawer: MatDrawer): void {

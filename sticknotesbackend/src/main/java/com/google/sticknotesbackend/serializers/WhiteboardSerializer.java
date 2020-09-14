@@ -21,9 +21,10 @@ import java.lang.reflect.Type;
  */
 public class WhiteboardSerializer implements JsonSerializer<Whiteboard> {
 
-  /** 
-   * Custom Whiteboard serialization, creates an array of notes from notes references that stored in the Whiteboard object
-  */
+  /**
+   * Custom Whiteboard serialization, creates an array of notes from notes references that stored in the Whiteboard
+   * object
+   */
   @Override
   public JsonElement serialize(Whiteboard src, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject board = new JsonObject();

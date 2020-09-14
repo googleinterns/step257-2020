@@ -5,10 +5,10 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
-import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
 import java.io.BufferedReader;
@@ -72,6 +72,6 @@ public class EditNoteServletTest extends NotesboardTestBase {
     assertThat(responseWriter.toString()).contains("#000000");
     // check that note from response is equal to note in the datastore
     Note savedNote = ofy().load().type(Note.class).id(note.id).now();
-    assertThat(responseWriter.toString()).isEqualTo(editNoteServlet.getNoteGsonParser().toJson(savedNote));
+    assertThat(responseWriter.toString()).isEqualTo(JsonParsers.getNoteGsonParser().toJson(savedNote));
   }
 }

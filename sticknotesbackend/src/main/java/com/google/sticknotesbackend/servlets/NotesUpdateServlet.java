@@ -2,26 +2,23 @@ package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-import com.googlecode.objectify.Ref;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.HashMap;
-
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.UpdateQueryData;
 import com.google.sticknotesbackend.models.Whiteboard;
-import com.google.sticknotesbackend.serializers.NoteSerializer;
+import com.googlecode.objectify.Ref;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.List;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This servlet is a backend of note live update feature.
@@ -63,23 +60,16 @@ public class NotesUpdateServlet extends AppAbstractServlet {
 
     //remove note from map if it was not updated
     for(UpdateQueryData query : notesQueryArray){
-      if(notesMap.containsKey(query.id) && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)){
+      if(notesMap.containsKey(query.id) && notesMap.get(query.id).lastUpdated != null && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)){
         notesMap.remove(query.id);
       }
     }
 
     //creates list of notes to return
-    String jsonResponse = getNoteGsonParser().toJson(notesMap.values());
+    String jsonResponse = JsonParsers.getNoteGsonParser().toJson(notesMap.values());
 
     response.setContentType("application/json");
     response.getWriter().println(jsonResponse);
     response.setStatus(OK);
-  }
-
-  public Gson getNoteGsonParser() {
-    GsonBuilder gson = new GsonBuilder();
-    gson.registerTypeAdapter(Note.class, new NoteSerializer());
-    Gson parser = gson.create();
-    return parser;
   }
 }

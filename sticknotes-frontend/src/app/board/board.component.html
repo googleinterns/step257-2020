@@ -12,19 +12,19 @@
     </div>
     <div *ngFor="let note of board.notes; let i = index">
       <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)" (cdkDragEnded)="onNoteDrop($event, note)"
-        cdkDrag class="mat-card-wrapper" [style]="getNoteStyle(note)">
+        cdkDrag [cdkDragDisabled]="!canModifyNote(note)" class="mat-card-wrapper" [style]="getNoteStyle(note)">
         <mat-card [style]="'background-color:' + note.color">
           <mat-card-content>
             <div class="card-header">
               <div class="card-header-buttons-group">
-                <button mat-icon-button class="note-button" (click)="deleteNote(note);">
+                <button *ngIf="canModifyNote(note)" mat-icon-button class="note-button" (click)="deleteNote(note);">
                   <mat-icon class="note-icon">delete</mat-icon>
                 </button>
-                <button mat-icon-button class="note-button" (click)="openEditNoteDialog(note)">
+                <button *ngIf="canModifyNote(note)" mat-icon-button class="note-button" (click)="openEditNoteDialog(note)">
                   <mat-icon class="note-icon">edit</mat-icon>
                 </button>
               </div>
-              <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+              <mat-icon *ngIf="canModifyNote(note)" cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
             </div>
             <p>{{note.creator.email}}</p>
             <p>{{getNoteContent(note)}}</p>
