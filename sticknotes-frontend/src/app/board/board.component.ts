@@ -231,9 +231,29 @@ export class BoardComponent implements OnInit, OnDestroy {
     return `width:${this.NOTE_WIDTH * this.board.cols}px;height:${this.NOTE_HEIGHT * this.board.rows}px`;
   }
 
+  public getBoardWrapperWidth() {
+    return `width: min(100% - 50px, ${this.NOTE_WIDTH * this.board.cols}px);`;
+  }
+
+  public getBoardWrapperHeight() {
+    return `height: min(100% - 70px, ${this.NOTE_HEIGHT * this.board.rows}px);`;
+  }
+
+  public getRCWrapperWidth() {
+    return `width: min(100%, ${(this.NOTE_WIDTH * this.board.cols) + 80}px);`;
+  }
+
+  public getRCWrapperHeight() {
+    return `height: min(100% - 40px, ${this.NOTE_HEIGHT * this.board.rows}px);`;
+  }
+
+  public getRCWrapperStyle() {
+    return `${this.getRCWrapperWidth()} ${this.getRCWrapperHeight()}`
+  }
+
   public getBoardWrapperStyle() {
     // if board is wider than 100% of the screen or higher than 100%, set fixed width and height
-    return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.board.cols}px); height: min(100% - 70px, ${this.NOTE_HEIGHT * this.board.rows}px)`; 
+    return `${this.getBoardWrapperWidth()} ${this.getBoardWrapperHeight()}`; 
   }
 
   public getNoteCreationDate(note: Note) {

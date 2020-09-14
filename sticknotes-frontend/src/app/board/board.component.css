@@ -1,8 +1,10 @@
 .board-wrapper {
   border: 1px solid black;
-  border-radius: 5px;
+  border-radius: 0px 0px 5px 5px;
   position: relative;
   overflow: scroll;
+  top: 30px;
+  left: 80px;
 }
 
 .board {
@@ -80,8 +82,24 @@ mat-card-content {
 
 .col-names {
   height: 30px;
-  width: 100%;
   background-color: aquamarine;
-  position: fixed;
-  top: 40px;
+  border: 1px solid aquamarine;
+  border-radius: 5px 5px 0px 0px;
+  top: 0px;
+  left: 80px;
+  position: absolute;
+}
+
+.row-names {
+  width: 80px;
+  background-color: aquamarine;
+  border: 1px solid aquamarine;
+  border-radius: 5px 0px 0px 5px;
+  left: 0px;
+  top: 30px;
+  position: absolute;
+}
+
+.rc-wrapper {
+  position: relative;
 }
