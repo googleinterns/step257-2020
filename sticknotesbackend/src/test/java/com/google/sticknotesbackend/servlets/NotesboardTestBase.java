@@ -45,7 +45,7 @@ public abstract class NotesboardTestBase {
   // Set up a helper so that the ApiProxy returns a valid environment for local
   // testing.
   protected final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(),
-      new LocalUserServiceTestConfig());
+      new LocalUserServiceTestConfig(), new LocalMemcacheServiceTestConfig());
 
   protected Closeable session;
 

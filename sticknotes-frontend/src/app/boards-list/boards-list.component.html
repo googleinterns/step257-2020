@@ -1,3 +1,6 @@
+<div class="header">
+  <button mat-raised-button color="primary" [disabled]="!logoutUrl" (click)="logout()">Log out</button>
+</div>
 <div *ngIf="myBoards" class="boards-list-container">
   <h1>Go to board</h1>
   <mat-grid-list gutterSize="10" cols="5" rowHeight="20vw">

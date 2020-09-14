@@ -55,3 +55,9 @@ mat-card {
   align-items: center;
   height: calc(20vw - 52px);
 }
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 20px 0px 0px;
+}
