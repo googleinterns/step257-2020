@@ -1,13 +1,14 @@
 <div class="flex-container" *ngIf="board">
   <h3>{{board.title}}</h3>
   <div class="rc-wrapper" [style]="getRCWrapperStyle()">
-    <div class="col-names" [style]="getBoardWrapperWidth()">
+    <div class="c-wrapper" [style]="getBoardWrapperWidth()">
+      <div class="column-name" *ngFor="let columnName of boardColumnNames" [style]="getColumnNameDivStyle(columnName)">
+        {{columnName.title}}
+      </div>
+    </div>
+    <div class="r-wrapper" [style]="getBoardWrapperHeight()">
 
     </div>
-    <div class="row-names" [style]="getBoardWrapperHeight()">
-
-    </div>
-
     <div class="board-wrapper" [style]="getBoardWrapperStyle()">
       <div class="board" [style]="getBoardWidth()">
         <div *ngFor="let y of board.rows | rangeLoop">

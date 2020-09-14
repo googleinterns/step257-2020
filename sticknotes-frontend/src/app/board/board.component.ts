@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board, UserBoardRole, User } from '../interfaces';
+import { Note, Board, UserBoardRole, User, GridDimensionName } from '../interfaces';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -15,6 +15,7 @@ import { BoardUsersApiService } from '../services/board-users-api.service';
 import { UserService } from '../services/user.service';
 import { UserRole } from '../enums/user-role.enum';
 import { SharedBoardService } from '../services/shared-board.service';
+import { BoardApiService } from '../services/board-api.service';
 
 /**
  * Component for displaying grid and notes
@@ -33,15 +34,16 @@ export class BoardComponent implements OnInit, OnDestroy {
   private boardRoles: UserBoardRole[] = [];
   private currentUserRole: UserRole = null;
   private currentUser: User = null;
+  public boardColumnNames: GridDimensionName[] = null;
 
   constructor(private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private notesApiService: NotesApiService,
     private sharedBoard: SharedBoardService,
-    private snackBar: MatSnackBar,
     private boardUsersApiService: BoardUsersApiService,
     private liveUpdatesService: LiveUpdatesService,
-    private userService: UserService) {
+    private userService: UserService,
+    private boardApiService: BoardApiService) {
   }
 
   /**
@@ -57,6 +59,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       const boardId = params.get('id'); // get board id from route param
       // load board with the key
       this.sharedBoard.loadBoard(boardId);
+      // 
+      this.boardApiService.getBoardColumns().subscribe(data => this.boardColumnNames = data);
       // subscribe to changes of the board
       this.sharedBoard.boardObservable().subscribe(board => {
         if (board) {
@@ -249,6 +253,10 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   public getRCWrapperStyle() {
     return `${this.getRCWrapperWidth()} ${this.getRCWrapperHeight()}`
+  }
+
+  public getColumnNameDivStyle(el: GridDimensionName) {
+    return `left: ${el.rangeStart * this.NOTE_WIDTH}px; width: ${Math.abs(el.rangeEnd - el.rangeStart + 1) * this.NOTE_WIDTH}px;`;
   }
 
   public getBoardWrapperStyle() {

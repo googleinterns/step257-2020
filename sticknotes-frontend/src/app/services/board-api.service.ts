@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Board, BoardDescription, BoardPreview, BoardUpdateData } from '../interfaces';
 
 @Injectable({
@@ -21,6 +21,22 @@ export class BoardApiService {
     return this.http.post<Board>('api/board/', { title: boardTitle });
   }
 
+  public getBoardColumns() {
+    const data = [{
+      rangeStart: 0,
+      rangeEnd: 1,
+      title: "this col name"
+    }, {
+      rangeStart: 2,
+      rangeEnd: 3,
+      title: "this col name"
+    }, {
+      rangeStart: 4,
+      rangeEnd: 6,
+      title: "this col name"
+    }];
+    return of(data);
+  }
   public updateBoard(data: BoardDescription): Observable<void> {
     const updateData: BoardUpdateData = {
       id: data.id,

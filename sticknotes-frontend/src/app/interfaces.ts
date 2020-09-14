@@ -92,3 +92,12 @@ export interface NoteUpdateRequest {
   id: string;
   lastUpdated: string;
 }
+
+/**
+ * Interface for keeping title of the row/column
+ */
+export interface GridDimensionName {
+  rangeStart: number;
+  rangeEnd: number;
+  title: string;
+}

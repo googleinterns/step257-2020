@@ -1,6 +1,6 @@
 .board-wrapper {
   border: 1px solid black;
-  border-radius: 0px 0px 5px 5px;
+  border-radius: 0px 0px 5px 0px;
   position: relative;
   overflow: scroll;
   top: 30px;
@@ -80,17 +80,21 @@ mat-card-content {
   height: 240px;
 }
 
-.col-names {
+.rc-wrapper {
+  position: relative;
+}
+
+.c-wrapper {
   height: 30px;
   background-color: aquamarine;
   border: 1px solid aquamarine;
   border-radius: 5px 5px 0px 0px;
-  top: 0px;
   left: 80px;
   position: absolute;
+  overflow: hidden;
 }
 
-.row-names {
+.r-wrapper {
   width: 80px;
   background-color: aquamarine;
   border: 1px solid aquamarine;
@@ -98,8 +102,10 @@ mat-card-content {
   left: 0px;
   top: 30px;
   position: absolute;
+  overflow-y: scroll;
 }
 
-.rc-wrapper {
-  position: relative;
+.column-name {
+  height: 25px;
+  border: 1px solid aqua;
 }
