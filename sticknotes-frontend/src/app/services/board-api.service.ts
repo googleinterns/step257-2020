@@ -11,11 +11,9 @@ export class BoardApiService {
   constructor(private http: HttpClient) { }
 
   /**
-   * Fetches the board and adds translation language if language code is not null
+   * Fetches the board
    */
-  public getBoard(boardId: string, targetLanguageCode: string | null): Observable<Board> {
-    if (targetLanguageCode)
-      return this.http.get<Board>(`api/board/?id=${boardId}&lc=${targetLanguageCode}`);
+  public getBoard(boardId: string): Observable<Board> {
     return this.http.get<Board>(`api/board/?id=${boardId}`);
   }
 

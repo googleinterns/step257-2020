@@ -39,10 +39,8 @@ public class BoardServlet extends BoardAbstractServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String boardIdParam = request.getParameter("id");
     // optional language param
-    String languageCode = request.getParameter("lc");
     if (boardIdParam != null) {
       long boardId = Long.parseLong(boardIdParam);
-
       Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
       if (board == null) {
         badRequest("Board with this id doesn't exist", response);
@@ -55,17 +53,7 @@ public class BoardServlet extends BoardAbstractServlet {
         handleBadPermission(perm, response);
         return;
       }
-      // if translate language is set, translate all notes
-      if (languageCode != null) {
-        Translate translate = TranslateOptions.getDefaultInstance().getService();
-        board.notes.forEach(noteRef -> {
-          // translate each note
-          Translation translation = translate.translate(noteRef.get().content, Translate.TranslateOption.targetLanguage(languageCode));
-          noteRef.get().content = translation.getTranslatedText();
-        });
-      }
       Gson gson = getBoardGsonParser();
-      response.setCharacterEncoding("UTF-8");
       response.getWriter().print(gson.toJson(board));
     } else {
       badRequest("No id parameter", response);
@@ -84,7 +72,7 @@ public class BoardServlet extends BoardAbstractServlet {
       return;
     }
     // convert request payload to a json object and validate it
-    JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    JsonObject jsonPayload = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
       String[] requiredFields = { "title" };
       validateRequestData(jsonPayload, response, requiredFields);

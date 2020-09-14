@@ -39,7 +39,7 @@ public class NoteServlet extends NoteAbstractServlet {
       return;
     }
     // convert request payload to a json object and validate it
-    JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    JsonObject jsonPayload = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
       String[] requiredFields = { "content", "boardId", "color", "x", "y" };
       validateRequestData(jsonPayload, response, requiredFields);
@@ -51,6 +51,16 @@ public class NoteServlet extends NoteAbstractServlet {
     // create gson parser that uses custom note serializer
     Gson gson = getNoteGsonParser();
     Note note = gson.fromJson(jsonPayload, Note.class);
+    // get the board of the note
+    // check that the position of note doesn't clash with the position of other notes
+    Whiteboard board = ofy().load().type(Whiteboard.class).id(note.boardId).now();
+    for (Ref<Note> noteRef: board.notes) {
+      Note existingNote = noteRef.get();
+      if (existingNote.x == note.x && existingNote.y == note.y) {
+        badRequest("Coordinates already taken", response);
+        return;
+      }
+    }
     // get currently logged in user from the datastore
     User user = ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first()
         .now();
@@ -58,8 +68,6 @@ public class NoteServlet extends NoteAbstractServlet {
     note.creationDate = System.currentTimeMillis();
     // save the note and set id
     note.id = ofy().save().entity(note).now().getId();
-    // get the board of the note
-    Whiteboard board = ofy().load().type(Whiteboard.class).id(note.boardId).now();
     // add reference to the note at this board
     board.notes.add(Ref.create(note));
     ofy().save().entity(board).now();

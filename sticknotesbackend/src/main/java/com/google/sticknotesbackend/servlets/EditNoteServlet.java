@@ -27,7 +27,7 @@ public class EditNoteServlet extends NoteAbstractServlet {
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     // convert request payload to a json object and validate it
-    JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    JsonObject jsonPayload = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
       String[] requiredFields = { "id" };
       validateRequestData(jsonPayload, response, requiredFields);

@@ -31,7 +31,7 @@ public class EditBoardServlet extends BoardAbstractServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // convert request payload to a json object and validate it
-    JsonObject jsonPayload = new JsonParser().parse(request.getReader()).getAsJsonObject();
+    JsonObject jsonPayload = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
       String[] requiredFields = { "id" };
       validateRequestData(jsonPayload, response, requiredFields);

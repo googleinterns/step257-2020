@@ -123,9 +123,21 @@ public abstract class NotesboardTestBase {
   }
 
   /**
+   * Creates a note with creator and lastUpdated, creationDates
+   */
+  protected Note createNoteWithCreatorAndDates() {
+    Note note = createNote();
+    note.setCreator(createUser());
+    note.lastUpdated = System.currentTimeMillis();
+    note.creationDate = System.currentTimeMillis();
+    ofy().save().entity(note).now();
+    return note;
+  }
+
+  /**
    * Creates a mock user and stores the user in the datastore
    */
-  protected User createUser() {
+  private User createUser() {
     // creating mock user with random email and nickname to avoid data duplication
     String uuid = UUID.randomUUID().toString();
     String userEmail = uuid + "@google.com";

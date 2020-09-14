@@ -32,7 +32,7 @@ export class BoardContainerComponent {
     { value: "uk", viewValue: "Українська" },
     { value: "zh", viewValue: "中文" },
   ];
-  constructor(private router: Router, private dialog: MatDialog, private boardApiService: BoardApiService, private snackBar: MatSnackBar) { }
+  constructor(private router: Router, private dialog: MatDialog) { }
 
   // toggles the side menu, changes the icon name accordingly to the state
   public toggleMenu(drawer: MatDrawer): void {
@@ -65,7 +65,6 @@ export class BoardContainerComponent {
    */
   public openEditBoardDialog() {
     const dialogRef = this.dialog.open(BoardEditComponent, {
-      width: '500px',
       data: this.boardData
     });
     dialogRef.afterClosed().subscribe((data: BoardData) => {
