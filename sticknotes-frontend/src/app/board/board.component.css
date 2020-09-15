@@ -90,7 +90,7 @@ mat-card-content {
 }
 
 .horizontal-scroll {
-  overflow-x: scroll;
+  overflow-x: hidden;
   position: absolute;
   top: 0px;
   height: 40px;
@@ -118,4 +118,13 @@ mat-card-content {
   border-radius: 5px;
   margin: 3px 3px 0px 3px;
   padding: 3px;
+}
+
+.cn-flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.mat-icon-button {
+  line-height: 30px;
 }

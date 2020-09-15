@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
@@ -37,6 +37,14 @@ export class BoardComponent implements OnInit, OnDestroy {
   private currentUserRole: UserRole = null;
   private currentUser: User = null;
   public boardColumnNames: GridDimensionName[] = null;
+  private columnsDivRef: ElementRef = null;
+  
+  /**
+   * Setter of the columns div reference
+   */
+  @ViewChild("columnsDiv", {read: ElementRef, static: false}) set columnsDivRefSetter(data: any) {
+    this.columnsDivRef = data;
+  };
 
   constructor(private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
@@ -48,20 +56,12 @@ export class BoardComponent implements OnInit, OnDestroy {
     private boardApiService: BoardApiService) {
   }
 
-  /**
-   * Stop live updates
-   */
-  ngOnDestroy(): void {
-    this.liveUpdatesService.unregisterBoard();
-  }
-
   ngOnInit(): void {
     // load board
     this.activatedRoute.paramMap.subscribe(params => {
       const boardId = params.get('id'); // get board id from route param
       // load board with the key
       this.sharedBoard.loadBoard(boardId);
-      // 
       this.boardApiService.getBoardColumns().subscribe(data => this.boardColumnNames = data);
       // subscribe to changes of the board
       this.sharedBoard.boardObservable().subscribe(board => {
@@ -85,6 +85,13 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.userService.getUser().subscribe(user => {
       this.currentUser = user;
     });
+  }
+
+  /**
+   * Stop live updates
+   */
+  ngOnDestroy(): void {
+    this.liveUpdatesService.unregisterBoard();
   }
 
   /**
@@ -277,6 +284,11 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   public getNoteCreationDate(note: Note) {
     return new Date(Number(note.creationDate));
+  }
+
+  public boardScrolled(event) {
+    const scroll = event.srcElement.scrollLeft;
+    this.columnsDivRef.nativeElement.scrollLeft = scroll;
   }
 
   /**
