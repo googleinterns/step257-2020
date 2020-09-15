@@ -112,6 +112,7 @@ mat-card-content {
 }
 
 .column-name {
+  position: absolute;
   height: 25px;
   display: inline-block;
   background-color: orange;

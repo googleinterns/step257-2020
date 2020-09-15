@@ -33,6 +33,7 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { MatMenuModule } from '@angular/material/menu';
     MatSelectModule,
     MaterialFileInputModule,
     MatTooltipModule,
-    MatMenuModule
+    MatMenuModule,
+    MatTabsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

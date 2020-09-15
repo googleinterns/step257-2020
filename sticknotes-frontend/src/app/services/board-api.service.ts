@@ -27,10 +27,6 @@ export class BoardApiService {
       rangeEnd: 1,
       title: "this col name"
     }, {
-      rangeStart: 2,
-      rangeEnd: 3,
-      title: "this col name"
-    }, {
       rangeStart: 4,
       rangeEnd: 6,
       title: "this col name"

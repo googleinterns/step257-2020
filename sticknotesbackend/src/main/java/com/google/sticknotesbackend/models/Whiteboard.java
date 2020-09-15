@@ -22,6 +22,7 @@ public class Whiteboard implements Serializable {
   public int cols;
   public String backgroundImg;
   public @Load(unless=WithoutNotesAndCreator.class) ArrayList<Ref<Note>> notes = new ArrayList<Ref<Note>>();
+  public @Load(unless=WithoutNotesAndCreator.class) ArrayList<Ref<BoardGridLine>> gridLines = new ArrayList<Ref<BoardGridLine>>();
 
   public Whiteboard() {
     this.rows = -1;

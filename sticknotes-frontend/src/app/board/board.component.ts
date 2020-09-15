@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } fr
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board, UserBoardRole, User, GridDimensionName } from '../interfaces';
+import { Note, Board, UserBoardRole, User, BoardGridLine } from '../interfaces';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -33,10 +33,13 @@ export class BoardComponent implements OnInit, OnDestroy {
   public readonly NOTE_HEIGHT = 250;
   public readonly MARGIN_BETWEEN_ADJ_NOTES = 6; // margin between adjacent notes is 6px
   public readonly COLUMN_NAME_PADDING = 6; // padding of the column name element
+  public readonly ADD_NEW_COLUMN_BUTTON_WIDTH = 36; // width of the "new column" button
   private boardRoles: UserBoardRole[] = [];
   private currentUserRole: UserRole = null;
   private currentUser: User = null;
-  public boardColumnNames: GridDimensionName[] = null;
+  public boardColumnNames: BoardGridLine[] = null;
+  // x coordinates of positions of "add new column" buttons
+  public newColumnNameButtonCoordinates: number[] = null;
   private columnsDivRef: ElementRef = null;
   
   /**
@@ -62,7 +65,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       const boardId = params.get('id'); // get board id from route param
       // load board with the key
       this.sharedBoard.loadBoard(boardId);
-      this.boardApiService.getBoardColumns().subscribe(data => this.boardColumnNames = data);
       // subscribe to changes of the board
       this.sharedBoard.boardObservable().subscribe(board => {
         if (board) {
@@ -146,7 +148,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Returns the closes available position to the given x and y
+   * Returns the closest available position to the given x and y
    */
   public getClosestFreeSlot(note: Note, x: number, y: number): Vector2 {
     // get the closest cells indices
@@ -272,9 +274,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     return `${this.getRCWrapperWidth()} ${this.getRCWrapperHeight()}`
   }
 
-  public getColumnNameDivStyle(el: GridDimensionName) {
+  public getColumnNameDivStyle(el: BoardGridLine) {
     // the width of the columns header is the width of columns - left and right margin, which is equal to margin between adjacent notes
-    return `width: ${(Math.abs(el.rangeEnd - el.rangeStart + 1) * this.NOTE_WIDTH) - this.MARGIN_BETWEEN_ADJ_NOTES - this.COLUMN_NAME_PADDING}px;`;
+    return `left: ${el.rangeStart * this.NOTE_WIDTH}px; width: ${(Math.abs(el.rangeEnd - el.rangeStart + 1) * this.NOTE_WIDTH) - this.MARGIN_BETWEEN_ADJ_NOTES - this.COLUMN_NAME_PADDING}px;`;
   }
 
   public getBoardWrapperStyle() {

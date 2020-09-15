@@ -27,6 +27,7 @@ export interface Board {
   cols: number;
   backgroundImg: string | null;
   lastUpdated: string;
+  gridLines: BoardGridLine[];
 }
 
 export interface NotePopupData {
@@ -51,7 +52,7 @@ export interface Note extends CreateNoteApiData {
 }
 
 /**
- * All board fields except notes
+ * All board fields except notes, columns
  */
 export interface BoardDescription {
   readonly id: string;
@@ -96,7 +97,7 @@ export interface NoteUpdateRequest {
 /**
  * Interface for keeping title of the row/column
  */
-export interface GridDimensionName {
+export interface BoardGridLine {
   rangeStart: number;
   rangeEnd: number;
   title: string;

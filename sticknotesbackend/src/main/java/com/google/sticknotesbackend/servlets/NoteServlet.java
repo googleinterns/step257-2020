@@ -34,12 +34,6 @@ public class NoteServlet extends AppAbstractServlet {
    */
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    // check that user is authenticated
-    UserService userService = UserServiceFactory.getUserService();
-    if (!userService.isUserLoggedIn()) {
-      unauthorized(response);
-      return;
-    }
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
@@ -53,6 +47,12 @@ public class NoteServlet extends AppAbstractServlet {
     // create gson parser that uses custom note serializer
     Gson gson = JsonParsers.getNoteGsonParser();
     Note note = gson.fromJson(jsonPayload, Note.class);
+    // check if user has enough permissions to create new note in this board
+    Permission perm = AuthChecker.boardAccessPermission(note.boardId);
+    if (!perm.equals(Permission.GRANTED)) {
+      handleBadPermission(perm, response);
+      return;
+    }
     // get the board of the note
     // check that the position of note doesn't clash with the position of other
     // notes
@@ -64,6 +64,7 @@ public class NoteServlet extends AppAbstractServlet {
         return;
       }
     }
+    UserService userService = UserServiceFactory.getUserService();
     // get currently logged in user from the datastore
     User user = ofy().load().type(User.class).filter("googleAccId", userService.getCurrentUser().getUserId()).first()
         .now();
