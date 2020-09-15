@@ -31,6 +31,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   public board: Board;
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
+  public readonly MARGIN_BETWEEN_ADJ_NOTES = 6; // margin between adjacent notes is 6px
+  public readonly COLUMN_NAME_PADDING = 6; // padding of the column name element
   private boardRoles: UserBoardRole[] = [];
   private currentUserRole: UserRole = null;
   private currentUser: User = null;
@@ -232,11 +234,19 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   public getBoardWidth() {
-    return `width:${this.NOTE_WIDTH * this.board.cols}px;height:${this.NOTE_HEIGHT * this.board.rows}px`;
+    return `width:${this.NOTE_WIDTH * this.board.cols}px;`;
+  }
+
+  public getBoardHeight() {
+    return `height:${this.NOTE_HEIGHT * this.board.rows}px;`;
+  }
+
+  public getBoardStyle() {
+    return `${this.getBoardWidth()} ${this.getBoardHeight()}`;
   }
 
   public getBoardWrapperWidth() {
-    return `width: min(100% - 50px, ${this.NOTE_WIDTH * this.board.cols}px);`;
+    return `width: min(100% - 100px, ${this.NOTE_WIDTH * this.board.cols}px);`;
   }
 
   public getBoardWrapperHeight() {
@@ -256,7 +266,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   public getColumnNameDivStyle(el: GridDimensionName) {
-    return `left: ${el.rangeStart * this.NOTE_WIDTH}px; width: ${Math.abs(el.rangeEnd - el.rangeStart + 1) * this.NOTE_WIDTH}px;`;
+    // the width of the columns header is the width of columns - left and right margin, which is equal to margin between adjacent notes
+    return `width: ${(Math.abs(el.rangeEnd - el.rangeStart + 1) * this.NOTE_WIDTH) - this.MARGIN_BETWEEN_ADJ_NOTES - this.COLUMN_NAME_PADDING}px;`;
   }
 
   public getBoardWrapperStyle() {

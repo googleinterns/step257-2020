@@ -3,7 +3,7 @@
   border-radius: 0px 0px 5px 0px;
   position: relative;
   overflow: scroll;
-  top: 30px;
+  top: 40px;
   left: 80px;
 }
 
@@ -85,13 +85,19 @@ mat-card-content {
 }
 
 .c-wrapper {
-  height: 30px;
+  background-color: aquamarine;
+  position: absolute;
+}
+
+.horizontal-scroll {
+  overflow-x: scroll;
+  position: absolute;
+  top: 0px;
+  height: 40px;
+  left: 80px;
   background-color: aquamarine;
   border: 1px solid aquamarine;
   border-radius: 5px 5px 0px 0px;
-  left: 80px;
-  position: absolute;
-  overflow: hidden;
 }
 
 .r-wrapper {
@@ -100,12 +106,16 @@ mat-card-content {
   border: 1px solid aquamarine;
   border-radius: 5px 0px 0px 5px;
   left: 0px;
-  top: 30px;
+  top: 40px;
   position: absolute;
   overflow-y: scroll;
 }
 
 .column-name {
   height: 25px;
-  border: 1px solid aqua;
+  display: inline-block;
+  background-color: orange;
+  border-radius: 5px;
+  margin: 3px 3px 0px 3px;
+  padding: 3px;
 }
