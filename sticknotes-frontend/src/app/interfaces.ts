@@ -1,6 +1,7 @@
 import { Vector2 } from './utility/vector';
 import { State } from './enums/state.enum';
 import { UserRole } from './enums/user-role.enum';
+import { BoardGridLineType } from './enums/board-grid-line-type.enum';
 
 export interface User {
   id: string;
@@ -101,4 +102,5 @@ export interface BoardGridLine {
   rangeStart: number;
   rangeEnd: number;
   title: string;
+  type: BoardGridLineType;
 }

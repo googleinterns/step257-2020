@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Board, Note, BoardDescription } from '../interfaces';
+import { Board, Note, BoardDescription, BoardGridLine } from '../interfaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BoardApiService } from './board-api.service';
 import _ from 'lodash';
@@ -13,6 +13,13 @@ export class SharedBoardService {
    */
   private boardSubj = new BehaviorSubject<Board>(null);
   constructor(private boardApiService: BoardApiService) { }
+
+  /**
+   * Sets boardSubj value to null
+   */
+  public clear() {
+    this.boardSubj.next(null);
+  }
 
   public boardObservable(): Observable<Board> {
     return this.boardSubj.asObservable();
@@ -60,5 +67,14 @@ export class SharedBoardService {
     let oldBoard = this.boardSubj.value;
     const newBoard = _.merge(oldBoard, board);
     this.boardSubj.next(newBoard);
+  }
+
+  /**
+   * Adds the BoardGridLine to a list of board lines.
+   * This change is emitted to all subscribers
+   */
+  public addGridLine(line: BoardGridLine) {
+    this.boardSubj.value.gridLines.push(line);
+    this.boardSubj.next(this.boardSubj.value);
   }
 }

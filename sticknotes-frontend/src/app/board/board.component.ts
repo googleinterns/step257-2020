@@ -9,13 +9,15 @@ import { ActivatedRoute } from '@angular/router';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
 import { LiveUpdatesService } from '../services/live-updates.service';
-import _ from 'lodash';
+import _, { range } from 'lodash';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BoardUsersApiService } from '../services/board-users-api.service';
 import { UserService } from '../services/user.service';
 import { UserRole } from '../enums/user-role.enum';
 import { SharedBoardService } from '../services/shared-board.service';
 import { BoardApiService } from '../services/board-api.service';
+import { BoardGridLineType } from '../enums/board-grid-line-type.enum';
+import { NewGridLineComponent } from '../new-grid-line/new-grid-line.component';
 
 /**
  * Component for displaying grid and notes
@@ -37,7 +39,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   private boardRoles: UserBoardRole[] = [];
   private currentUserRole: UserRole = null;
   private currentUser: User = null;
-  public boardColumnNames: BoardGridLine[] = null;
+  public boardColumnNames: BoardGridLine[] = [];
   // x coordinates of positions of "add new column" buttons
   public newColumnNameButtonCoordinates: number[] = null;
   private columnsDivRef: ElementRef = null;
@@ -55,8 +57,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     private sharedBoard: SharedBoardService,
     private boardUsersApiService: BoardUsersApiService,
     private liveUpdatesService: LiveUpdatesService,
-    private userService: UserService,
-    private boardApiService: BoardApiService) {
+    private userService: UserService) {
   }
 
   ngOnInit(): void {
@@ -70,8 +71,10 @@ export class BoardComponent implements OnInit, OnDestroy {
         if (board) {
           this.board = board;
           this.updateBoardAbstractGrid();
+          this.updateColumnNames();
           // setup live updates
           if (!this.liveUpdatesService.hasRegisteredBoard()) {
+            console.log('Registering a board with board id = ' + board.id);
             this.liveUpdatesService.registerBoard(board);
           }
         }
@@ -90,10 +93,11 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Stop live updates
+   * Stop live updates and remove board subject
    */
   ngOnDestroy(): void {
     this.liveUpdatesService.unregisterBoard();
+    this.sharedBoard.clear();
   }
 
   /**
@@ -147,6 +151,27 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Generates a list of numbers - x coordinates of the plus buttons,
+   * Geenrates a list of column titles from the board entity
+   */
+  public updateColumnNames(): void {
+    // assume each column has a plus button
+    const coordinates = [];
+    for (let i = 0; i < this.board.cols; ++i) {
+      coordinates.push(i);
+    }
+    // next remove buttons that intersect with the taken ranges
+    this.board.gridLines.filter(l => l.type === BoardGridLineType.COLUMN).forEach(l => {
+      this.boardColumnNames.push(l);
+      // remove elements from l.rangeStart to l.rangeEnd
+      const idxOfRangeStart = coordinates.indexOf(l.rangeStart);
+      if (idxOfRangeStart >= 0) {
+        coordinates.splice(idxOfRangeStart, (l.rangeEnd - l.rangeStart));
+      }
+    });
+    this.newColumnNameButtonCoordinates = coordinates;
+  }
   /**
    * Returns the closest available position to the given x and y
    */
@@ -230,6 +255,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Deletes given note. Sends a request to the server and updates shared board
+   */
   public deleteNote(note: Note): void {
     const reallyWantToDelete = confirm('Delete this note?');
     if (reallyWantToDelete) {
@@ -241,6 +269,15 @@ export class BoardComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  /**
+   * Opens dialog with the NewGridLineComponent inside
+   */
+  public openNewColumnDialog(rangeStart: number): void {
+    this.dialog.open(NewGridLineComponent, {
+      data: {boardId: this.board.id, rangeStart: rangeStart, type: BoardGridLineType.COLUMN}
+    });
+  } 
 
   public getBoardWidth() {
     return `width:${this.NOTE_WIDTH * this.board.cols}px;`;
@@ -276,12 +313,16 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   public getColumnNameDivStyle(el: BoardGridLine) {
     // the width of the columns header is the width of columns - left and right margin, which is equal to margin between adjacent notes
-    return `left: ${el.rangeStart * this.NOTE_WIDTH}px; width: ${(Math.abs(el.rangeEnd - el.rangeStart + 1) * this.NOTE_WIDTH) - this.MARGIN_BETWEEN_ADJ_NOTES - this.COLUMN_NAME_PADDING}px;`;
+    return `left: ${el.rangeStart * this.NOTE_WIDTH}px; width: ${(Math.abs(el.rangeEnd - el.rangeStart) * this.NOTE_WIDTH) - this.MARGIN_BETWEEN_ADJ_NOTES - this.COLUMN_NAME_PADDING}px;`;
   }
 
   public getBoardWrapperStyle() {
     // if board is wider than 100% of the screen or higher than 100%, set fixed width and height
     return `${this.getBoardWrapperWidth()} ${this.getBoardWrapperHeight()}`; 
+  }
+
+  public getPlusButtonStyle(pos: number) {
+    return `left: ${pos * this.NOTE_WIDTH}px;`
   }
 
   public getNoteCreationDate(note: Note) {

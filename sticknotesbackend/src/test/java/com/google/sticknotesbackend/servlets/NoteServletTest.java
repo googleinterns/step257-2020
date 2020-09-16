@@ -65,7 +65,7 @@ public class NoteServletTest extends NotesboardTestBase {
     // read Json from response to a Note object
     // check that response has id
     // if id is there, check if the note with this id is really saved
-    JsonObject body = new JsonParser().parse(responseWriter.toString()).getAsJsonObject();
+    JsonObject body = JsonParser.parseString(responseWriter.toString()).getAsJsonObject();
     assertThat(body.has("id")).isTrue();
     // load note with the given id from datastore
     Note savedNote = ofy().load().type(Note.class).id(Long.parseLong(body.get("id").getAsString())).now();

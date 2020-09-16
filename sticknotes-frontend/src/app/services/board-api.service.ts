@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { Board, BoardDescription, BoardPreview, BoardUpdateData } from '../interfaces';
+import { Board, BoardDescription, BoardGridLine, BoardPreview, BoardUpdateData } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -17,22 +17,16 @@ export class BoardApiService {
     return this.http.get<Board>(`api/board/?id=${boardId}`);
   }
 
+  /**
+   * Create a new board
+   */
   public createBoard(boardTitle: string): Observable<Board> {
     return this.http.post<Board>('api/board/', { title: boardTitle });
   }
 
-  public getBoardColumns() {
-    const data = [{
-      rangeStart: 0,
-      rangeEnd: 1,
-      title: "this col name"
-    }, {
-      rangeStart: 4,
-      rangeEnd: 6,
-      title: "this col name"
-    }];
-    return of(data);
-  }
+  /**
+   * Updates board's mutable fields
+   */
   public updateBoard(data: BoardDescription): Observable<void> {
     const updateData: BoardUpdateData = {
       id: data.id,
@@ -63,5 +57,14 @@ export class BoardApiService {
    */
   public deleteBoard(boardId: string): Observable<void> {
     return this.http.delete<void>(`api/board/?id=${boardId}`);
+  }
+
+  /**
+   * Creates a BoardGridLine (column/row name)
+   */
+  public createBoardGridLine(line: BoardGridLine, boardId: string) {
+    const payload = {...line};
+    payload['boardId'] = boardId;
+    return this.http.post('api/board-grid-lines/', payload);
   }
 }

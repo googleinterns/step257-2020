@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
 import com.google.sticknotesbackend.FastStorage;
+import com.google.sticknotesbackend.enums.BoardGridLineType;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.BoardGridLine;
@@ -40,6 +41,8 @@ public class BoardGridLineServlet extends AppAbstractServlet {
     }
     Gson gson = new Gson();
     BoardGridLine line = gson.fromJson(jsonPayload, BoardGridLine.class);
+    // parse type
+    line.type = BoardGridLineType.valueOf(jsonPayload.get("type").getAsString().toUpperCase());
     // check if user has enougn permission to access the board
     Permission perm = AuthChecker.boardAccessPermission(line.boardId);
     if (!perm.equals(Permission.GRANTED)) {
@@ -63,6 +66,8 @@ public class BoardGridLineServlet extends AppAbstractServlet {
     // if no overlapping, create a line and add it to the board
     line.id = ofy().save().entity(line).now().getId();
     board.gridLines.add(Ref.create(line));
+    // save the board
+    ofy().save().entity(board).now();
     // return new line to the client
     response.getWriter().print(gson.toJson(line));
   }

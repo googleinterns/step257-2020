@@ -34,6 +34,7 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
+import { NewGridLineComponent } from './new-grid-line/new-grid-line.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { MatTabsModule } from '@angular/material/tabs';
     NoteContentPipe,
     AddUserComponent,
     BoardEditComponent,
-    EditUserComponent
+    EditUserComponent,
+    NewGridLineComponent
   ],
   imports: [
     BrowserModule,

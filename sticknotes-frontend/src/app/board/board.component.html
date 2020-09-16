@@ -14,6 +14,11 @@
             </button>
           </div>
         </div>
+        <div class="column-name" *ngFor="let coord of newColumnNameButtonCoordinates" [style]="getPlusButtonStyle(coord)">
+          <button class="note-button" mat-icon-button (click)="openNewColumnDialog(coord)">
+            <mat-icon class="note-icon">add</mat-icon>
+          </button>
+        </div>
       </div>
     </div>
     <div class="r-wrapper" [style]="getBoardWrapperHeight()">
