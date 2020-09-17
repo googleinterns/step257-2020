@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
-import com.google.sticknotesbackend.FastStorage;
 import com.google.sticknotesbackend.enums.BoardGridLineType;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
@@ -20,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet for creating/updating/deleting board row/columns names
+ * Servlet for creating/deleting board row/columns names
  */
 @WebServlet("/api/board-grid-lines/")
 public class BoardGridLineServlet extends AppAbstractServlet {
@@ -28,7 +27,7 @@ public class BoardGridLineServlet extends AppAbstractServlet {
    * Creates a new board column/row for the board with the give param
    */
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     // validate request
     JsonObject jsonPayload = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
@@ -70,5 +69,37 @@ public class BoardGridLineServlet extends AppAbstractServlet {
     ofy().save().entity(board).now();
     // return new line to the client
     response.getWriter().print(gson.toJson(line));
+  }
+
+  /**
+   * Deletes a board line (row/column)
+   */
+  @Override
+  public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String lineToDeleteId = request.getParameter("id");
+    if (lineToDeleteId == null) {
+      badRequest("Missing line url param", response);
+      return;
+    }
+    // get BoardGridLine with the given id
+    BoardGridLine lineToDelete = ofy().load().type(BoardGridLine.class).id(Long.parseLong(lineToDeleteId)).now();
+    if (lineToDelete == null) {
+      badRequest("No line with given id exists", response);
+      return;
+    }
+    // check user has enough permission to delete the line
+    Permission perm = AuthChecker.boardAccessPermission(lineToDelete.boardId);
+    if (!perm.equals(Permission.GRANTED)) {
+      handleBadPermission(perm, response);
+      return;
+    }
+    // load board
+    Whiteboard board = ofy().load().type(Whiteboard.class).id(lineToDelete.boardId).now();
+    // remove line from board
+    board.gridLines.removeIf(lineRef -> lineRef.get().id.equals(lineToDelete.id));
+    // remove line itself
+    ofy().delete().entity(lineToDelete).now();
+    // send no content
+    response.setStatus(NO_CONTENT);
   }
 }

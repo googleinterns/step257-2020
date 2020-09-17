@@ -12,6 +12,7 @@ import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.googlecode.objectify.Ref;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -70,7 +71,40 @@ public class BoardGridLineServletTest extends NotesboardTestBase {
     // check that this line is added to the board
     Whiteboard boardWithNewLine = ofy().load().type(Whiteboard.class).id(board.id).now();
     // generate a list of ids of BoardGridLine objects stored in the board and check that saved one is there
-    assertThat(boardWithNewLine.gridLines.stream().map(lineRef -> lineRef.get().id).toArray()).asList().contains(savedLineId);
-    
+    assertThat(boardWithNewLine.gridLines.stream().map(lineRef -> lineRef.get().id).toArray())
+        .asList()
+        .contains(savedLineId);
+  }
+
+  @Test
+  public void testDeleteSuccessWithValidLineId() throws IOException, ServletException {
+    // prepare mock data
+    Whiteboard board = createBoard();
+    User boardUser = createUserSafe();
+    createRole(board, boardUser, Role.USER);
+    // log user in
+    logIn(boardUser);
+    BoardGridLine line = createBoardGridLine(board.id);
+    board.gridLines.add(Ref.create(line));
+    // save updated board
+    ofy().save().entity(board).now();
+    // set line id as request param
+    when(mockRequest.getParameter("id")).thenReturn(Long.toString(line.id));
+    // do request
+    boardGridLineServlet.doDelete(mockRequest, mockResponse);
+    // check that no content was set
+    verify(mockResponse).setStatus(NO_CONTENT);
+    // check that line was really deleted from datastore
+    assertThat(ofy().load().type(BoardGridLine.class).id(line.id).now()).isNull();
+    // check that line was deleted from board
+    assertThat(ofy()
+                   .load()
+                   .type(Whiteboard.class)
+                   .id(board.id)
+                   .now()
+                   .gridLines.stream()
+                   .filter(lineRef -> lineRef.get().id.equals(line.id))
+                   .toArray())
+        .isEmpty();
   }
 }
