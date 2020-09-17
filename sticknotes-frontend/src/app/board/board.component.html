@@ -68,19 +68,19 @@
 <!-- Menu of column header element -->
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-column="column">
-  <button mat-menu-item>
+  <button mat-menu-item (click)="editBoardGridLine(expandedLeft(column))">
     <mat-icon>first_page</mat-icon>
     <span>Expand left</span>
   </button>
-  <button mat-menu-item>
+  <button mat-menu-item (click)="editBoardGridLine(expandedRight(column))">
     <mat-icon>last_page</mat-icon>
     <span>Expand right</span>
   </button>
-  <button mat-menu-item>
+  <button mat-menu-item (click)="editBoardGridLine(shrinkedLeft(column))">
     <mat-icon>chevron_right</mat-icon>
     <span>Shrink left</span>
   </button>
-  <button mat-menu-item>
+  <button mat-menu-item (click)="editBoardGridLine(shrinkedRight(column))">
     <mat-icon>chevron_left</mat-icon>
     <span>Shrink right</span>
   </button>

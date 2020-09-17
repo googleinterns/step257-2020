@@ -41,11 +41,11 @@ export class BoardComponent implements OnInit, OnDestroy {
   public newColumnNameButtonCoordinates: number[] = null;
   private columnsDivRef: ElementRef = null;
   public styler: BoardStyles = null;
-  
+
   /**
    * Setter of the columns div reference
    */
-  @ViewChild("columnsDiv", {read: ElementRef, static: false}) set columnsDivRefSetter(data: any) {
+  @ViewChild("columnsDiv", { read: ElementRef, static: false }) set columnsDivRefSetter(data: any) {
     this.columnsDivRef = data;
   };
 
@@ -264,7 +264,7 @@ export class BoardComponent implements OnInit, OnDestroy {
    */
   public openNewColumnDialog(rangeStart: number): void {
     this.dialog.open(NewGridLineComponent, {
-      data: {boardId: this.board.id, rangeStart: rangeStart, type: BoardGridLineType.COLUMN}
+      data: { boardId: this.board.id, rangeStart: rangeStart, type: BoardGridLineType.COLUMN }
     });
   }
 
@@ -286,32 +286,89 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
   }
 
-  public getNoteCreationDate(note: Note) {
-    return new Date(Number(note.creationDate));
+  /**
+   * Edits the board grid line. Sends an updated line to the server
+   */
+  public editBoardGridLine(updatedLine: BoardGridLine): void {
+    this.boardApiService.editBoardGridLine(updatedLine).subscribe(line => {
+      // success, update shared board
+      this.sharedBoard.updateGridLine(line);
+    }, err => {
+      // some error
+      this.snackbar.open("Error occurred", "Ok");
+    });
   }
 
-  public boardScrolled(event: any) {
-    const scroll = event.srcElement.scrollLeft;
-    this.columnsDivRef.nativeElement.scrollLeft = scroll;
+  /**
+   * Returns shrinked left column, or same column if shrink is impossible
+   */
+  public shrinkedLeft(column: BoardGridLine): BoardGridLine {
+    // copy all fields of column to a new object
+    const newColumn = {...column};
+    const newRangeStart = column.rangeStart + 1;
+    newColumn.rangeStart = newRangeStart;
+    return newColumn;
   }
+
+  /**
+   * Returns shrinked right column, or same column if shrink is impossible
+   */
+  public shrinkedRight(column: BoardGridLine): BoardGridLine {
+    // copy all fields of column to a new object
+    const newColumn = {...column};
+    const newRangeEnd = column.rangeEnd - 1;
+    newColumn.rangeEnd = newRangeEnd;
+    return newColumn;
+  }
+
+  /**
+   * Expands the left end of the column 1 unit left if possible
+   */
+  public expandedLeft(column: BoardGridLine): BoardGridLine {
+    // copy all fields of column to a new object
+    const newColumn = {...column};
+    const newRangeStart = column.rangeStart - 1;
+    newColumn.rangeStart = newRangeStart;
+    return newColumn;
+  }
+
+  /**
+   * Expands the right end of the column 1 unit right if possible
+   */
+  public expandedRight(column: BoardGridLine): BoardGridLine {
+    // copy all fields of column to a new object
+    const newColumn = {...column};
+    const newRangeEnd = column.rangeEnd + 1;
+    newColumn.rangeEnd = newRangeEnd;
+    return newColumn;
+  }
+
+  public getNoteCreationDate(note: Note) {
+  return new Date(Number(note.creationDate));
+}
+
+  public boardScrolled(event: any) {
+  const scroll = event.srcElement.scrollLeft;
+  this.columnsDivRef.nativeElement.scrollLeft = scroll;
+}
 
   /**
    * Returns true if user can modify note.
    * Returns false otherwise.
    */
   public canModifyNote(note: Note) {
-    if (this.currentUser && this.boardRoles) {
-      if (!this.currentUserRole) {
-        // save user's role if it is not saved yet
-        this.currentUserRole = this.boardRoles.find(role => role.user.id === this.currentUser.id).role;
-      }
-      // if user is owner or admin, return true
-      if (this.currentUserRole === 'ADMIN' || this.currentUserRole === 'OWNER') {
-        return true;
-      }
-      // if user is author of the note also return true
-      return this.currentUser.id === note.creator.id;
+  if (this.currentUser && this.boardRoles) {
+    if (!this.currentUserRole) {
+      // save user's role if it is not saved yet
+      this.currentUserRole = this.boardRoles.find(role => role.user.id === this.currentUser.id).role;
     }
-    return false;
+    // if user is owner or admin, return true
+    if (this.currentUserRole === 'ADMIN' || this.currentUserRole === 'OWNER') {
+      return true;
+    }
+    // if user is author of the note also return true
+    return this.currentUser.id === note.creator.id;
   }
+  return false;
+}
 }

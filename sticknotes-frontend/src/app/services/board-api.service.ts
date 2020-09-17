@@ -74,4 +74,11 @@ export class BoardApiService {
   public deleteBoardGridLine(line: BoardGridLine) {
     return this.http.delete(`api/board-grid-lines/?id=${line.id}`);
   }
+
+  /**
+   * Edits a BoardGridLin (column/row name)
+   */
+  public editBoardGridLine(line: BoardGridLine): Observable<BoardGridLine> {
+    return this.http.post<BoardGridLine>('api/edit-board-grid-lines/', line);
+  }
 }
