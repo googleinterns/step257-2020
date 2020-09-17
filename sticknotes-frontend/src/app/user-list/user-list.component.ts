@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EditUserComponent } from '../edit-user/edit-user.component';
+import { ActiveUsersApiService } from '../services/active-users-api.service';
 
 @Component({
   selector: 'app-user-list',
@@ -20,9 +21,12 @@ export class UserListComponent implements OnInit {
   public currentUser: User;
   public currentUserRole: UserRole;
   @Input('boardId') public boardId: string;
+  public activeUsersIdSet: Set<number> = new Set();
+  private intervalId: number = -1; 
 
   constructor(private userService: UserService,
     private boardUsersService: BoardUsersApiService,
+    private activeUsersService: ActiveUsersApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar) { }
 
@@ -42,6 +46,40 @@ export class UserListComponent implements OnInit {
         this.currentUserRole = null;
       }
     });
+    this.startFetchingActiveUsers(this.boardId);
+  }
+
+  // destroys setInterval
+  ngOnDestroy(): void {    
+    clearInterval(this.intervalId);
+  }
+
+  /**
+   * 
+   * @param boardId id of board which function should pass to fetchActiveUsers()
+   * 
+   * Function starts fetching active users list for the given board
+   * If the interval is already running, it's id different to -1 than we need to clear 
+   * it before running another interval
+   */
+  private startFetchingActiveUsers(boardId: string): void{
+    if(this.intervalId != null){
+      clearInterval(this.intervalId);
+    }
+    this.intervalId = setInterval(()=>{
+      this.fetchActiveUsers(boardId);
+      console.log();
+    }, 2000);
+  }
+
+  /**
+   * 
+   * @param boardId utilizes activeUsersService to fetch list of active users
+   */
+  private fetchActiveUsers(boardId: string): void {
+    this.activeUsersService.getActiveUsers(boardId).subscribe(activeUsers => {
+      this.activeUsersIdSet = new Set(activeUsers.activeUsers);
+    })
   }
 
   canEdit(userBoardRole: UserBoardRole): boolean {
