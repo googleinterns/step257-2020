@@ -10,6 +10,7 @@ import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.FastStorage;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
+import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
@@ -90,8 +91,19 @@ public class EditBoardServlet extends AppAbstractServlet {
           return;
         }
       }
+      // delete column titles if there are ones starting further than new end
+      board.gridLines.removeIf(lineRef -> lineRef.get().rangeStart > board.cols);
+      // shrink column titles if there are ones that overflow
+      for (Ref<BoardGridLine> lineRef: board.gridLines) {
+        BoardGridLine line = lineRef.get();
+        if (line.rangeEnd > board.cols) {
+          line.rangeEnd = board.cols;
+          ofy().save().entity(line).now();
+        }
+      }
     }
     FastStorage.updateBoard(board);
-    // servlet default will return 200
+    // return updated board
+    response.getWriter().print(gson.toJson(board));
   }
 }

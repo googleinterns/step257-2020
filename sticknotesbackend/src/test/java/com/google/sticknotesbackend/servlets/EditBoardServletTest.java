@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
-import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
 import java.io.BufferedReader;
@@ -97,6 +96,9 @@ public class EditBoardServletTest extends NotesboardTestBase {
     logIn(user);
     // add some notes
     Note note = createNote();
+    note.setCreator(user);
+    note.boardId = board.id;
+    ofy().save().entity(note).now();
     // add the note to the board object
     board.notes.add(Ref.create(note));
     // save updated board

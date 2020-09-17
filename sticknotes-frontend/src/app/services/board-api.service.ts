@@ -27,7 +27,7 @@ export class BoardApiService {
   /**
    * Updates board's mutable fields
    */
-  public updateBoard(data: BoardDescription): Observable<void> {
+  public updateBoard(data: BoardDescription): Observable<Board> {
     const updateData: BoardUpdateData = {
       id: data.id,
       title: data.title,
@@ -35,7 +35,7 @@ export class BoardApiService {
       cols: data.cols,
       backgroundImg: data.backgroundImg
     };
-    return this.http.post<void>('api/edit-board/', updateData);
+    return this.http.post<Board>('api/edit-board/', updateData);
   }
 
   /**

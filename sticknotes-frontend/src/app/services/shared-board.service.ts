@@ -63,7 +63,7 @@ export class SharedBoardService {
   /**
    * Updates board subject
    */
-  public updateBoard(board: BoardDescription) {
+  public updateBoard(board: BoardDescription | Board) {
     let oldBoard = this.boardSubj.value;
     const newBoard = _.merge(oldBoard, board);
     this.boardSubj.next(newBoard);
