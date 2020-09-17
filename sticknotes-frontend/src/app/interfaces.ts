@@ -99,6 +99,7 @@ export interface NoteUpdateRequest {
  * Interface for keeping title of the row/column
  */
 export interface BoardGridLine {
+  id: string;
   rangeStart: number;
   rangeEnd: number;
   title: string;

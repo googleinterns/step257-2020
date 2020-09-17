@@ -77,4 +77,17 @@ export class SharedBoardService {
     this.boardSubj.value.gridLines.push(line);
     this.boardSubj.next(this.boardSubj.value);
   }
+
+  /**
+   * Deletes the BoardGridLine from the list of board linest.
+   * This change is emitted to all subscribers.
+   */
+  public deleteGridLine(line: BoardGridLine) {
+    const indexOfLine = this.boardSubj.value.gridLines.indexOf(line);
+    if (indexOfLine >= 0 && indexOfLine < this.boardSubj.value.gridLines.length) {
+      this.boardSubj.value.gridLines.splice(indexOfLine, 1);
+      console.log('deleted');
+    }
+    this.boardSubj.next(this.boardSubj.value);
+  }
 }

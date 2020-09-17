@@ -50,15 +50,15 @@ export class NewGridLineComponent implements OnInit {
       this.submitDisabled = true;
       const lineTitle = this.newLineFormGroup.controls.title.value;
       const width = this.newLineFormGroup.controls.width.value;
-      const line: BoardGridLine = {
+      const linePayload = {
         rangeStart: this.rangeStart,
         rangeEnd: this.rangeStart + width,
         title: lineTitle,
         type: this.type
       };
-      this.boardApiService.createBoardGridLine(line, this.boardId).subscribe(data => {
+      this.boardApiService.createBoardGridLine(linePayload, this.boardId).subscribe(data => {
         // successfully created, close the dialog and update shared board
-        this.sharedBoard.addGridLine(line);
+        this.sharedBoard.addGridLine(data);
         this.dialogRef.close();
       }, err => {
         // error occurred, open snackbar to inform the user

@@ -5,11 +5,12 @@
       <!-- Scroll container for the visible width of board -->
       <div class="c-wrapper" [style]="styler.getBoardWidth()">
         <!-- Full width of board-->
-        <div class="column-name" *ngFor="let columnName of boardColumnNames"
-          [style]="styler.getColumnNameDivStyle(columnName)">
+        <div class="column-name" *ngFor="let column of boardColumnNames"
+          [style]="styler.getColumnDivStyle(column)">
           <div class="cn-flex-container">
-            <p>{{columnName.title}}</p>
-            <button class="note-button" mat-icon-button [matMenuTriggerFor]="menu">
+            <p>{{column.title}}</p>
+            <!-- Pass column data to menu -->
+            <button class="note-button" mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{column: column}">
               <mat-icon class="note-icon">more_vert</mat-icon>
             </button>
           </div>
@@ -66,6 +67,7 @@
 </div>
 <!-- Menu of column header element -->
 <mat-menu #menu="matMenu">
+  <ng-template matMenuContent let-column="column">
   <button mat-menu-item>
     <mat-icon>first_page</mat-icon>
     <span>Expand left</span>
@@ -86,8 +88,9 @@
     <mat-icon>edit</mat-icon>
     <span>Edit</span>
   </button>
-  <button mat-menu-item>
+  <button mat-menu-item (click)="deleteColumn(column)">
     <mat-icon>delete</mat-icon>
     <span>Delete</span>
   </button>
+</ng-template>
 </mat-menu>

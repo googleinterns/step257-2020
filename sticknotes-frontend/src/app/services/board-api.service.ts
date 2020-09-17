@@ -62,9 +62,16 @@ export class BoardApiService {
   /**
    * Creates a BoardGridLine (column/row name)
    */
-  public createBoardGridLine(line: BoardGridLine, boardId: string) {
+  public createBoardGridLine(line: any, boardId: string):Observable<BoardGridLine> {
     const payload = {...line};
     payload['boardId'] = boardId;
-    return this.http.post('api/board-grid-lines/', payload);
+    return this.http.post<BoardGridLine>('api/board-grid-lines/', payload);
+  }
+
+  /**
+   * Deletes a BoardGridLine (column/row name)
+   */
+  public deleteBoardGridLine(line: BoardGridLine) {
+    return this.http.delete(`api/board-grid-lines/?id=${line.id}`);
   }
 }

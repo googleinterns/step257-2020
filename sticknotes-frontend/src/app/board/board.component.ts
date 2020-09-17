@@ -55,7 +55,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     private sharedBoard: SharedBoardService,
     private boardUsersApiService: BoardUsersApiService,
     private liveUpdatesService: LiveUpdatesService,
-    private userService: UserService) {
+    private userService: UserService,
+    private boardApiService: BoardApiService,
+    private snackbar: MatSnackBar) {
   }
 
   ngOnInit(): void {
@@ -74,7 +76,6 @@ export class BoardComponent implements OnInit, OnDestroy {
           this.styler = new BoardStyles(board.cols, board.rows);
           // setup live updates
           if (!this.liveUpdatesService.hasRegisteredBoard()) {
-            console.log('Registering a board with board id = ' + board.id);
             this.liveUpdatesService.registerBoard(board);
           }
         }
@@ -157,6 +158,7 @@ export class BoardComponent implements OnInit, OnDestroy {
    */
   public updateColumnNames(): void {
     // assume each column has a plus button
+    this.boardColumnNames = [];
     const coordinates = [];
     for (let i = 0; i < this.board.cols; ++i) {
       coordinates.push(i);
@@ -264,13 +266,31 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.dialog.open(NewGridLineComponent, {
       data: {boardId: this.board.id, rangeStart: rangeStart, type: BoardGridLineType.COLUMN}
     });
-  } 
+  }
+
+  /**
+   * Deletes a column name
+   */
+  public deleteColumn(column: BoardGridLine): void {
+    // confirm user wants to delete
+    const reallyWantToDelete = confirm("Delete column?");
+    if (reallyWantToDelete) {
+      // make a http delete request, update shared board
+      this.boardApiService.deleteBoardGridLine(column).subscribe(() => {
+        // successfully deleted
+        // update shared board
+        this.sharedBoard.deleteGridLine(column);
+      }, err => {
+        this.snackbar.open("Error occurred when deleting column", "Ok");
+      });
+    }
+  }
 
   public getNoteCreationDate(note: Note) {
     return new Date(Number(note.creationDate));
   }
 
-  public boardScrolled(event) {
+  public boardScrolled(event: any) {
     const scroll = event.srcElement.scrollLeft;
     this.columnsDivRef.nativeElement.scrollLeft = scroll;
   }

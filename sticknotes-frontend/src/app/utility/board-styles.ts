@@ -50,7 +50,7 @@ export class BoardStyles {
     return `${this.getRCWrapperWidth()} ${this.getRCWrapperHeight()}`
   }
 
-  public getColumnNameDivStyle(el: BoardGridLine) {
+  public getColumnDivStyle(el: BoardGridLine) {
     // the width of the columns header is the width of columns - left and right margin, which is equal to margin between adjacent notes
     return `left: ${el.rangeStart * this.NOTE_WIDTH}px; width: ${(Math.abs(el.rangeEnd - el.rangeStart) * this.NOTE_WIDTH) - this.MARGIN_BETWEEN_ADJ_NOTES - this.COLUMN_NAME_PADDING}px;`;
   }
