@@ -9,6 +9,10 @@ export interface User {
   accessibleBoards: Board[];
 }
 
+export interface ActiveUsers {
+  activeUsers: number[];
+}
+
 export interface UserBoardRole {
   id: string;
   user: User;
