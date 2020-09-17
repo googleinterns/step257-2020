@@ -84,7 +84,7 @@ public class BoardServlet extends AppAbstractServlet {
 
       // deleting all notes which "boardId" property is equal to deleted board
       ofy().delete().entities(ofy().load().type(Note.class).filter("boardId", board.id).iterable()).now();
-
+      // TODO delete rows and columns
       // deleting board itself
       FastStorage.removeBoard(board);
 

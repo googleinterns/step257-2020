@@ -1,21 +1,27 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board, UserBoardRole, User } from '../interfaces';
+import { Note, Board, UserBoardRole, User, BoardGridLine } from '../interfaces';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
 import { LiveUpdatesService } from '../services/live-updates.service';
-import _ from 'lodash';
+import _, { range } from 'lodash';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BoardUsersApiService } from '../services/board-users-api.service';
 import { UserService } from '../services/user.service';
 import { UserRole } from '../enums/user-role.enum';
 import { SharedBoardService } from '../services/shared-board.service';
+import { BoardApiService } from '../services/board-api.service';
+import { BoardGridLineType } from '../enums/board-grid-line-type.enum';
+import { NewGridLineComponent } from '../new-grid-line/new-grid-line.component';
 
+/**
+ * Component for displaying grid and notes
+ */
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
@@ -27,25 +33,31 @@ export class BoardComponent implements OnInit, OnDestroy {
   public board: Board;
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
+  public readonly MARGIN_BETWEEN_ADJ_NOTES = 6; // margin between adjacent notes is 6px
+  public readonly COLUMN_NAME_PADDING = 6; // padding of the column name element
+  public readonly ADD_NEW_COLUMN_BUTTON_WIDTH = 36; // width of the "new column" button
   private boardRoles: UserBoardRole[] = [];
   private currentUserRole: UserRole = null;
   private currentUser: User = null;
+  public boardColumnNames: BoardGridLine[] = [];
+  // x coordinates of positions of "add new column" buttons
+  public newColumnNameButtonCoordinates: number[] = null;
+  private columnsDivRef: ElementRef = null;
+  
+  /**
+   * Setter of the columns div reference
+   */
+  @ViewChild("columnsDiv", {read: ElementRef, static: false}) set columnsDivRefSetter(data: any) {
+    this.columnsDivRef = data;
+  };
 
   constructor(private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private notesApiService: NotesApiService,
     private sharedBoard: SharedBoardService,
-    private snackBar: MatSnackBar,
     private boardUsersApiService: BoardUsersApiService,
     private liveUpdatesService: LiveUpdatesService,
     private userService: UserService) {
-  }
-
-  /**
-   * Stop live updates
-   */
-  ngOnDestroy(): void {
-    this.liveUpdatesService.unregisterBoard();
   }
 
   ngOnInit(): void {
@@ -59,8 +71,10 @@ export class BoardComponent implements OnInit, OnDestroy {
         if (board) {
           this.board = board;
           this.updateBoardAbstractGrid();
+          this.updateColumnNames();
           // setup live updates
           if (!this.liveUpdatesService.hasRegisteredBoard()) {
+            console.log('Registering a board with board id = ' + board.id);
             this.liveUpdatesService.registerBoard(board);
           }
         }
@@ -76,6 +90,14 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.userService.getUser().subscribe(user => {
       this.currentUser = user;
     });
+  }
+
+  /**
+   * Stop live updates and remove board subject
+   */
+  ngOnDestroy(): void {
+    this.liveUpdatesService.unregisterBoard();
+    this.sharedBoard.clear();
   }
 
   /**
@@ -130,7 +152,28 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Returns the closes available position to the given x and y
+   * Generates a list of numbers - x coordinates of the plus buttons,
+   * Geenrates a list of column titles from the board entity
+   */
+  public updateColumnNames(): void {
+    // assume each column has a plus button
+    const coordinates = [];
+    for (let i = 0; i < this.board.cols; ++i) {
+      coordinates.push(i);
+    }
+    // next remove buttons that intersect with the taken ranges
+    this.board.gridLines.filter(l => l.type === BoardGridLineType.COLUMN).forEach(l => {
+      this.boardColumnNames.push(l);
+      // remove elements from l.rangeStart to l.rangeEnd
+      const idxOfRangeStart = coordinates.indexOf(l.rangeStart);
+      if (idxOfRangeStart >= 0) {
+        coordinates.splice(idxOfRangeStart, (l.rangeEnd - l.rangeStart));
+      }
+    });
+    this.newColumnNameButtonCoordinates = coordinates;
+  }
+  /**
+   * Returns the closest available position to the given x and y
    */
   public getClosestFreeSlot(note: Note, x: number, y: number): Vector2 {
     // get the closest cells indices
@@ -180,7 +223,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * generates a correct style to position the note
+   * Generates a correct style to position the note
    */
   public getNoteStyle(note: Note): string {
     return `left:${note.x * this.NOTE_WIDTH}px;top:${note.y * this.NOTE_HEIGHT}px`;
@@ -212,6 +255,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Deletes given note. Sends a request to the server and updates shared board
+   */
   public deleteNote(note: Note): void {
     const reallyWantToDelete = confirm('Delete this note?');
     if (reallyWantToDelete) {
@@ -224,17 +270,68 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Opens dialog with the NewGridLineComponent inside
+   */
+  public openNewColumnDialog(rangeStart: number): void {
+    this.dialog.open(NewGridLineComponent, {
+      data: {boardId: this.board.id, rangeStart: rangeStart, type: BoardGridLineType.COLUMN}
+    });
+  } 
+
   public getBoardWidth() {
-    return `width:${this.NOTE_WIDTH * this.board.cols}px;height:${this.NOTE_HEIGHT * this.board.rows}px`;
+    return `width:${this.NOTE_WIDTH * this.board.cols}px;`;
+  }
+
+  public getBoardHeight() {
+    return `height:${this.NOTE_HEIGHT * this.board.rows}px;`;
+  }
+
+  public getBoardStyle() {
+    return `${this.getBoardWidth()} ${this.getBoardHeight()}`;
+  }
+
+  public getBoardWrapperWidth() {
+    return `width: min(100% - 100px, ${this.NOTE_WIDTH * this.board.cols}px);`;
+  }
+
+  public getBoardWrapperHeight() {
+    return `height: min(100% - 70px, ${this.NOTE_HEIGHT * this.board.rows}px);`;
+  }
+
+  public getRCWrapperWidth() {
+    return `width: min(100%, ${(this.NOTE_WIDTH * this.board.cols) + 80}px);`;
+  }
+
+  public getRCWrapperHeight() {
+    return `height: min(100% - 40px, ${this.NOTE_HEIGHT * this.board.rows}px);`;
+  }
+
+  public getRCWrapperStyle() {
+    return `${this.getRCWrapperWidth()} ${this.getRCWrapperHeight()}`
+  }
+
+  public getColumnNameDivStyle(el: BoardGridLine) {
+    // the width of the columns header is the width of columns - left and right margin, which is equal to margin between adjacent notes
+    return `left: ${el.rangeStart * this.NOTE_WIDTH}px; width: ${(Math.abs(el.rangeEnd - el.rangeStart) * this.NOTE_WIDTH) - this.MARGIN_BETWEEN_ADJ_NOTES - this.COLUMN_NAME_PADDING}px;`;
   }
 
   public getBoardWrapperStyle() {
     // if board is wider than 100% of the screen or higher than 100%, set fixed width and height
-    return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.board.cols}px); height: min(100% - 100px, ${this.NOTE_HEIGHT * this.board.rows}px)`; 
+    return `${this.getBoardWrapperWidth()} ${this.getBoardWrapperHeight()}`; 
+  }
+
+  public getPlusButtonStyle(pos: number) {
+    return `left: ${pos * this.NOTE_WIDTH}px;`
   }
 
   public getNoteCreationDate(note: Note) {
     return new Date(Number(note.creationDate));
+  }
+
+  public boardScrolled(event) {
+    const scroll = event.srcElement.scrollLeft;
+    this.columnsDivRef.nativeElement.scrollLeft = scroll;
   }
 
   /**

@@ -1,6 +1,7 @@
 import { Vector2 } from './utility/vector';
 import { State } from './enums/state.enum';
 import { UserRole } from './enums/user-role.enum';
+import { BoardGridLineType } from './enums/board-grid-line-type.enum';
 
 export interface User {
   id: string;
@@ -31,6 +32,7 @@ export interface Board {
   cols: number;
   backgroundImg: string | null;
   lastUpdated: string;
+  gridLines: BoardGridLine[];
 }
 
 export interface NotePopupData {
@@ -55,7 +57,7 @@ export interface Note extends CreateNoteApiData {
 }
 
 /**
- * All board fields except notes
+ * All board fields except notes, columns
  */
 export interface BoardDescription {
   readonly id: string;
@@ -95,4 +97,14 @@ export interface BoardPreview {
 export interface NoteUpdateRequest {
   id: string;
   lastUpdated: string;
+}
+
+/**
+ * Interface for keeping title of the row/column
+ */
+export interface BoardGridLine {
+  rangeStart: number;
+  rangeEnd: number;
+  title: string;
+  type: BoardGridLineType;
 }

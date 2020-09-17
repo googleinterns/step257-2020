@@ -32,6 +32,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTabsModule } from '@angular/material/tabs';
+import { NewGridLineComponent } from './new-grid-line/new-grid-line.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +51,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     NoteContentPipe,
     AddUserComponent,
     BoardEditComponent,
-    EditUserComponent
+    EditUserComponent,
+    NewGridLineComponent
   ],
   imports: [
     BrowserModule,
@@ -70,7 +74,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSnackBarModule,
     MatSelectModule,
     MaterialFileInputModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatMenuModule,
+    MatTabsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

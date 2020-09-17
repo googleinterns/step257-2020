@@ -1,0 +1,19 @@
+<div class="new-line-form">
+  <form [formGroup]="newLineFormGroup">
+    <mat-form-field>
+      <mat-label>Title of {{type}}</mat-label>
+      <input matInput formControlName="title">
+      <mat-error *ngIf="!this.newLineFormGroup.controls.title.valid">
+        Please enter a valid title
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Width</mat-label>
+      <input matInput formControlName="width" type="number">
+      <mat-error *ngIf="!this.newLineFormGroup.controls.width.valid">
+        Width is invalid
+      </mat-error>
+    </mat-form-field>
+  </form>
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="submitDisabled">Add</button>
+</div>

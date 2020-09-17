@@ -310,7 +310,7 @@ public class UserListServletTest extends NotesboardTestBase {
         .filter("role", Role.USER).first().now();
 
     assertNotNull(datastoreData);
-
+    
     // checking response value
     JsonElement expectedResponse = gson.toJsonTree(datastoreData, UserBoardRole.class);
     JsonElement actualResponse = gson.fromJson(responseWriter.getBuffer().toString(), JsonObject.class);

@@ -11,6 +11,7 @@ import com.google.cloud.ServiceOptions;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.sticknotesbackend.enums.Role;
+import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
@@ -69,6 +70,7 @@ public abstract class NotesboardTestBase {
     ObjectifyService.register(Note.class);
     ObjectifyService.register(User.class);
     ObjectifyService.register(UserBoardRole.class);
+    ObjectifyService.register(BoardGridLine.class);
   }
 
   /**
