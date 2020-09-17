@@ -8,7 +8,7 @@
         <div class="column-name" *ngFor="let column of boardColumnNames"
           [style]="styler.getColumnDivStyle(column)">
           <div class="cn-flex-container">
-            <p>{{column.title}}</p>
+            <h4 class="mat-h4">{{column.title}}</h4>
             <!-- Pass column data to menu -->
             <button class="note-button" mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{column: column}">
               <mat-icon class="note-icon">more_vert</mat-icon>
@@ -21,9 +21,6 @@
           </button>
         </div>
       </div>
-    </div>
-    <div class="r-wrapper" [style]="styler.getBoardWrapperHeight()">
-
     </div>
     <div #boardWrapper class="board-wrapper" [style]="styler.getBoardWrapperStyle()" (scroll)="boardScrolled($event)">
       <div class="board" [style]="styler.getBoardStyle()">
@@ -84,7 +81,7 @@
     <mat-icon>chevron_left</mat-icon>
     <span>Shrink right</span>
   </button>
-  <button mat-menu-item>
+  <button mat-menu-item (click)="openEditBoardGridLineDialog(column)">
     <mat-icon>edit</mat-icon>
     <span>Edit</span>
   </button>

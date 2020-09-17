@@ -264,7 +264,7 @@ export class BoardComponent implements OnInit, OnDestroy {
    */
   public openNewColumnDialog(rangeStart: number): void {
     this.dialog.open(NewGridLineComponent, {
-      data: { boardId: this.board.id, rangeStart: rangeStart, type: BoardGridLineType.COLUMN }
+      data: { boardId: this.board.id, rangeStart: rangeStart, type: BoardGridLineType.COLUMN, mode: State.CREATE}
     });
   }
 
@@ -297,6 +297,13 @@ export class BoardComponent implements OnInit, OnDestroy {
       // some error
       this.snackbar.open("Error occurred", "Ok");
     });
+  }
+
+  /**
+   * Opens NewGridLineComponent
+   */
+  public openEditBoardGridLineDialog(updatedLine: BoardGridLine): void {
+    this.dialog.open(NewGridLineComponent, {data: {line: updatedLine, mode: State.EDIT}});
   }
 
   /**
