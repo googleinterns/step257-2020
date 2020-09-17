@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
 import { LiveUpdatesService } from '../services/live-updates.service';
-import _, { range } from 'lodash';
+import _ from 'lodash';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BoardUsersApiService } from '../services/board-users-api.service';
 import { UserService } from '../services/user.service';
@@ -18,7 +18,7 @@ import { SharedBoardService } from '../services/shared-board.service';
 import { BoardApiService } from '../services/board-api.service';
 import { BoardGridLineType } from '../enums/board-grid-line-type.enum';
 import { NewGridLineComponent } from '../new-grid-line/new-grid-line.component';
-
+import { BoardStyles } from '../utility/board-styles';
 /**
  * Component for displaying grid and notes
  */
@@ -33,9 +33,6 @@ export class BoardComponent implements OnInit, OnDestroy {
   public board: Board;
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
-  public readonly MARGIN_BETWEEN_ADJ_NOTES = 6; // margin between adjacent notes is 6px
-  public readonly COLUMN_NAME_PADDING = 6; // padding of the column name element
-  public readonly ADD_NEW_COLUMN_BUTTON_WIDTH = 36; // width of the "new column" button
   private boardRoles: UserBoardRole[] = [];
   private currentUserRole: UserRole = null;
   private currentUser: User = null;
@@ -43,6 +40,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   // x coordinates of positions of "add new column" buttons
   public newColumnNameButtonCoordinates: number[] = null;
   private columnsDivRef: ElementRef = null;
+  public styler: BoardStyles = null;
   
   /**
    * Setter of the columns div reference
@@ -72,6 +70,8 @@ export class BoardComponent implements OnInit, OnDestroy {
           this.board = board;
           this.updateBoardAbstractGrid();
           this.updateColumnNames();
+          // init styler
+          this.styler = new BoardStyles(board.cols, board.rows);
           // setup live updates
           if (!this.liveUpdatesService.hasRegisteredBoard()) {
             console.log('Registering a board with board id = ' + board.id);
@@ -172,6 +172,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
     this.newColumnNameButtonCoordinates = coordinates;
   }
+
   /**
    * Returns the closest available position to the given x and y
    */
@@ -223,20 +224,6 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Generates a correct style to position the note
-   */
-  public getNoteStyle(note: Note): string {
-    return `left:${note.x * this.NOTE_WIDTH}px;top:${note.y * this.NOTE_HEIGHT}px`;
-  }
-
-  /** 
-   * Generates a correct style to position the slot
-   */ 
-  public getSlotStyle(x: number, y: number): string {
-    return `left:${x * this.NOTE_WIDTH}px;top:${y * this.NOTE_HEIGHT}px`;
-  }
-
-  /**
    * Opens new-note component in a dialog and passes the position where the note has to be created.
    * Dialog sends new note to the board data service
    */
@@ -278,52 +265,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       data: {boardId: this.board.id, rangeStart: rangeStart, type: BoardGridLineType.COLUMN}
     });
   } 
-
-  public getBoardWidth() {
-    return `width:${this.NOTE_WIDTH * this.board.cols}px;`;
-  }
-
-  public getBoardHeight() {
-    return `height:${this.NOTE_HEIGHT * this.board.rows}px;`;
-  }
-
-  public getBoardStyle() {
-    return `${this.getBoardWidth()} ${this.getBoardHeight()}`;
-  }
-
-  public getBoardWrapperWidth() {
-    return `width: min(100% - 100px, ${this.NOTE_WIDTH * this.board.cols}px);`;
-  }
-
-  public getBoardWrapperHeight() {
-    return `height: min(100% - 70px, ${this.NOTE_HEIGHT * this.board.rows}px);`;
-  }
-
-  public getRCWrapperWidth() {
-    return `width: min(100%, ${(this.NOTE_WIDTH * this.board.cols) + 80}px);`;
-  }
-
-  public getRCWrapperHeight() {
-    return `height: min(100% - 40px, ${this.NOTE_HEIGHT * this.board.rows}px);`;
-  }
-
-  public getRCWrapperStyle() {
-    return `${this.getRCWrapperWidth()} ${this.getRCWrapperHeight()}`
-  }
-
-  public getColumnNameDivStyle(el: BoardGridLine) {
-    // the width of the columns header is the width of columns - left and right margin, which is equal to margin between adjacent notes
-    return `left: ${el.rangeStart * this.NOTE_WIDTH}px; width: ${(Math.abs(el.rangeEnd - el.rangeStart) * this.NOTE_WIDTH) - this.MARGIN_BETWEEN_ADJ_NOTES - this.COLUMN_NAME_PADDING}px;`;
-  }
-
-  public getBoardWrapperStyle() {
-    // if board is wider than 100% of the screen or higher than 100%, set fixed width and height
-    return `${this.getBoardWrapperWidth()} ${this.getBoardWrapperHeight()}`; 
-  }
-
-  public getPlusButtonStyle(pos: number) {
-    return `left: ${pos * this.NOTE_WIDTH}px;`
-  }
 
   public getNoteCreationDate(note: Note) {
     return new Date(Number(note.creationDate));
