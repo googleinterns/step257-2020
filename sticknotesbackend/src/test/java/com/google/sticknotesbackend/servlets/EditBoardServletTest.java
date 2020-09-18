@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
 import com.google.sticknotesbackend.enums.Role;
+import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.Whiteboard;
@@ -16,6 +17,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+
+import javax.servlet.ServletException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -147,5 +151,71 @@ public class EditBoardServletTest extends NotesboardTestBase {
     editBoardServlet.doPost(mockRequest, mockResponse);
     // check that bad request error was generated
     verify(mockResponse).sendError(BAD_REQUEST);
+  }
+
+  @Test
+  public void testBoardResizeShrinksOverflowingColumns() throws IOException, ServletException {
+    // create board firstly, default width is 6
+    Whiteboard board = createBoard();
+    // creating mock user and log-in
+    User user = createUserSafe();
+    board.setCreator(user);
+    createRole(board, user, Role.ADMIN);
+    // log user in
+    logIn(user);
+    // add some columns
+    BoardGridLine line = createBoardGridLine(board.id);
+    line.rangeEnd = 5;
+    ofy().save().entity(line).now();
+    board.gridLines.add(Ref.create(line));
+    // save updated board
+    ofy().save().entity(board).now();
+    // mock request payload
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("id", board.id);
+    jsonObject.addProperty("rows", 3);
+    jsonObject.addProperty("cols", 4);
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+    // do request
+    editBoardServlet.doPost(mockRequest, mockResponse);
+    // check that the line rangeEnd was shrinked to 4
+    line = ofy().load().type(BoardGridLine.class).id(line.id).now();
+    assertThat(line.rangeEnd).isEqualTo(4);
+    // check that line reange start remained the same
+    assertThat(line.rangeStart).isEqualTo(0);
+  }
+
+  @Test
+  public void testBoardResizeRemovesColumnsWithStartBiggerThanBoardWidth() throws IOException, ServletException {
+    // create board firstly, default width is 6
+    Whiteboard board = createBoard();
+    // creating mock user and log-in
+    User user = createUserSafe();
+    board.setCreator(user);
+    createRole(board, user, Role.ADMIN);
+    // log user in
+    logIn(user);
+    // add some columns
+    BoardGridLine line = createBoardGridLine(board.id);
+    line.rangeStart = 4;
+    line.rangeEnd = 6;
+    ofy().save().entity(line).now();
+    board.gridLines.add(Ref.create(line));
+    // save updated board
+    ofy().save().entity(board).now();
+    // mock request payload
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("id", board.id);
+    jsonObject.addProperty("rows", 3);
+    jsonObject.addProperty("cols", 3);
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+    // do request
+    editBoardServlet.doPost(mockRequest, mockResponse);
+    // check that the line was deleted because it's rangeStart = 4 > board.cols = 3
+    line = ofy().load().type(BoardGridLine.class).id(line.id).now();
+    assertThat(line).isNull();
+    // check that board lines array is empty
+    board = ofy().load().type(Whiteboard.class).id(board.id).now();
+    assertThat(board.gridLines.size()).isEqualTo(0);
   }
 }
