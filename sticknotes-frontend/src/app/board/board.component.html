@@ -5,7 +5,7 @@
       <!-- Scroll container for the visible width of board -->
       <div class="c-wrapper" [style]="styler.getBoardWidth()">
         <!-- Full width of board-->
-        <div class="column-name" *ngFor="let column of boardColumnNames"
+        <div class="column-name mat-elevation-z6" *ngFor="let column of boardColumnNames"
           [style]="styler.getColumnDivStyle(column)">
           <div class="cn-flex-container">
             <h4 class="mat-h4">{{column.title}}</h4>
@@ -15,7 +15,7 @@
             </button>
           </div>
         </div>
-        <div class="column-name" *ngFor="let coord of newColumnNameButtonCoordinates" [style]="styler.getPlusButtonStyle(coord)">
+        <div class="column-name mat-elevation-z6" *ngFor="let coord of newColumnNameButtonCoordinates" [style]="styler.getPlusButtonStyle(coord)">
           <button class="note-button" mat-icon-button (click)="openNewColumnDialog(coord)">
             <mat-icon class="note-icon">add</mat-icon>
           </button>
