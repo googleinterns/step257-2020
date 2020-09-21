@@ -25,6 +25,8 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   private boardGrid: number[][];
   public board: Board;
+
+  // Notes width and height in pixels
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
   private boardRoles: UserBoardRole[] = [];
@@ -48,6 +50,10 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.liveUpdatesService.unregisterBoard();
   }
 
+  /**
+   * Gets the route parameter "id" of the board and fetches the board with this id from the server
+   * Creates SidenavBoardData, which is passed to the sidenav to be dispalyed there
+   */
   ngOnInit(): void {
     // load board
     this.activatedRoute.paramMap.subscribe(params => {
@@ -87,7 +93,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Moves a note to a proper position after it was released, resets z-index
+   * Moves a note to a proper position after it was released, resets z-index.
    */
   public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note): void {
     const elementRef = cdkDragEnd.source.element.nativeElement;
@@ -130,7 +136,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Returns the closes available position to the given x and y
+   * Returns the closest available position to the given x and y.
    */
   public getClosestFreeSlot(note: Note, x: number, y: number): Vector2 {
     // get the closest cells indices
@@ -212,6 +218,10 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Deletes the note passed as the parameter
+   * Sends a DELETE request to the server and removes the note from the list of board notes
+   */
   public deleteNote(note: Note): void {
     const reallyWantToDelete = confirm('Delete this note?');
     if (reallyWantToDelete) {
@@ -224,15 +234,24 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Generates a CSS style string of the board element based on the number of columns and rows in the board
+   */
   public getBoardWidth() {
     return `width:${this.NOTE_WIDTH * this.board.cols}px;height:${this.NOTE_HEIGHT * this.board.rows}px`;
   }
-
+  
+  /**
+   * Generates a CSS style string of the board wrapper element based on the number of columns and rows in the board
+   */
   public getBoardWrapperStyle() {
     // if board is wider than 100% of the screen or higher than 100%, set fixed width and height
     return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.board.cols}px); height: min(100% - 100px, ${this.NOTE_HEIGHT * this.board.rows}px)`; 
   }
 
+  /**
+   * Converts timestamp sent from the server to the TS Date object
+   */
   public getNoteCreationDate(note: Note) {
     return new Date(Number(note.creationDate));
   }

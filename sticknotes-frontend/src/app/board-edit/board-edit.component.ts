@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
-import { noSpacesValidator } from '../utility/util';
+import { onlySpacesValidator } from '../utility/util';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BoardApiService } from '../services/board-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -17,7 +17,7 @@ export class BoardEditComponent implements OnInit {
   public editBoardForm = new FormGroup({
     boardTitle: new FormControl('', [
       Validators.required,
-      noSpacesValidator
+      onlySpacesValidator
     ]),
     cols: new FormControl('', [
       Validators.required,
