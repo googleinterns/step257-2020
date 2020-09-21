@@ -1,3 +1,8 @@
+/**
+ * This component is a dialog that is opened when users wants to edit
+ * role of other user. It receives data from the user using form and 
+ * than sends that data to the server using boardUsersService for that. 
+ */
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserRole } from '../enums/user-role.enum';
@@ -39,7 +44,11 @@ export class EditUserComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
+  /**
+   * This function sends new role to the server on the 'api/edit-role/' endpoint.
+   * If editing was successful, new role is send back to the component that opened
+   * this dialog. Otherwise the old role is send back.
+   */
   editUser(): void {
     if (this.editUserForm.valid) {
       this.boardUsersService

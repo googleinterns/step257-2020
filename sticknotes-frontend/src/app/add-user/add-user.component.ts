@@ -1,3 +1,8 @@
+/**
+ * This component is a dialog that is opened when users wants to add
+ * new user to the board. It receives data from the user using form and 
+ * than sends that data to the server using boardUsersService. 
+ */
 import { Component, OnInit, Input, Inject } from '@angular/core';
 import { UserRole } from '../enums/user-role.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -37,7 +42,12 @@ export class AddUserComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
+  
+  /**
+   * Uses boardUsersService to send POST request to api/board/users/:id endpoint which adds user to the board.
+   * Server response contains successfully added user. When the request was successful newly created user
+   * is passed to component which opened this dialog.
+   */
   addUser(): void {
     if (this.addUserForm.valid) {
       // load board

@@ -1,6 +1,6 @@
 .board-wrapper {
   border: 1px solid black;
-  border-radius: 0px 0px 5px 0px;
+  border-radius: 5px;
   position: relative;
   overflow: scroll;
   top: 40px;
@@ -96,10 +96,10 @@ mat-card-content {
   overflow-x: hidden;
   position: absolute;
   top: 0px;
-  height: 40px;
+  height: 37px;
   background-color: white;
   border: 1px solid black;
-  border-radius: 5px 5px 0px 0px;
+  border-radius: 5px;
 }
 
 .column-name {
@@ -116,6 +116,7 @@ mat-card-content {
 .cn-flex-container {
   display: flex;
   justify-content: space-between;
+  margin-left: 8px;
 }
 
 .mat-icon-button {
@@ -125,7 +126,6 @@ mat-card-content {
 /*
 For displaying row names, not used yet 
  */
-
 .r-wrapper {
   width: 80px;
   background-color: aquamarine;

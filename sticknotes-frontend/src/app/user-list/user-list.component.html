@@ -6,7 +6,11 @@
         matTooltip="Edit user role" matTooltipPosition="right" [matTooltipDisabled]="!canEdit(userWithRole)">
         <mat-icon color="primary" matListIcon>account_circle</mat-icon>
         <div matLine> {{ userWithRole.user.nickname }} </div>
-        <div mat-line> {{ userWithRole.user.email }} <p class="mat-small"> {{ userWithRole.role }} </p>
+        <div mat-line> 
+          {{ userWithRole.user.email }} 
+          <p class="mat-small"> 
+            {{ userWithRole.role }} <span *ngIf="this.activeUsersIdSet.has(userWithRole.id)" class="mat-small" style="color:green">ACTIVE</span> 
+          </p>
         </div>
         <button mat-icon-button *ngIf="canDelete(userWithRole)" color="primary" (click)="removeUser(userWithRole)"
           aria-label="Open add user dialog">

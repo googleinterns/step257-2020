@@ -68,13 +68,9 @@ public class EditBoardGridLineServlet extends AppAbstractServlet {
       BoardGridLine l = board.gridLines.get(i).get();
       // check if line overlaps with some other line
       if (!l.id.equals(editedLine.id) && l.overlapsWith(editedLine)) {
-        try {
-          // overlaps, so throw bad request
-          badRequest("new " + editedLine.type + " intersects with already existing", response);
-          return;
-        } catch (IOException ignored) {
-          return;
-        }
+        // overlaps, so throw bad request
+        badRequest("new " + editedLine.type + " intersects with already existing", response);
+        return;
       }
     }
     // if no overlapping, save modified line

@@ -1,3 +1,10 @@
+/**
+ * Welcome component and entry point to the application. It displays
+ * login button and fetches login url from the server. After successful
+ * login, or if user was already logged in user is redirected to the
+ * boards view.
+ */
+
 import { Component, OnInit, Inject } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
@@ -23,6 +30,7 @@ export class LoginPageComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  //navigates to the loginUrl
   goToUrl(): void {
     window.location.href = this.loginUrl;
   }

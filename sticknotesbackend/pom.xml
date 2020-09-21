@@ -83,7 +83,11 @@
       <artifactId>commons-io</artifactId>
       <version>2.5</version>
     </dependency>
-
+    <dependency>
+    <groupId>org.javatuples</groupId>
+      <artifactId>javatuples</artifactId>
+      <version>1.2</version>
+    </dependency>
     <!-- Test Dependencies -->
     <dependency>
       <groupId>com.google.appengine</groupId>
