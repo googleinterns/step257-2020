@@ -63,7 +63,7 @@ export class SharedBoardService {
   /**
    * Updates board subject
    */
-  public updateBoard(board: BoardDescription) {
+  public updateBoard(board: BoardDescription | Board) {
     let oldBoard = this.boardSubj.value;
     const newBoard = _.merge(oldBoard, board);
     this.boardSubj.next(newBoard);
@@ -75,6 +75,31 @@ export class SharedBoardService {
    */
   public addGridLine(line: BoardGridLine) {
     this.boardSubj.value.gridLines.push(line);
+    this.boardSubj.next(this.boardSubj.value);
+  }
+
+  /**
+   * Deletes the BoardGridLine from the list of board linest.
+   * This change is emitted to all subscribers.
+   */
+  public deleteGridLine(line: BoardGridLine) {
+    const indexOfLine = this.boardSubj.value.gridLines.indexOf(line);
+    if (indexOfLine >= 0 && indexOfLine < this.boardSubj.value.gridLines.length) {
+      this.boardSubj.value.gridLines.splice(indexOfLine, 1);
+    }
+    this.boardSubj.next(this.boardSubj.value);
+  }
+
+  /**
+   * Updates the BoardGridLine in the list of lines of the board.
+   * This change is emitted to all subscribers
+   */
+  public updateGridLine(line: BoardGridLine) {
+    this.boardSubj.value.gridLines.map(l => { 
+      if (l.id === line.id) {
+        l = _.merge(l, line);
+      }
+    });
     this.boardSubj.next(this.boardSubj.value);
   }
 }

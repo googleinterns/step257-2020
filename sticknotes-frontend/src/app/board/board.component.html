@@ -1,33 +1,31 @@
 <div class="flex-container" *ngIf="board">
   <h3>{{board.title}}</h3>
-  <div class="rc-wrapper" [style]="getRCWrapperStyle()">
-    <div #columnsDiv class="horizontal-scroll" [style]="getBoardWrapperWidth()">
+  <div class="rc-wrapper" [style]="styler.getRCWrapperStyle()">
+    <div #columnsDiv class="horizontal-scroll" [style]="styler.getBoardWrapperWidth()">
       <!-- Scroll container for the visible width of board -->
-      <div class="c-wrapper" [style]="getBoardWidth()">
+      <div class="c-wrapper" [style]="styler.getBoardWidth()">
         <!-- Full width of board-->
-        <div class="column-name" *ngFor="let columnName of boardColumnNames"
-          [style]="getColumnNameDivStyle(columnName)">
+        <div class="column-name mat-elevation-z6" *ngFor="let column of boardColumnNames"
+          [style]="styler.getColumnDivStyle(column)">
           <div class="cn-flex-container">
-            <p>{{columnName.title}}</p>
-            <button class="note-button" mat-icon-button [matMenuTriggerFor]="menu">
+            <h4 class="mat-h4">{{column.title}}</h4>
+            <!-- Pass column data to menu -->
+            <button class="note-button" mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{column: column}">
               <mat-icon class="note-icon">more_vert</mat-icon>
             </button>
           </div>
         </div>
-        <div class="column-name" *ngFor="let coord of newColumnNameButtonCoordinates" [style]="getPlusButtonStyle(coord)">
+        <div class="column-name mat-elevation-z6" *ngFor="let coord of newColumnNameButtonCoordinates" [style]="styler.getPlusButtonStyle(coord)">
           <button class="note-button" mat-icon-button (click)="openNewColumnDialog(coord)">
             <mat-icon class="note-icon">add</mat-icon>
           </button>
         </div>
       </div>
     </div>
-    <div class="r-wrapper" [style]="getBoardWrapperHeight()">
-
-    </div>
-    <div #boardWrapper class="board-wrapper" [style]="getBoardWrapperStyle()" (scroll)="boardScrolled($event)">
-      <div class="board" [style]="getBoardStyle()">
+    <div #boardWrapper class="board-wrapper" [style]="styler.getBoardWrapperStyle()" (scroll)="boardScrolled($event)">
+      <div class="board" [style]="styler.getBoardStyle()">
         <div *ngFor="let y of board.rows | rangeLoop">
-          <div *ngFor="let x of board.cols | rangeLoop" class="new-note-container" [style]="getSlotStyle(x, y)">
+          <div *ngFor="let x of board.cols | rangeLoop" class="new-note-container" [style]="styler.getSlotStyle(x, y)">
             <button mat-icon-button aria-label="Create new note" (click)="openNewNoteDialog(x, y)">
               <mat-icon color="primary">add</mat-icon>
             </button>
@@ -37,7 +35,7 @@
       <div *ngFor="let note of board.notes; let i = index">
         <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)"
           (cdkDragEnded)="onNoteDrop($event, note)" cdkDrag [cdkDragDisabled]="!canModifyNote(note)"
-          class="mat-card-wrapper" [style]="getNoteStyle(note)">
+          class="mat-card-wrapper" [style]="styler.getNoteStyle(note)">
           <mat-card [style]="'background-color:' + note.color">
             <mat-card-content>
               <div class="card-header">
@@ -66,28 +64,30 @@
 </div>
 <!-- Menu of column header element -->
 <mat-menu #menu="matMenu">
-  <button mat-menu-item>
+  <ng-template matMenuContent let-column="column">
+  <button mat-menu-item (click)="editBoardGridLine(expandedLeft(column))">
     <mat-icon>first_page</mat-icon>
     <span>Expand left</span>
   </button>
-  <button mat-menu-item>
+  <button mat-menu-item (click)="editBoardGridLine(expandedRight(column))">
     <mat-icon>last_page</mat-icon>
     <span>Expand right</span>
   </button>
-  <button mat-menu-item>
+  <button mat-menu-item (click)="editBoardGridLine(shrinkedLeft(column))">
     <mat-icon>chevron_right</mat-icon>
     <span>Shrink left</span>
   </button>
-  <button mat-menu-item>
+  <button mat-menu-item (click)="editBoardGridLine(shrinkedRight(column))">
     <mat-icon>chevron_left</mat-icon>
     <span>Shrink right</span>
   </button>
-  <button mat-menu-item>
+  <button mat-menu-item (click)="openEditBoardGridLineDialog(column)">
     <mat-icon>edit</mat-icon>
     <span>Edit</span>
   </button>
-  <button mat-menu-item>
+  <button mat-menu-item (click)="deleteColumn(column)">
     <mat-icon>delete</mat-icon>
     <span>Delete</span>
   </button>
+</ng-template>
 </mat-menu>

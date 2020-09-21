@@ -27,7 +27,7 @@ export class BoardApiService {
   /**
    * Updates board's mutable fields
    */
-  public updateBoard(data: BoardDescription): Observable<void> {
+  public updateBoard(data: BoardDescription): Observable<Board> {
     const updateData: BoardUpdateData = {
       id: data.id,
       title: data.title,
@@ -35,7 +35,7 @@ export class BoardApiService {
       cols: data.cols,
       backgroundImg: data.backgroundImg
     };
-    return this.http.post<void>('api/edit-board/', updateData);
+    return this.http.post<Board>('api/edit-board/', updateData);
   }
 
   /**
@@ -62,9 +62,23 @@ export class BoardApiService {
   /**
    * Creates a BoardGridLine (column/row name)
    */
-  public createBoardGridLine(line: BoardGridLine, boardId: string) {
+  public createBoardGridLine(line: any, boardId: string):Observable<BoardGridLine> {
     const payload = {...line};
     payload['boardId'] = boardId;
-    return this.http.post('api/board-grid-lines/', payload);
+    return this.http.post<BoardGridLine>('api/board-grid-lines/', payload);
+  }
+
+  /**
+   * Deletes a BoardGridLine (column/row name)
+   */
+  public deleteBoardGridLine(line: BoardGridLine) {
+    return this.http.delete(`api/board-grid-lines/?id=${line.id}`);
+  }
+
+  /**
+   * Edits a BoardGridLin (column/row name)
+   */
+  public editBoardGridLine(line: BoardGridLine): Observable<BoardGridLine> {
+    return this.http.post<BoardGridLine>('api/edit-board-grid-lines/', line);
   }
 }
