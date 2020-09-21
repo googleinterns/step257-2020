@@ -6,8 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
-import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.FastStorage;
+import com.google.sticknotesbackend.JsonParsers;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.BoardGridLine;
@@ -15,6 +15,10 @@ import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +40,7 @@ public class EditBoardServlet extends AppAbstractServlet {
     // convert request payload to a json object and validate it
     JsonObject jsonPayload = JsonParser.parseReader(request.getReader()).getAsJsonObject();
     try {
-      String[] requiredFields = { "id" };
+      String[] requiredFields = {"id"};
       validateRequestData(jsonPayload, response, requiredFields);
     } catch (PayloadValidationException ex) {
       // if exception was thrown, send error message to client
@@ -65,8 +69,8 @@ public class EditBoardServlet extends AppAbstractServlet {
     }
 
     // run this code only if board is resized
-    if ((editedBoard.cols != -1 && editedBoard.cols != board.cols)
-        || (editedBoard.rows != -1 && editedBoard.rows != board.rows)) {
+    if ((editedBoard.cols != -1 && editedBoard.cols != board.cols) ||
+        (editedBoard.rows != -1 && editedBoard.rows != board.rows)) {
       if (editedBoard.rows != -1) {
         if (editedBoard.rows < 1) {
           badRequest("Can not resize to < 1 rows", response);
@@ -92,9 +96,15 @@ public class EditBoardServlet extends AppAbstractServlet {
         }
       }
       // delete column titles if there are ones starting further than new end
-      board.gridLines.removeIf(lineRef -> lineRef.get().rangeStart > board.cols);
+      Set<Ref<BoardGridLine>> linesToRemove = board.gridLines.stream()
+                                        .filter(lineRef -> lineRef.get().rangeStart > board.cols)
+                                        .collect(Collectors.toSet());
+      // remove lines from the list                                        
+      board.gridLines.removeIf(lineRef -> linesToRemove.contains(lineRef));
+      // remove lines from the datastore
+      linesToRemove.forEach(lineRef -> ofy().delete().entity(lineRef.get()).now());
       // shrink column titles if there are ones that overflow
-      for (Ref<BoardGridLine> lineRef: board.gridLines) {
+      for (Ref<BoardGridLine> lineRef : board.gridLines) {
         BoardGridLine line = lineRef.get();
         if (line.rangeEnd > board.cols) {
           line.rangeEnd = board.cols;

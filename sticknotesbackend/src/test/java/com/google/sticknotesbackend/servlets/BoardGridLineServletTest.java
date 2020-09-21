@@ -1,7 +1,6 @@
 package com.google.sticknotesbackend.servlets;
 import static com.google.common.truth.Truth.assertThat;
 import static com.googlecode.objectify.ObjectifyService.ofy;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -106,5 +105,35 @@ public class BoardGridLineServletTest extends NotesboardTestBase {
                    .filter(lineRef -> lineRef.get().id.equals(line.id))
                    .toArray())
         .isEmpty();
+  }
+
+  @Test
+  public void testCreateGridLineFailsIfOverlap() throws IOException, ServletException {
+    // prepare mock data
+    Whiteboard board = createBoard();
+    User boardUser = createUserSafe();
+    createRole(board, boardUser, Role.USER);
+    BoardGridLine line = createBoardGridLine(board.id); // range is 0 - 2
+    // add line to the board
+    board.gridLines.add(Ref.create(line));
+    ofy().save().entity(board).now();
+    // log user in
+    logIn(boardUser);
+    // construct payload
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("boardId", board.id);
+    jsonObject.addProperty("rangeStart", 1);
+    jsonObject.addProperty("rangeEnd", 3);
+    jsonObject.addProperty("title", "value");
+    jsonObject.addProperty("type", "column");
+    // prepare request
+    when(mockRequest.getReader()).thenReturn(new BufferedReader(new StringReader(jsonObject.toString())));
+    // do a request
+    boardGridLineServlet.doPost(mockRequest, mockResponse);
+    // check that bad request was thrown
+    verify(mockResponse).sendError(BAD_REQUEST);
+    // check that this line is not added to the board
+    Whiteboard boardWithoutNewLine = ofy().load().type(Whiteboard.class).id(board.id).now();
+    assertThat(boardWithoutNewLine.gridLines.size()).isEqualTo(1);
   }
 }
