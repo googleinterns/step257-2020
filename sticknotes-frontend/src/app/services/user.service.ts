@@ -12,7 +12,6 @@ export class UserService {
   private userSubject: BehaviorSubject<User> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient) {
-    this.fetch();
   }
 
   private fetch(): Observable<User> {

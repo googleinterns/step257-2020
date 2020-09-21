@@ -4,14 +4,15 @@
 import { Component } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
-import { BoardData, UserBoardRole } from '../interfaces';
 import { MatDialog } from '@angular/material/dialog';
 import { BoardEditComponent } from '../board-edit/board-edit.component';
 import { FormControl, Validators } from '@angular/forms';
-import { Observable, forkJoin } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { BoardUsersApiService } from '../services/board-users-api.service';
 import { UserService } from '../services/user.service';
 import { take } from 'rxjs/operators';
+import { TranslateService } from '../services/translate.service';
+import { SharedBoardService } from '../services/shared-board.service';
 
 @Component({
   selector: 'app-board-container',
@@ -19,26 +20,19 @@ import { take } from 'rxjs/operators';
   styleUrls: ['./board-container.component.css']
 })
 export class BoardContainerComponent {
+  public boardData = null;
   public iconName = 'menu';
-  // used to receive data from the board and to send updates to the board component
-  public boardData: BoardData = null;
   public translateFormControl = new FormControl("original", [Validators.required]);
-  public targetLanguage: string = null;
+
   // flag for storing user's permission to edit the board
   public canEditBoard = false;
-  // languages to which notes can be translated
-  public translateLanguages = [
-    { value: "original", viewValue: "Original language"},
-    { value: "en", viewValue: "English" },
-    { value: "hr", viewValue: "Hrvatski" },
-    { value: "pl", viewValue: "Polski" },
-    { value: "ro", viewValue: "Română" },
-    { value: "te", viewValue: "తెలుగు" },
-    { value: "uk", viewValue: "Українська" },
-    { value: "zh", viewValue: "中文" },
-  ];
 
-  constructor(private router: Router, private dialog: MatDialog, private boardUsersApiService: BoardUsersApiService, private userService: UserService) { 
+  constructor(private router: Router,
+    private dialog: MatDialog,
+    private boardUsersApiService: BoardUsersApiService,
+    private sharedBoard: SharedBoardService,
+    private userService: UserService,
+    public translateService: TranslateService) {
     forkJoin([
       this.userService.getUser().pipe(take(1)),
       // first emitted default value of behavior subject, second is actual rules
@@ -47,9 +41,26 @@ export class BoardContainerComponent {
       const role = roles.find(r => r.user.id === user.id);
       this.canEditBoard = (role && (role.role === 'OWNER' || role.role === 'ADMIN'));
     });
+
+    // subscribe to board data changes
+    this.sharedBoard.boardObservable().subscribe(board => {
+      if (board) {
+        this.boardData = {
+          id: board.id,
+          title: board.title,
+          creationDate: board.creationDate,
+          backgroundImg: board.backgroundImg,
+          rows: board.rows,
+          cols: board.cols,
+          creator: board.creator
+        };
+      }
+    });
   }
 
-  // toggles the side menu, changes the icon name accordingly to the state
+  /** 
+   * Toggles the side menu, changes the icon name accordingly to the state
+   */
   public toggleMenu(drawer: MatDrawer): void {
     drawer.toggle();
     if (this.iconName === 'menu') {
@@ -67,47 +78,24 @@ export class BoardContainerComponent {
   }
 
   /**
-   * Listens for the @Output Board of the board.component.ts
-   */
-  public receiveBoardData(boardData: BoardData): void {
-    // when board data is emitted, add info about the board to the sidenav
-    this.boardData = boardData;
-  }
-
-  /**
-   * Opens edit board dialog by opening the NewBoardComponent in "edit" mode
-   * When editing is done, receives the edited board and updates the board data
+   * Opens edit board component in a dialog
    */
   public openEditBoardDialog() {
-    const dialogRef = this.dialog.open(BoardEditComponent, {
+    this.dialog.open(BoardEditComponent, {
       data: this.boardData
-    });
-    dialogRef.afterClosed().subscribe((data: BoardData) => {
-      // if board was edited
-      if (data) {
-        // update local fields
-        this.boardData = data;
-      }
     });
   }
 
   /**
-   * Converts a timestamp received from server to the TS Date object
-   */
-  public getBoardCreatedDate(): Date {
-    if (this.boardData) {
-      return new Date(Number(this.boardData.creationDate));
-    }
-  }
-  /**
-   * Requests server to translate board notes to a language specified in "translateFormControl".
-   * Sends updated data to the board-component
+   * Emits new language value to translate service
    */
   public translateNotes(): void {
     if (this.translateFormControl.valid) {
       // get the target language and 
       // send target language to the board component
-      this.targetLanguage = this.translateFormControl.value;
+      const targetLanguage = this.translateFormControl.value;
+      // emit new translation value
+      this.translateService.notesTargetLanguage.next(targetLanguage);
     }
   }
 
@@ -116,5 +104,11 @@ export class BoardContainerComponent {
       return this.boardData.creator.nickname;
     }
     return this.boardData.creator.email;
+  }
+
+  get boardCreatedDate(): Date {
+    if (this.boardData) {
+      return new Date(Number(this.boardData.creationDate));
+    }
   }
 }

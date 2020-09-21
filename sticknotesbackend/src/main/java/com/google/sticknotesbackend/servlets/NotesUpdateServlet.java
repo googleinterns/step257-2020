@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.FastStorage;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,7 +58,8 @@ public class NotesUpdateServlet extends AppAbstractServlet {
     }
     // obtaining type of List<UpdateQueryData> for conversion from JsonArray to
     // List<UpdateQueryData>
-    Type queryListType = new TypeToken<List<UpdateQueryData>>() {}.getType();
+    Type queryListType = new TypeToken<List<UpdateQueryData>>() {
+    }.getType();
     List<UpdateQueryData> notesQueryArray = gson.fromJson(requestBody.get("notes").getAsJsonArray(), queryListType);
 
     // map to store notes from board
@@ -65,7 +67,7 @@ public class NotesUpdateServlet extends AppAbstractServlet {
     Whiteboard board = ofy().load().type(Whiteboard.class).id(boardId).now();
     if (board != null) {
       for (Ref<Note> noteRef : board.notes) {
-        Note note = noteRef.get();
+        Note note = FastStorage.getNote(noteRef.key().getId());
         notesMap.put(note.id, note);
       }
     }
@@ -77,11 +79,12 @@ public class NotesUpdateServlet extends AppAbstractServlet {
      */
     JsonArray removedNotes = new JsonArray();
     for (UpdateQueryData query : notesQueryArray) {
-      if(!notesMap.containsKey(query.id)){
+      if (!notesMap.containsKey(query.id)) {
         removedNotes.add(query.id);
       }
       // remove note from map if it was not updated
-      else if (notesMap.get(query.id).lastUpdated != null && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)) {
+      else if (notesMap.get(query.id).lastUpdated != null
+          && notesMap.get(query.id).lastUpdated.equals(query.lastUpdated)) {
         notesMap.remove(query.id);
       }
     }

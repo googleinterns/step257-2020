@@ -14,8 +14,7 @@
               <h3>{{boardData.title}}</h3>
             </div>
             <h3>{{boardData.rows}} X {{boardData.cols}} board</h3>
-            <!-- amCalendar is a moment js pipe used to make date human readable -->
-            <h3>Created {{getBoardCreatedDate() | amCalendar}} by {{ boardCreator }}</h3>
+            <h3>Created {{boardCreatedDate | amCalendar}} by {{ boardCreator }}</h3>
           </mat-card-content>
         </mat-card>
       </div>
@@ -27,7 +26,7 @@
             <mat-form-field>
               <mat-label>Translate notes to</mat-label>
               <mat-select [formControl]="translateFormControl" (selectionChange)="translateNotes()">
-                <mat-option *ngFor="let language of translateLanguages" [value]="language.value">
+                <mat-option *ngFor="let language of translateService.translateLanguages" [value]="language.value">
                   {{language.viewValue}}
                 </mat-option>
               </mat-select>
@@ -41,6 +40,6 @@
     <button mat-icon-button (click)="toggleMenu(drawer)" class="toggle-button">
       <mat-icon>{{iconName}}</mat-icon>
     </button>
-    <app-board [boardUpdatedData]="boardData" [notesLanguage]="targetLanguage" (boardLoaded)="receiveBoardData($event)"></app-board>
+    <app-board></app-board>
   </div>
 </mat-drawer-container>
