@@ -43,7 +43,7 @@ export class BoardStyles {
   }
 
   public getRCWrapperHeight() {
-    return `height: min(100% - 40px, ${this.NOTE_HEIGHT * this.rows + 70}px);`;
+    return `height: min(100% - 40px, ${(this.NOTE_HEIGHT * this.rows) + 70}px);`;
   }
 
   public getRCWrapperStyle() {
