@@ -31,7 +31,7 @@ export class BoardStyles {
   }
 
   public getBoardWrapperWidth() {
-    return `width: min(100% - 100px, ${this.NOTE_WIDTH * this.cols}px);`;
+    return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.cols}px);`;
   }
 
   public getBoardWrapperHeight() {
