@@ -51,9 +51,9 @@ public class BoardGridLineServlet extends AppAbstractServlet {
     }
     // load board and check that new line doesn't overlap with any other line
     Whiteboard board = FastStorage.getWhiteboardLite(line.boardId);
-    board.gridLines.forEach(lineRef -> {
+    for(int i = 0; i < board.gridLines.size(); i++){
       // get line from reference
-      BoardGridLine l = lineRef.get();
+      BoardGridLine l = board.gridLines.get(i).get();
       // check if line overlaps with some other line
       if (l.overlapsWith(line)) {
         try {
@@ -62,7 +62,7 @@ public class BoardGridLineServlet extends AppAbstractServlet {
           return;
         } catch (IOException ignored) {}
       }
-    });
+    }
     // if no overlapping, create a line and add it to the board
     line.id = ofy().save().entity(line).now().getId();
     board.gridLines.add(Ref.create(line));
