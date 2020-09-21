@@ -79,6 +79,11 @@ export class LiveUpdatesService {
           }
         });
         // update board fields
+        if(board){
+          // if board was updated we have to copy gridLines, _.merge is not enough 
+          // because some of gridLines could have been deleted 
+          this.board.gridLines = board.gridLines;
+        }
         this.board = _.merge(this.board, board);
         // emit updated board
         this.sharedBoard.updateBoard(this.board);

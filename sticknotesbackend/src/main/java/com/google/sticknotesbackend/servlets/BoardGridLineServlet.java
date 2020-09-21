@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.FastStorage;
 import com.google.sticknotesbackend.enums.BoardGridLineType;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
@@ -49,7 +50,7 @@ public class BoardGridLineServlet extends AppAbstractServlet {
       return;
     }
     // load board and check that new line doesn't overlap with any other line
-    Whiteboard board = ofy().load().type(Whiteboard.class).id(line.boardId).now();
+    Whiteboard board = FastStorage.getWhiteboardLite(line.boardId);
     board.gridLines.forEach(lineRef -> {
       // get line from reference
       BoardGridLine l = lineRef.get();
@@ -66,7 +67,7 @@ public class BoardGridLineServlet extends AppAbstractServlet {
     line.id = ofy().save().entity(line).now().getId();
     board.gridLines.add(Ref.create(line));
     // save the board
-    ofy().save().entity(board).now();
+    FastStorage.updateBoard(board);
     // return new line to the client
     response.getWriter().print(gson.toJson(line));
   }
@@ -94,10 +95,10 @@ public class BoardGridLineServlet extends AppAbstractServlet {
       return;
     }
     // load board
-    Whiteboard board = ofy().load().type(Whiteboard.class).id(lineToDelete.boardId).now();
+    Whiteboard board = FastStorage.getWhiteboardLite(lineToDelete.boardId);
     // remove line from board
-    board.gridLines.removeIf(lineRef -> lineRef.get().id.equals(lineToDelete.id));
-    ofy().save().entity(board).now();
+    board.gridLines.removeIf(lineRef -> lineRef.get().id.equals(lineToDelete.id)); 
+    FastStorage.updateBoard(board);
     // remove line itself
     ofy().delete().entity(lineToDelete).now();
     // send no content

@@ -8,7 +8,6 @@ import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.google.sticknotesbackend.models.Note;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.Ref;
 
 import java.util.HashMap;
 import java.util.Map;
