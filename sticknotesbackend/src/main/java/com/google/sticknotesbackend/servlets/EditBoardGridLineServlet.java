@@ -10,6 +10,7 @@ import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
 import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.google.sticknotesbackend.FastStorage;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -74,6 +75,7 @@ public class EditBoardGridLineServlet extends AppAbstractServlet {
     }
     // if no overlapping, save modified line
     ofy().save().entity(editedLine).now();
+    FastStorage.updateBoard(board);
     Gson gson = new Gson();
     response.getWriter().print(gson.toJson(editedLine));
   }

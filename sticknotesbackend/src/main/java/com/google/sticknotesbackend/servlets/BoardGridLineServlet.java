@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sticknotesbackend.AuthChecker;
+import com.google.sticknotesbackend.FastStorage;
 import com.google.sticknotesbackend.enums.BoardGridLineType;
 import com.google.sticknotesbackend.enums.Permission;
 import com.google.sticknotesbackend.exceptions.PayloadValidationException;
@@ -49,22 +50,24 @@ public class BoardGridLineServlet extends AppAbstractServlet {
       return;
     }
     // load board and check that new line doesn't overlap with any other line
-    Whiteboard board = ofy().load().type(Whiteboard.class).id(line.boardId).now();
-    for (int i = 0; i < board.gridLines.size(); ++i) {
+    Whiteboard board = FastStorage.getWhiteboardLite(line.boardId);
+    for(int i = 0; i < board.gridLines.size(); i++){
       // get line from reference
       BoardGridLine l = board.gridLines.get(i).get();
       // check if line overlaps with some other line
       if (l.overlapsWith(line)) {
-        // overlaps, so throw bad request
-        badRequest("new " + line.type + " intersects with already existing", response);
-        return;
+        try {
+          // overlaps, so throw bad request
+          badRequest("new " + line.type + " intersects with already existing", response);
+          return;
+        } catch (IOException ignored) {}
       }
     }
     // if no overlapping, create a line and add it to the board
     line.id = ofy().save().entity(line).now().getId();
     board.gridLines.add(Ref.create(line));
     // save the board
-    ofy().save().entity(board).now();
+    FastStorage.updateBoard(board);
     // return new line to the client
     response.getWriter().print(gson.toJson(line));
   }
@@ -92,10 +95,10 @@ public class BoardGridLineServlet extends AppAbstractServlet {
       return;
     }
     // load board
-    Whiteboard board = ofy().load().type(Whiteboard.class).id(lineToDelete.boardId).now();
+    Whiteboard board = FastStorage.getWhiteboardLite(lineToDelete.boardId);
     // remove line from board
-    board.gridLines.removeIf(lineRef -> lineRef.get().id.equals(lineToDelete.id));
-    ofy().save().entity(board).now();
+    board.gridLines.removeIf(lineRef -> lineRef.get().id.equals(lineToDelete.id)); 
+    FastStorage.updateBoard(board);
     // remove line itself
     ofy().delete().entity(lineToDelete).now();
     // send no content
