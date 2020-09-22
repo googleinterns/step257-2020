@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Vector2 } from './vector';
 import { FormControl } from '@angular/forms';
 

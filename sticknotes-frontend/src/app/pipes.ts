@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Pipe, PipeTransform } from '@angular/core';
 import { Note } from './interfaces';
 import { TranslateService } from './services/translate.service';

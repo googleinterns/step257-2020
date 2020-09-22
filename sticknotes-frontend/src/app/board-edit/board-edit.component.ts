@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Component, OnInit, Inject } from '@angular/core';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { noSpacesValidator } from '../utility/util';

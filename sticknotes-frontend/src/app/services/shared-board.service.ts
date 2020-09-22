@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Injectable } from '@angular/core';
 import { Board, Note, BoardDescription, BoardGridLine } from '../interfaces';
 import { BehaviorSubject, Observable } from 'rxjs';

@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 /**
  * This component is a dialog that is opened when users wants to add
  * new user to the board. It receives data from the user using form and 

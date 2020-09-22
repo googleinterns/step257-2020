@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { TestBed } from '@angular/core/testing';
 
 import { LiveUpdatesService } from './live-updates.service';

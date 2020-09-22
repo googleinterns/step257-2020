@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 /**
  * Service used to manage and retrieve list of board users.
  */

@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 /**
  * This component is a dialog that is opened when users wants to edit
  * role of other user. It receives data from the user using form and 

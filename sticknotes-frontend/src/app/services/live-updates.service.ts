@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Injectable } from '@angular/core';
 import { SharedBoardService } from './shared-board.service';
 import { Board, NoteUpdateRequest, Note } from '../interfaces';

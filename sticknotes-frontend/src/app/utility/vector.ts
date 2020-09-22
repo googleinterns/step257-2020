@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 export class Vector2 {
   public x: number;
   public y: number;

@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LoginPageComponent } from './login-page/login-page.component';

@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NewBoardComponent } from '../new-board/new-board.component';

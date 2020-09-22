@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 /**
  * A main view of the app, container that holds the board
  */

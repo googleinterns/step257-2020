@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { TestBed } from '@angular/core/testing';
 
 import { ActiveUsersApiService } from './active-users-api.service';
