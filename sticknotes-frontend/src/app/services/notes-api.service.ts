@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Injectable } from '@angular/core';
 import { CreateNoteApiData, Note, NoteUpdateRequest, NotesUpdatesResponseData } from '../interfaces';
 import { Observable, of } from 'rxjs';

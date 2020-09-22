@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Vector2 } from '../utility/vector';

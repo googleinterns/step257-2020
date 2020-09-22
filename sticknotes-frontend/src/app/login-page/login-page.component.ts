@@ -1,3 +1,4 @@
+// Copyright 2020 Google LLC
 /**
  * Welcome component and entry point to the application. It displays
  * login button and fetches login url from the server. After successful

@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 /**
  * This service allows to:
  * - get authentication status

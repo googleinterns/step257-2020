@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 /**
  * This component is displayed on the side bar and contains
  * list of board users

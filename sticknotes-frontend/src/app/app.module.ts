@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';

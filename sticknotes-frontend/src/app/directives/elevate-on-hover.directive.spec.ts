@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { ElevateOnHoverDirective } from './elevate-on-hover.directive';
 
 describe('ElevateOnHoverDirective', () => {

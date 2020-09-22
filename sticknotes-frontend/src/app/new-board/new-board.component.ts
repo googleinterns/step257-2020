@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';

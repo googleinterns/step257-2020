@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 /**
  * This directive is responsible for changing elevation of element on mouse hover.
  * Elevation is meant as material design elevation, so it has influence on few 
