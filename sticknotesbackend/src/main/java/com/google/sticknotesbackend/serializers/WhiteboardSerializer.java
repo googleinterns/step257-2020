@@ -46,7 +46,10 @@ public class WhiteboardSerializer implements JsonSerializer<Whiteboard> {
     // create gson array
     JsonArray notesArray = new JsonArray();
     for (Ref<Note> noteRef: src.notes) {
-      notesArray.add(gson.toJsonTree(noteRef.get()));
+      Note note = noteRef.get();
+      if (note != null) {
+        notesArray.add(gson.toJsonTree(note));
+      }
     }
     // add array as "notes" property
     board.add("notes", notesArray);

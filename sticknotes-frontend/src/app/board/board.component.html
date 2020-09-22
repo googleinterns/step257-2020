@@ -1,4 +1,4 @@
-<div class="flex-container" *ngIf="board">
+<div class="flex-container" *ngIf="board && styler">
   <h3>{{board.title}}</h3>
   <div class="rc-wrapper" [style]="styler.getRCWrapperStyle()">
     <div #columnsDiv class="horizontal-scroll" [style]="styler.getBoardWrapperWidth()">
