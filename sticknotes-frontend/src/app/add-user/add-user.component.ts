@@ -2,8 +2,8 @@
 
 /**
  * This component is a dialog that is opened when users wants to add
- * new user to the board. It receives data from the user using form and 
- * than sends that data to the server using boardUsersService. 
+ * new user to the board. It receives data from the user using form and
+ * than sends that data to the server using boardUsersService.
  */
 import { Component, OnInit, Input, Inject } from '@angular/core';
 import { UserRole } from '../enums/user-role.enum';
@@ -35,7 +35,8 @@ export class AddUserComponent implements OnInit {
     ])
   });
 
-  constructor(private boardUsersService: BoardUsersApiService,
+  constructor(
+    private boardUsersService: BoardUsersApiService,
     private dialogRef: MatDialogRef<AddUserComponent>,
     @Inject(MAT_DIALOG_DATA) data,
     private snackBar: MatSnackBar) {
@@ -44,7 +45,7 @@ export class AddUserComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  
+
   /**
    * Uses boardUsersService to send POST request to api/board/users/:id endpoint which adds user to the board.
    * Server response contains successfully added user. When the request was successful newly created user
@@ -57,13 +58,13 @@ export class AddUserComponent implements OnInit {
         .addBoardUser(this.boardId, this.addUserForm.controls.userEmail.value, this.addUserForm.controls.role.value)
         .subscribe(user => {
           this.dialogRef.close(user);
-          this.snackBar.open("User added", "Ok", {
+          this.snackBar.open('User added', 'Ok', {
             duration: 2000,
           });
         }, err => {
           // something went wrong
-          this.snackBar.open("Error while adding user."
-            , "Ok", {
+          this.snackBar.open('Error while adding user.'
+            , 'Ok', {
             duration: 2000,
           });
           this.dialogRef.close();

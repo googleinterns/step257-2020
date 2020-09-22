@@ -25,13 +25,13 @@ export class LoginPageComponent implements OnInit {
     }, err => {
       // probably user is already logged in, redirect to boards/
       this.router.navigateByUrl('/boards');
-    })
+    });
   }
 
   ngOnInit(): void {
   }
 
-  //navigates to the loginUrl
+  // navigates to the loginUrl
   goToUrl(): void {
     window.location.href = this.loginUrl;
   }

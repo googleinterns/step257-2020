@@ -18,13 +18,16 @@ export class LiveUpdatesService {
   private intervalFunction: any = null;
   // interval between updates requests in milliseconds
   private readonly UPDATE_INTERVAL = 2000;
-  constructor(private sharedBoard: SharedBoardService, private notesApiService: NotesApiService, private boardApiService: BoardApiService) { }
+  constructor(
+    private sharedBoard: SharedBoardService,
+    private notesApiService: NotesApiService,
+    private boardApiService: BoardApiService) { }
 
   /**
    * Sets a board for which updates must be fetched.
    * Starts interval function.
    */
-  public registerBoard(board: Board) {
+  public registerBoard(board: Board): void {
     this.board = board;
     // fetch updates data each 2 seconds from the server
     this.intervalFunction = setInterval(() => {
@@ -35,7 +38,7 @@ export class LiveUpdatesService {
   /**
    * Stops requesting updates
    */
-  public unregisterBoard() {
+  public unregisterBoard(): void {
     clearInterval(this.intervalFunction);
     this.board = null;
   }
@@ -43,7 +46,7 @@ export class LiveUpdatesService {
   /**
    * Fetches an updated content of notes and board from the server
    */
-  private fetchUpdate() {
+  private fetchUpdate(): void {
     if (this.board) {
       // generate notes update request
       const notesUpdatesRequestData: NoteUpdateRequest[] = [];
@@ -81,9 +84,9 @@ export class LiveUpdatesService {
           }
         });
         // update board fields
-        if(board){
-          // if board was updated we have to copy gridLines, _.merge is not enough 
-          // because some of gridLines could have been deleted 
+        if (board) {
+          // if board was updated we have to copy gridLines, _.merge is not enough
+          // because some of gridLines could have been deleted
           this.board.gridLines = board.gridLines;
         }
         this.board = _.merge(this.board, board);
@@ -100,7 +103,7 @@ export class LiveUpdatesService {
     if (note.lastUpdated) {
       return note.lastUpdated;
     }
-    return "0";
+    return '0';
   }
 
   /**
@@ -110,13 +113,13 @@ export class LiveUpdatesService {
     if (board.lastUpdated) {
       return board.lastUpdated;
     }
-    return "0";
+    return '0';
   }
 
   /**
    * Returns true if service has a board for which it fetches updates, and false otherwise
    */
-  public hasRegisteredBoard() {
+  public hasRegisteredBoard(): boolean {
     return this.board !== null;
   }
 }
