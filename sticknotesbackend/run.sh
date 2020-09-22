@@ -1,3 +1,5 @@
+# Copyright 2020 Google LLC
+
 #!/bin/bash
 
 # this script is for local run only

@@ -1,4 +1,6 @@
 /**
+ * Copyright 2020 Google LLC
+ * 
  * Servlet for handling requests for active users list
  */
 package com.google.sticknotesbackend.servlets;

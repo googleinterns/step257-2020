@@ -1,4 +1,6 @@
 /**
+ * Copyright 2020 Google LLC
+ * 
  * Notesboard
  * Board API servlet
  */
