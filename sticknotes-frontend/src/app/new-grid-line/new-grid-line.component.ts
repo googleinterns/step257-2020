@@ -32,9 +32,10 @@ export class NewGridLineComponent implements OnInit {
   public submitDisabled = false;
   private mode: State; // edit/create
   private editedLine: BoardGridLine = null;
-  public submitButtonText = "Add";
+  public submitButtonText = 'Add';
 
-  constructor(private dialogRef: MatDialogRef<NewGridLineComponent>,
+  constructor(
+    private dialogRef: MatDialogRef<NewGridLineComponent>,
     private sharedBoard: SharedBoardService,
     private boardApiService: BoardApiService,
     private snackbar: MatSnackBar,
@@ -49,7 +50,7 @@ export class NewGridLineComponent implements OnInit {
       this.newLineFormGroup.controls.title.setValue(this.editedLine.title);
       this.newLineFormGroup.controls.width.setValue(this.editedLine.rangeEnd - this.editedLine.rangeStart);
       // change submit button text
-      this.submitButtonText = "Edit";
+      this.submitButtonText = 'Edit';
     }
     this.mode = callersData.mode;
     // TODO set max width validator based on the width/height of the board
@@ -79,7 +80,7 @@ export class NewGridLineComponent implements OnInit {
           this.dialogRef.close();
         }, err => {
           // error occurred, open snackbar to inform the user
-          this.snackbar.open("Error occurred", "Ok");
+          this.snackbar.open('Error occurred', 'Ok');
           // close dialog anyway
           this.dialogRef.close();
         });
@@ -92,7 +93,7 @@ export class NewGridLineComponent implements OnInit {
           this.dialogRef.close();
         }, err => {
           // error occurred, open snackbar to inform the user
-          this.snackbar.open("Error occurred", "Ok");
+          this.snackbar.open('Error occurred', 'Ok');
           // close dialog anyway
           this.dialogRef.close();
         });

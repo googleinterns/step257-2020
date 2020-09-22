@@ -21,11 +21,14 @@ export class NewBoardComponent {
     ])
   });
 
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
     private dialogRef: MatDialogRef<NewBoardComponent>,
     private boardApiService: BoardApiService) { }
 
-  // creates a new board with the given name
+  /**
+   * creates a new board with the given name
+   */
   public createNewBoard(): void {
     if (this.newBoardForm.valid) {
       // to create a board we only need a title

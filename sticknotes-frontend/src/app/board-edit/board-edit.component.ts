@@ -33,7 +33,7 @@ export class BoardEditComponent implements OnInit {
     ])
   });
   constructor(
-    @Inject(MAT_DIALOG_DATA) private boardData: BoardDescription, 
+    @Inject(MAT_DIALOG_DATA) private boardData: BoardDescription,
     private dialogRef: MatDialogRef<BoardEditComponent>,
     private boardApiService: BoardApiService,
     private snackBar: MatSnackBar,
@@ -50,7 +50,7 @@ export class BoardEditComponent implements OnInit {
   /**
    * Sends the updated board data to the server
    */
-  public updateBoard() {
+  public updateBoard(): void {
     if (this.editBoardForm.valid) {
       this.sendingData = true;
       const updatePayload: BoardDescription = {
@@ -61,19 +61,19 @@ export class BoardEditComponent implements OnInit {
         backgroundImg: this.boardData.backgroundImg,
         creationDate: this.boardData.creationDate,
         creator: this.boardData.creator
-      }
+      };
       // send data to the server
       this.boardApiService.updateBoard(updatePayload).subscribe(updatedBoard => {
         // if update successfull, send updated data to the shared board and close dialog
         this.sharedBoard.updateBoard(updatedBoard);
         this.dialogRef.close();
-        this.snackBar.open("Successfully updated!", "Ok", {
+        this.snackBar.open('Successfully updated!', 'Ok', {
           duration: 2000,
         });
       }, err => {
         // if error occurred, display Material Snackbar with error message for 2 seconds
         this.dialogRef.close();
-        this.snackBar.open("Error occurred while updating the board", "Ok", {
+        this.snackBar.open('Error occurred while updating the board', 'Ok', {
           duration: 2000,
         });
       });

@@ -19,7 +19,7 @@ export class SharedBoardService {
   /**
    * Sets boardSubj value to null
    */
-  public clear() {
+  public clear(): void {
     this.boardSubj.next(null);
   }
 
@@ -27,14 +27,14 @@ export class SharedBoardService {
     return this.boardSubj.asObservable();
   }
 
-  public loadBoard(boardId: string) {
+  public loadBoard(boardId: string): void {
     this.boardApiService.getBoard(boardId).subscribe(board => this.boardSubj.next(board));
   }
 
   /**
    * Adds new note to the board. This change is emitted to all subscribers
    */
-  public newNote(note: Note) {
+  public newNote(note: Note): void {
     this.boardSubj.value.notes.push(note);
     this.boardSubj.next(this.boardSubj.value);
   }
@@ -42,8 +42,8 @@ export class SharedBoardService {
   /**
    * Updates local copy of given note. This change is emitted to all subscribers
    */
-  public updateNote(note: Note) {
-    this.boardSubj.value.notes.map(n => { 
+  public updateNote(note: Note): void {
+    this.boardSubj.value.notes.map(n => {
       if (n.id === note.id) {
         n = _.merge(n, note);
       }
@@ -54,7 +54,7 @@ export class SharedBoardService {
   /**
    * Deletes given note from shared board. This change is emitted to all subscribers
    */
-  public deleteNote(note: Note) {
+  public deleteNote(note: Note): void {
     const indexOfNote = this.boardSubj.value.notes.indexOf(note);
     if (indexOfNote >= 0 && indexOfNote < this.boardSubj.value.notes.length) {
       this.boardSubj.value.notes.splice(indexOfNote, 1);
@@ -65,8 +65,8 @@ export class SharedBoardService {
   /**
    * Updates board subject
    */
-  public updateBoard(board: BoardDescription | Board) {
-    let oldBoard = this.boardSubj.value;
+  public updateBoard(board: BoardDescription | Board): void {
+    const oldBoard = this.boardSubj.value;
     const newBoard = _.merge(oldBoard, board);
     this.boardSubj.next(newBoard);
   }
@@ -75,7 +75,7 @@ export class SharedBoardService {
    * Adds the BoardGridLine to a list of board lines.
    * This change is emitted to all subscribers
    */
-  public addGridLine(line: BoardGridLine) {
+  public addGridLine(line: BoardGridLine): void {
     this.boardSubj.value.gridLines.push(line);
     this.boardSubj.next(this.boardSubj.value);
   }
@@ -84,7 +84,7 @@ export class SharedBoardService {
    * Deletes the BoardGridLine from the list of board linest.
    * This change is emitted to all subscribers.
    */
-  public deleteGridLine(line: BoardGridLine) {
+  public deleteGridLine(line: BoardGridLine): void {
     const indexOfLine = this.boardSubj.value.gridLines.indexOf(line);
     if (indexOfLine >= 0 && indexOfLine < this.boardSubj.value.gridLines.length) {
       this.boardSubj.value.gridLines.splice(indexOfLine, 1);
@@ -96,8 +96,8 @@ export class SharedBoardService {
    * Updates the BoardGridLine in the list of lines of the board.
    * This change is emitted to all subscribers
    */
-  public updateGridLine(line: BoardGridLine) {
-    this.boardSubj.value.gridLines.map(l => { 
+  public updateGridLine(line: BoardGridLine): void {
+    this.boardSubj.value.gridLines.map(l => {
       if (l.id === line.id) {
         l = _.merge(l, line);
       }
