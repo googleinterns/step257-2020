@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { BoardGridLine, Note } from '../interfaces';
 
 /**
@@ -18,50 +20,50 @@ export class BoardStyles {
     this.rows = rows;
   }
 
-  public getBoardWidth() {
+  public getBoardWidth(): string {
     return `width:${this.NOTE_WIDTH * this.cols}px;`;
   }
 
-  public getBoardHeight() {
+  public getBoardHeight(): string {
     return `height:${this.NOTE_HEIGHT * this.rows}px;`;
   }
 
-  public getBoardStyle() {
+  public getBoardStyle(): string {
     return `${this.getBoardWidth()} ${this.getBoardHeight()}`;
   }
 
-  public getBoardWrapperWidth() {
+  public getBoardWrapperWidth(): string {
     return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.cols}px);`;
   }
 
-  public getBoardWrapperHeight() {
+  public getBoardWrapperHeight(): string {
     return `height: min(100% - 70px, ${this.NOTE_HEIGHT * this.rows}px);`;
   }
 
-  public getRCWrapperWidth() {
+  public getRCWrapperWidth(): string {
     return `width: min(100%, ${(this.NOTE_WIDTH * this.cols) + 80}px);`;
   }
 
-  public getRCWrapperHeight() {
+  public getRCWrapperHeight(): string {
     return `height: min(100% - 40px, ${(this.NOTE_HEIGHT * this.rows) + 70}px);`;
   }
 
-  public getRCWrapperStyle() {
-    return `${this.getRCWrapperWidth()} ${this.getRCWrapperHeight()}`
+  public getRCWrapperStyle(): string {
+    return `${this.getRCWrapperWidth()} ${this.getRCWrapperHeight()}`;
   }
 
-  public getColumnDivStyle(el: BoardGridLine) {
+  public getColumnDivStyle(el: BoardGridLine): string {
     // the width of the columns header is the width of columns - left and right margin, which is equal to margin between adjacent notes
     return `left: ${el.rangeStart * this.NOTE_WIDTH}px; width: ${(Math.abs(el.rangeEnd - el.rangeStart) * this.NOTE_WIDTH) - this.MARGIN_BETWEEN_ADJ_NOTES - this.COLUMN_NAME_PADDING}px;`;
   }
 
-  public getBoardWrapperStyle() {
+  public getBoardWrapperStyle(): string {
     // if board is wider than 100% of the screen or higher than 100%, set fixed width and height
     return `${this.getBoardWrapperWidth()} ${this.getBoardWrapperHeight()}`;
   }
 
-  public getPlusButtonStyle(pos: number) {
-    return `left: ${pos * this.NOTE_WIDTH}px;`
+  public getPlusButtonStyle(pos: number): string {
+    return `left: ${pos * this.NOTE_WIDTH}px;`;
   }
 
   /**
@@ -71,7 +73,7 @@ export class BoardStyles {
     return `left:${note.x * this.NOTE_WIDTH}px;top:${note.y * this.NOTE_HEIGHT}px`;
   }
 
-  /** 
+  /**
    * Generates a correct style to position the slot
    */
   public getSlotStyle(x: number, y: number): string {

@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Injectable } from '@angular/core';
 import { CreateNoteApiData, Note, NoteUpdateRequest, NotesUpdatesResponseData } from '../interfaces';
 import { Observable, of } from 'rxjs';
@@ -22,7 +24,7 @@ export class NotesApiService {
       content: note.content,
       image: note.image,
       id: note.id
-    }
+    };
     return this.http.post<Note>('api/edit-note/', updateNoteData);
   }
 
@@ -36,7 +38,7 @@ export class NotesApiService {
   public getUpdatedNotes(data: NoteUpdateRequest[], boardId: string): Observable<NotesUpdatesResponseData> {
     const payload = {
       notes: data,
-      boardId: boardId
+      boardId: {boardId}
     };
     return this.http.post<NotesUpdatesResponseData>('api/notes-updates/', payload);
   }

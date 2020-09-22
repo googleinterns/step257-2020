@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 /**
  * A main view of the app, container that holds the board
  */
@@ -22,12 +24,13 @@ import { SharedBoardService } from '../services/shared-board.service';
 export class BoardContainerComponent {
   public boardData = null;
   public iconName = 'menu';
-  public translateFormControl = new FormControl("original", [Validators.required]);
+  public translateFormControl = new FormControl('original', [Validators.required]);
 
   // flag for storing user's permission to edit the board
   public canEditBoard = false;
 
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
     private dialog: MatDialog,
     private boardUsersApiService: BoardUsersApiService,
     private sharedBoard: SharedBoardService,
@@ -58,7 +61,7 @@ export class BoardContainerComponent {
     });
   }
 
-  /** 
+  /**
    * Toggles the side menu, changes the icon name accordingly to the state
    */
   public toggleMenu(drawer: MatDrawer): void {
@@ -77,7 +80,7 @@ export class BoardContainerComponent {
   /**
    * Opens edit board component in a dialog
    */
-  public openEditBoardDialog() {
+  public openEditBoardDialog(): void {
     this.dialog.open(BoardEditComponent, {
       data: this.boardData
     });
@@ -88,7 +91,7 @@ export class BoardContainerComponent {
    */
   public translateNotes(): void {
     if (this.translateFormControl.valid) {
-      // get the target language and 
+      // get the target language and
       // send target language to the board component
       const targetLanguage = this.translateFormControl.value;
       // emit new translation value
@@ -96,8 +99,8 @@ export class BoardContainerComponent {
     }
   }
 
-  get boardCreator() {
-    if (this.boardData.creator.nickname != "---") {
+  get boardCreator(): string {
+    if (this.boardData.creator.nickname !== '---') {
       return this.boardData.creator.nickname;
     }
     return this.boardData.creator.email;

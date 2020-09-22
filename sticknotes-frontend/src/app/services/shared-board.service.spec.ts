@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { TestBed } from '@angular/core/testing';
 
 import { SharedBoardService } from './shared-board.service';

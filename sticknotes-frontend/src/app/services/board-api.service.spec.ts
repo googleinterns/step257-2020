@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { TestBed } from '@angular/core/testing';
 
 import { BoardApiService } from './board-api.service';

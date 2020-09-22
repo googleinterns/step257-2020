@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Vector2 } from '../utility/vector';
@@ -38,7 +40,8 @@ export class NewNoteComponent implements OnInit {
     file: new FormControl({ value: '', disabled: this.editableNote && this.editableNote.image !== null }, [])
   });
 
-  constructor(@Inject(MAT_DIALOG_DATA) private data: NotePopupData,
+  constructor(
+    @Inject(MAT_DIALOG_DATA) private data: NotePopupData,
     private notesApiService: NotesApiService,
     private dialogRef: MatDialogRef<NewNoteComponent>,
     private snackBar: MatSnackBar,
@@ -130,7 +133,7 @@ export class NewNoteComponent implements OnInit {
   /**
    * Sends create note payload
    */
-  private sendNoteCreateData(payload: CreateNoteApiData) {
+  private sendNoteCreateData(payload: CreateNoteApiData): void {
     // service returns a new note object
     this.notesApiService.createNote(payload).subscribe(note => {
       // successfully created, close the dialog and send new note to the shared board service
@@ -138,7 +141,7 @@ export class NewNoteComponent implements OnInit {
       this.dialogRef.close();
     }, err => {
       // something went wrong
-      this.snackBar.open("Server error occurred while creating a note", "Ok", {
+      this.snackBar.open('Server error occurred while creating a note', 'Ok', {
         duration: 2000,
       });
       this.dialogRef.close();
@@ -148,14 +151,14 @@ export class NewNoteComponent implements OnInit {
   /**
    * Sends updated note to the server to update note's fields
    */
-  private sendNoteUpdateData(payload: Note) {
+  private sendNoteUpdateData(payload: Note): void {
     this.notesApiService.updateNote(payload).subscribe(note => {
       // successfully updated, close the dialog and send new note to the shared board service
       this.sharedBoard.updateNote(note);
       this.dialogRef.close();
     }, err => {
       // something went wrong
-      this.snackBar.open("Server error occurred while updating a note", "Ok", {
+      this.snackBar.open('Server error occurred while updating a note', 'Ok', {
         duration: 2000,
       });
       this.dialogRef.close();
@@ -206,7 +209,7 @@ export class NewNoteComponent implements OnInit {
    * Removes image from editableNote.
    * Maybe need to send a request to cloud storage to delete a file indeed
    */
-  public removeImage() {
+  public removeImage(): void {
     this.editableNote.image = null;
   }
 }

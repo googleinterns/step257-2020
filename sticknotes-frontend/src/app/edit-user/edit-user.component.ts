@@ -1,7 +1,9 @@
+// Copyright 2020 Google LLC
+
 /**
  * This component is a dialog that is opened when users wants to edit
- * role of other user. It receives data from the user using form and 
- * than sends that data to the server using boardUsersService for that. 
+ * role of other user. It receives data from the user using form and
+ * than sends that data to the server using boardUsersService for that.
  */
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -27,7 +29,8 @@ export class EditUserComponent implements OnInit {
 
   public editUserForm: FormGroup;
 
-  constructor(private boardUsersService: BoardUsersApiService,
+  constructor(
+    private boardUsersService: BoardUsersApiService,
     private dialogRef: MatDialogRef<EditUserComponent>,
     @Inject(MAT_DIALOG_DATA) data,
     private snackBar: MatSnackBar) {
@@ -54,14 +57,14 @@ export class EditUserComponent implements OnInit {
       this.boardUsersService
         .editUserRole(this.boardId, this.roleId, this.editUserForm.controls.role.value)
         .subscribe(() => {
-          this.snackBar.open("User role edited", "Ok", {
+          this.snackBar.open('User role edited', 'Ok', {
             duration: 2000,
           });
           this.dialogRef.close(this.editUserForm.controls.role.value);
         }, err => {
           // something went wrong
-          this.snackBar.open("Error while editing user role."
-            , "Ok", {
+          this.snackBar.open('Error while editing user role.'
+            , 'Ok', {
             duration: 2000,
           });
           this.dialogRef.close(this.previousUserRole);
