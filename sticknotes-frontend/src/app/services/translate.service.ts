@@ -92,7 +92,7 @@ export class TranslateService {
   public translateArray(arrOfStrings: string[], targetLanguage): Observable<{ result: string[] }> {
     const payload = {
       texts: arrOfStrings,
-      targetLanguage: targetLanguage
+      targetLanguage: {targetLanguage}
     };
     return this.http.post<{ result: string[] }>('api/translate/', payload);
   }

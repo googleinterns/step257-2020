@@ -1,7 +1,6 @@
 package com.google.sticknotesbackend;
 
 import com.google.cloud.datastore.DatastoreOptions;
-import com.google.sticknotesbackend.models.SettingsEntry;
 import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
@@ -32,7 +31,6 @@ public class NotesboardContextListener implements ServletContextListener {
     ObjectifyService.register(Note.class);
     ObjectifyService.register(UserBoardRole.class);
     ObjectifyService.register(BoardGridLine.class);
-    ObjectifyService.register(SettingsEntry.class);
   }
 
   @Override
