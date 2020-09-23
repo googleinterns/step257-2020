@@ -82,7 +82,7 @@ export class BoardsListComponent implements OnInit {
   /**
    * Logs user out of the app
    */
-  public logout(): boid {
+  public logout(): void {
     if (this.logoutUrl) {
       window.location.href = this.logoutUrl;
     }

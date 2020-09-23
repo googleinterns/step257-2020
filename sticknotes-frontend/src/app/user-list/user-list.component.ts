@@ -173,7 +173,9 @@ export class UserListComponent implements OnInit, OnDestroy {
    * Sends remove request using boardUsersService, if operation was successful
    * also removes role from local list of user roles.
    */
-  removeUser(userBoardRole: UserBoardRole): void {
+  removeUser(userBoardRole: UserBoardRole, event: Event): void {
+    // prevent from opening edit dialog
+    event.stopPropagation();
     this.boardUsersService.removeUser(this.boardId, userBoardRole.id).subscribe(() => {
       this.snackBar.open('User removed successfully.', 'Ok', {
         duration: 2000,

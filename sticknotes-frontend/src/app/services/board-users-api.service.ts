@@ -44,6 +44,6 @@ export class BoardUsersApiService {
 
   // sends request to edit role of user on the board
   public editUserRole(boardId: string, userRoleKey: string, newRole: string): Observable<void> {
-    return this.http.post<void>('api/edit-role/', {boardId: {boardId}, roleId: userRoleKey, newRole: {newRole}});
+    return this.http.post<void>('api/edit-role/', {boardId: boardId, roleId: userRoleKey, newRole: newRole});
   }
 }
