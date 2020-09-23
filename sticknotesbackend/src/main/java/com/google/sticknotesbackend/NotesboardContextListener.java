@@ -1,6 +1,7 @@
 package com.google.sticknotesbackend;
 
 import com.google.cloud.datastore.DatastoreOptions;
+import com.google.sticknotesbackend.enums.EnvironmentVariable;
 import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
@@ -20,7 +21,7 @@ public class NotesboardContextListener implements ServletContextListener {
   public void contextInitialized(ServletContextEvent sce) {
     // for local development we need another config of objectify, to run locally
     // there must be variable RUNMODE=local set
-    if (System.getenv("RUNMODE") != null && System.getenv("RUNMODE").equals("local")) {
+    if (System.getenv(EnvironmentVariable.RUNMODE.name) != null && System.getenv(EnvironmentVariable.RUNMODE.name).equals("local")) {
       ObjectifyService.init(new ObjectifyFactory(
           DatastoreOptions.newBuilder().setHost("http://localhost:8484").setProjectId("dummy").build().getService()));
     } else {

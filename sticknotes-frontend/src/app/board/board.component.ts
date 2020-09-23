@@ -267,7 +267,7 @@ export class BoardComponent implements OnInit, OnDestroy {
    */
   public openNewColumnDialog(rangeStart: number): void {
     this.dialog.open(NewGridLineComponent, {
-      data: { boardId: this.board.id, rangeStart: {rangeStart}, type: BoardGridLineType.COLUMN, mode: State.CREATE}
+      data: { boardId: this.board.id, rangeStart: rangeStart, type: BoardGridLineType.COLUMN, mode: State.CREATE}
     });
   }
 

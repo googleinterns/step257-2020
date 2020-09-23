@@ -13,7 +13,7 @@
             {{ userWithRole.role }} <span *ngIf="this.activeUsersIdSet.has(userWithRole.id)" class="mat-small" style="color:green">ACTIVE</span> 
           </p>
         </div>
-        <button mat-icon-button *ngIf="canDelete(userWithRole)" color="primary" (click)="removeUser(userWithRole)"
+        <button mat-icon-button *ngIf="canDelete(userWithRole)" color="primary" (click)="removeUser(userWithRole, $event)"
           aria-label="Open add user dialog">
           <mat-icon>delete</mat-icon>
         </button>

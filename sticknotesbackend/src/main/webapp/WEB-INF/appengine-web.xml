@@ -7,4 +7,8 @@
     <!-- prevent unwanted caching when accessing via the web preview server -->
     <include path="/**" expiration="0s" />
   </static-files>
+  <env-variables>
+    <env-var name="PROJECT_ID" value="notesboard"/>
+    <env-var name="GCS_BUCKET_NAME" value="notesboard-file-uploads"/>
+  </env-variables>
 </appengine-web-app>
