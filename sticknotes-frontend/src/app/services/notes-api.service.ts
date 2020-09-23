@@ -38,7 +38,7 @@ export class NotesApiService {
   public getUpdatedNotes(data: NoteUpdateRequest[], boardId: string): Observable<NotesUpdatesResponseData> {
     const payload = {
       notes: data,
-      boardId: {boardId}
+      boardId: boardId
     };
     return this.http.post<NotesUpdatesResponseData>('api/notes-updates/', payload);
   }
