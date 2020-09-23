@@ -70,6 +70,9 @@ export class BoardContainerComponent {
     }
   }
 
+  /**
+   * Navigates user to the main menu
+   */
   public backToBoards(): void {
     this.router.navigateByUrl('/boards');
   }

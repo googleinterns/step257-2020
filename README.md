@@ -1,5 +1,7 @@
 STEP Capstone project "Notesboard" by apodob@ and paulkovalov@
 
+Our project is an attempt to improve WFH experience for googlers who got used to notesboards they have in offices. Our app is a virtual notesboard where you can leave notes and invite other people to collaborate.
+
 To deploy the app, run `./deploy.sh`
 
 To run frontend locally, execute
