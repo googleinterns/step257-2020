@@ -53,7 +53,7 @@ public class BoardGridLineServlet extends AppAbstractServlet {
       return;
     }
     // load board and check that new line doesn't overlap with any other line
-    Whiteboard board = FastStorage.getWhiteboardLite(line.boardId);
+    Whiteboard board = ofy().load().type(Whiteboard.class).id(line.boardId).now();
     for(int i = 0; i < board.gridLines.size(); i++){
       // get line from reference
       BoardGridLine l = board.gridLines.get(i).get();
@@ -98,7 +98,7 @@ public class BoardGridLineServlet extends AppAbstractServlet {
       return;
     }
     // load board
-    Whiteboard board = FastStorage.getWhiteboardLite(lineToDelete.boardId);
+    Whiteboard board = ofy().load().type(Whiteboard.class).id(lineToDelete.id).now();
     // remove line from board
     board.gridLines.removeIf(lineRef -> lineRef.get().id.equals(lineToDelete.id)); 
     FastStorage.updateBoard(board);
