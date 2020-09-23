@@ -8,6 +8,9 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.gson.JsonObject;
+import com.google.sticknotesbackend.AppConfig;
+import com.google.sticknotesbackend.enums.SettingsEntryKey;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -26,11 +29,15 @@ import org.apache.commons.io.IOUtils;
  */
 @WebServlet("api/file-upload/")
 @MultipartConfig
-public class ImageUploadServlet extends HttpServlet {
+public class ImageUploadServlet extends AppAbstractServlet {
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String projectId = "notesboard";
-    String bucketName = "notesboard-file-uploads";
+    String projectId = AppConfig.getValue(SettingsEntryKey.PROJECT_ID);
+    String bucketName = AppConfig.getValue(SettingsEntryKey.GCS_BUCKET_NAME);
+    if (projectId == null || bucketName == null) {
+      badRequest("PROJECT_ID and GCS_BUCKET_NAME variables must be set", response);
+      return;
+    }
     // get the uploaded file
     Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
     String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString(); // MSIE fix.
@@ -45,7 +52,7 @@ public class ImageUploadServlet extends HttpServlet {
     BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
     // upload file
     storage.create(blobInfo, bytes);
-    // generate a link to the file
+    // generate a link to the file, maybe it is worth to move this to AppConfig
     String linkToFile = "https://storage.cloud.google.com/" + bucketName + "/" + fileName;
     JsonObject responseJson = new JsonObject();
     responseJson.addProperty("fileUrl", linkToFile);

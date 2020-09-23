@@ -15,8 +15,10 @@ import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.sticknotesbackend.enums.BoardGridLineType;
 import com.google.sticknotesbackend.enums.Role;
+import com.google.sticknotesbackend.enums.SettingsEntryKey;
 import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.Note;
+import com.google.sticknotesbackend.models.SettingsEntry;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
@@ -75,6 +77,7 @@ public abstract class NotesboardTestBase {
     ObjectifyService.register(User.class);
     ObjectifyService.register(UserBoardRole.class);
     ObjectifyService.register(BoardGridLine.class);
+    ObjectifyService.register(SettingsEntry.class);
   }
 
   /**
@@ -192,6 +195,13 @@ public abstract class NotesboardTestBase {
     return line;
   }
 
+  protected SettingsEntry createSettingsEntry(SettingsEntryKey key, String value) {
+    SettingsEntry entry = new SettingsEntry();
+    entry.key = key;
+    entry.value = value;
+    entry.id = ofy().save().entity(entry).now().getId();
+    return entry;
+  }
   /**
    * Logs in given user for a test User object passed here must have googleAccId
    * property set
