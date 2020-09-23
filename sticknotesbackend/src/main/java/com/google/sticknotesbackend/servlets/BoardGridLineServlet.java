@@ -100,7 +100,12 @@ public class BoardGridLineServlet extends AppAbstractServlet {
     // load board
     Whiteboard board = ofy().load().type(Whiteboard.class).id(lineToDelete.id).now();
     // remove line from board
-    board.gridLines.removeIf(lineRef -> lineRef.get().id.equals(lineToDelete.id)); 
+    board.gridLines.removeIf(lineRef -> {
+      if (lineRef.get() != null) {
+        return lineRef.get().id.equals(lineToDelete.id);
+      }
+      return false;
+    });
     FastStorage.updateBoard(board);
     // remove line itself
     ofy().delete().entity(lineToDelete).now();
