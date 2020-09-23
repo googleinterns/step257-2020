@@ -1,6 +1,3 @@
-/**
- * Copyright 2020 Google LLC
- */
 package com.google.sticknotesbackend.servlets;
 
 import static com.google.common.truth.Truth.assertThat;

@@ -1,6 +1,4 @@
 /**
- * Copyright 2020 Google LLC
- * 
  * Class in a super class for memcache management classes
  */
 package com.google.sticknotesbackend;

@@ -1,4 +1,3 @@
-# Copyright 2020 Google LLC
 #!/bin/bash
 
 # build angular

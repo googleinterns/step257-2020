@@ -1,6 +1,3 @@
-/*
-* Copyright 2020 Google LLC
-*/
 package com.google.sticknotesbackend.serializers;
 
 import com.google.gson.Gson;

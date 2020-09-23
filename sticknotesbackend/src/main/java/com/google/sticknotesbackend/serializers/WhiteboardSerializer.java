@@ -1,7 +1,5 @@
 /**
-  * Copyright 2020 Google LLC
-  *
-  * Custom serializer for Whiteboard object
+ * Custom serializer for Whiteboard object
  */
 package com.google.sticknotesbackend.serializers;
 

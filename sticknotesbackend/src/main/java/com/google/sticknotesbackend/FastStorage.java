@@ -1,6 +1,4 @@
 /**
- * Copyright 2020 Google LLC
- * 
  * This class manages UserBoardRole, Notes and Board objects in memcache.
  */
 package com.google.sticknotesbackend;

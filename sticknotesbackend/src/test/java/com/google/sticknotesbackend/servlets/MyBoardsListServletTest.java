@@ -1,6 +1,3 @@
-/**
- * Copyright 2020 Google LLC
- */
 package com.google.sticknotesbackend.servlets;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -12,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.sticknotesbackend.enums.Role;
 import com.google.sticknotesbackend.models.User;
+import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import java.io.IOException;
 import java.io.PrintWriter;
