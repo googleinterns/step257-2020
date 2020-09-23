@@ -1,4 +1,8 @@
+/*
+* Copyright 2020 Google LLC
+*/
 package com.google.sticknotesbackend.serializers;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;

@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Copyright 2020 Google LLC
+ * 
  * Abstract servlet that provides some features used by all servlets
  */
 public abstract class AppAbstractServlet extends HttpServlet {
