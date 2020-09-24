@@ -98,7 +98,7 @@ public class BoardGridLineServlet extends AppAbstractServlet {
       return;
     }
     // load board
-    Whiteboard board = ofy().load().type(Whiteboard.class).id(lineToDelete.id).now();
+    Whiteboard board = ofy().load().type(Whiteboard.class).id(lineToDelete.boardId).now();
     // remove line from board
     board.gridLines.removeIf(lineRef -> {
       if (lineRef.get() != null) {
