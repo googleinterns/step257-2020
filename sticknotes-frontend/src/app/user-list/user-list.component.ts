@@ -85,14 +85,32 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 
+   * @param activeIdSet 
+   * with a given activeIdSet returns comparator function that:
+   * decides a < b if a is owner or is active and b is not active
+   * decides b > a if b is owner or is active and a is not active
+   * decides a == b in any other case
+   */
+  private compUsers(activeIdSet){
+    return function(a, b){
+      if(a.role === UserRole.OWNER || (activeIdSet.has(+a.id) && !activeIdSet.has(Number(b.id)))){
+        return -1;
+      }
+      else if(b.role === UserRole.OWNER || (activeIdSet.has(+b.id) && !activeIdSet.has(Number(a.id)))){
+        return 1;
+      }
+      return 0;
+    }
+  }
+  /**
    *
    * @param boardId utilizes activeUsersService to fetch list of active users
    */
   private fetchActiveUsers(boardId: string): void {
     this.activeUsersService.getActiveUsers(boardId).subscribe(activeUsers => {
       this.activeUsersIdSet = new Set(activeUsers.activeUsers);
-      this.activeUsers = this.usersWithRole.filter(user => this.activeUsersIdSet.has(+user.id));
-      this.inactiveUsers = this.usersWithRole.filter(user => !this.activeUsersIdSet.has(+user.id))
+      this.usersWithRole.sort(this.compUsers(this.activeUsersIdSet));
     });
   }
 
