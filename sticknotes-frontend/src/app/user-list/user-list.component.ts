@@ -24,8 +24,6 @@ import { ActiveUsersApiService } from '../services/active-users-api.service';
 })
 export class UserListComponent implements OnInit, OnDestroy {
   public usersWithRole: UserBoardRole[] = [];
-  public activeUsers: UserBoardRole[] = [];
-  public inactiveUsers: UserBoardRole[] = [];
   public currentUser: User;
   public currentUserRole: UserRole;
   @Input('boardId') public boardId: string;
