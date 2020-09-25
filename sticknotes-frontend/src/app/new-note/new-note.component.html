@@ -12,7 +12,7 @@
       </mat-error>
     </mat-form-field>
     <label id="colorpicker-label">Note color</label>
-    <mat-radio-group aria-labelledby="colorpicker-label" class="color-picker" formControlName="options">
+    <mat-radio-group aria-labelledby="colorpicker-label" class="color-picker" formControlName="colors">
       <mat-radio-button *ngFor="let item of 4 | rangeLoop, let i = index" [value]="(i + 1).toString()"><span
           class="circle" [style]="'background-color:' + getColorHexValue((i + 1).toString())"></span></mat-radio-button>
     </mat-radio-group>

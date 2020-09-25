@@ -58,7 +58,6 @@ mat-card {
   height: calc(20vw - 52px);
 }
 
-
 .header {
   display: flex;
   justify-content: flex-end;

@@ -4,7 +4,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Vector2 } from '../utility/vector';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { noSpacesValidator } from '../utility/util';
+import { onlySpacesValidator } from '../utility/util';
 import { CreateNoteApiData, Note, NotePopupData } from '../interfaces';
 import { NotesApiService } from '../services/notes-api.service';
 import { State } from '../enums/state.enum';
@@ -17,29 +17,43 @@ import { SharedBoardService } from '../services/shared-board.service';
   templateUrl: './new-note.component.html',
   styleUrls: ['./new-note.component.css']
 })
-export class NewNoteComponent implements OnInit {
+export class NewNoteComponent {
+  // Position of the board in the grid, used in "create" mode
   private position: Vector2;
+  // id of the board for which note is created
   private boardId: string;
-  // this component can be in 2 states: editing the existing note or creating a new one
+  // This component can be in 2 states: editing the existing note or creating a new one
   private mode: State;
-  // this object stores the note the user edits in the moment
+  // This object stores the note the user edits in the moment
   public editableNote: Note = null;
+  // Text displayed in the "submit" button
   public submitButtonText: string;
-  // to disable button when the data is being sent to the server
+  // To disable button when the data is being sent to the server
   public sendingData = false;
 
+  // Form used in .html file, has a note content field and colors field
   public newNoteForm = new FormGroup({
     content: new FormControl('', [
+      // note must not be empty
       Validators.required,
-      noSpacesValidator,
-      Validators.maxLength(128) // just random number
+      // must not be of spaces only
+      onlySpacesValidator,
+      // must not have content longer than 256 characters
+      Validators.maxLength(256) // just random number
     ]),
-    options: new FormControl('1', [
+    // used in a radio buttons group
+    // '1' means to select the first radio button as default
+    colors: new FormControl('1', [
+      // must not be empty
       Validators.required
     ]),
     file: new FormControl({ value: '', disabled: this.editableNote && this.editableNote.image !== null }, [])
   });
 
+  /**
+   * Depending on the state, parses the data passed from the caller component in the appropriate way and
+   * initializes the component's fields
+   */
   constructor(
     @Inject(MAT_DIALOG_DATA) private data: NotePopupData,
     private notesApiService: NotesApiService,
@@ -59,7 +73,7 @@ export class NewNoteComponent implements OnInit {
       // editing existing note
       this.editableNote = data.noteData as Note;
       this.newNoteForm.controls.content.setValue(this.editableNote.content);
-      this.newNoteForm.controls.options.setValue(this.getValueByHex(this.editableNote.color));
+      this.newNoteForm.controls.colors.setValue(this.getValueByHex(this.editableNote.color));
       this.submitButtonText = 'Update';
       this.mode = State.EDIT;
     }
@@ -77,7 +91,7 @@ export class NewNoteComponent implements OnInit {
       this.sendingData = true;
       // construct note payload
       const noteContent = this.newNoteForm.controls.content.value;
-      const noteColor = this.getColorHexValue(this.newNoteForm.controls.options.value);
+      const noteColor = this.getColorHexValue(this.newNoteForm.controls.colors.value);
       const noteData: CreateNoteApiData = {
         x: this.position.x,
         y: this.position.y,
@@ -173,6 +187,9 @@ export class NewNoteComponent implements OnInit {
     }
   }
 
+  /**
+   * Converts radio button value to color hex value
+   */
   public getColorHexValue(val: string): string {
     switch (val) {
       case '1': {
@@ -189,6 +206,9 @@ export class NewNoteComponent implements OnInit {
     }
   }
 
+  /**
+   * Converts color hex value to radio button value
+   */
   public getValueByHex(color: string): string {
     switch (color) {
       case '#ffff99': {

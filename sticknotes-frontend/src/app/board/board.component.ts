@@ -33,6 +33,8 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   private boardGrid: number[][];
   public board: Board;
+
+  // Notes width and height in pixels
   public readonly NOTE_WIDTH = 200;
   public readonly NOTE_HEIGHT = 250;
   private boardRoles: UserBoardRole[] = [];
@@ -63,6 +65,10 @@ export class BoardComponent implements OnInit, OnDestroy {
     private snackbar: MatSnackBar) {
   }
 
+  /**
+   * Gets the route parameter "id" of the board and fetches the board with this id from the server
+   * Creates SidenavBoardData, which is passed to the sidenav to be dispalyed there
+   */
   ngOnInit(): void {
     // load board
     this.activatedRoute.paramMap.subscribe(params => {

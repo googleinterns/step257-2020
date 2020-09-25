@@ -3,6 +3,9 @@
 import { Vector2 } from './vector';
 import { FormControl } from '@angular/forms';
 
+/**
+ * Parses the css translate property of the HTMLElement and gets it X and Y translate values
+ */
 export function getTranslateValues(element: HTMLElement): Vector2 {
   const style = window.getComputedStyle(element);
   const matrix = style.transform || style.webkitTransform;
@@ -27,7 +30,10 @@ export function getTranslateValues(element: HTMLElement): Vector2 {
   }
 }
 
-export function noSpacesValidator(control: FormControl): any {
+/**
+ * Checks if the passed FormControl object has only spaces
+ */
+export function onlySpacesValidator(control: FormControl): any {
   const isWhitespace = (control.value || '').trim().length === 0;
   const isValid = !isWhitespace;
   return isValid ? null : { whitespace: true };
