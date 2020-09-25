@@ -61,9 +61,9 @@ export class BoardEditComponent implements OnInit {
         creator: this.boardData.creator
       }
       // send data to the server
-      this.boardApiService.updateBoard(updatePayload).subscribe(() => {
+      this.boardApiService.updateBoard(updatePayload).subscribe(updatedBoard => {
         // if update successfull, send updated data to the shared board and close dialog
-        this.sharedBoard.updateBoard(updatePayload);
+        this.sharedBoard.updateBoard(updatedBoard);
         this.dialogRef.close();
         this.snackBar.open("Successfully updated!", "Ok", {
           duration: 2000,

@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
 import { getTranslateValues } from '../utility/util';
-import { Note, Board, UserBoardRole, User } from '../interfaces';
+import { Note, Board, UserBoardRole, User, BoardGridLine } from '../interfaces';
 import { NewNoteComponent } from '../new-note/new-note.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -15,7 +15,13 @@ import { BoardUsersApiService } from '../services/board-users-api.service';
 import { UserService } from '../services/user.service';
 import { UserRole } from '../enums/user-role.enum';
 import { SharedBoardService } from '../services/shared-board.service';
-
+import { BoardApiService } from '../services/board-api.service';
+import { BoardGridLineType } from '../enums/board-grid-line-type.enum';
+import { NewGridLineComponent } from '../new-grid-line/new-grid-line.component';
+import { BoardStyles } from '../utility/board-styles';
+/**
+ * Component for displaying grid and notes
+ */
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
@@ -32,22 +38,28 @@ export class BoardComponent implements OnInit, OnDestroy {
   private boardRoles: UserBoardRole[] = [];
   private currentUserRole: UserRole = null;
   private currentUser: User = null;
+  public boardColumnNames: BoardGridLine[] = [];
+  // x coordinates of positions of "add new column" buttons
+  public newColumnNameButtonCoordinates: number[] = null;
+  private columnsDivRef: ElementRef = null;
+  public styler: BoardStyles = null;
+
+  /**
+   * Setter of the columns div reference
+   */
+  @ViewChild("columnsDiv", { read: ElementRef, static: false }) set columnsDivRefSetter(data: any) {
+    this.columnsDivRef = data;
+  };
 
   constructor(private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private notesApiService: NotesApiService,
     private sharedBoard: SharedBoardService,
-    private snackBar: MatSnackBar,
     private boardUsersApiService: BoardUsersApiService,
     private liveUpdatesService: LiveUpdatesService,
-    private userService: UserService) {
-  }
-
-  /**
-   * Stop live updates
-   */
-  ngOnDestroy(): void {
-    this.liveUpdatesService.unregisterBoard();
+    private userService: UserService,
+    private boardApiService: BoardApiService,
+    private snackbar: MatSnackBar) {
   }
 
   /**
@@ -65,6 +77,9 @@ export class BoardComponent implements OnInit, OnDestroy {
         if (board) {
           this.board = board;
           this.updateBoardAbstractGrid();
+          this.updateColumnNames();
+          // init styler
+          this.styler = new BoardStyles(board.cols, board.rows);
           // setup live updates
           if (!this.liveUpdatesService.hasRegisteredBoard()) {
             this.liveUpdatesService.registerBoard(board);
@@ -85,6 +100,14 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Stop live updates and remove board subject
+   */
+  ngOnDestroy(): void {
+    this.liveUpdatesService.unregisterBoard();
+    this.sharedBoard.clear();
+  }
+
+  /**
    * Updates the z-index of the note
    */
   public onNoteDragStart(cdkDragStart: CdkDragStart): void {
@@ -93,7 +116,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Moves a note to a proper position after it was released, resets z-index.
+   * Moves a note to a proper position after it was released, resets z-index
    */
   public onNoteDrop(cdkDragEnd: CdkDragEnd, note: Note): void {
     const elementRef = cdkDragEnd.source.element.nativeElement;
@@ -136,7 +159,30 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Returns the closest available position to the given x and y.
+   * Generates a list of numbers - x coordinates of the plus buttons,
+   * Geenrates a list of column titles from the board entity
+   */
+  public updateColumnNames(): void {
+    // assume each column has a plus button
+    this.boardColumnNames = [];
+    const coordinates = [];
+    for (let i = 0; i < this.board.cols; ++i) {
+      coordinates.push(i);
+    }
+    // next remove buttons that intersect with the taken ranges
+    this.board.gridLines.filter(l => l.type === BoardGridLineType.COLUMN).forEach(l => {
+      this.boardColumnNames.push(l);
+      // remove elements from l.rangeStart to l.rangeEnd
+      const idxOfRangeStart = coordinates.indexOf(l.rangeStart);
+      if (idxOfRangeStart >= 0) {
+        coordinates.splice(idxOfRangeStart, (l.rangeEnd - l.rangeStart));
+      }
+    });
+    this.newColumnNameButtonCoordinates = coordinates;
+  }
+
+  /**
+   * Returns the closest available position to the given x and y
    */
   public getClosestFreeSlot(note: Note, x: number, y: number): Vector2 {
     // get the closest cells indices
@@ -186,20 +232,6 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * generates a correct style to position the note
-   */
-  public getNoteStyle(note: Note): string {
-    return `left:${note.x * this.NOTE_WIDTH}px;top:${note.y * this.NOTE_HEIGHT}px`;
-  }
-
-  /** 
-   * Generates a correct style to position the slot
-   */ 
-  public getSlotStyle(x: number, y: number): string {
-    return `left:${x * this.NOTE_WIDTH}px;top:${y * this.NOTE_HEIGHT}px`;
-  }
-
-  /**
    * Opens new-note component in a dialog and passes the position where the note has to be created.
    * Dialog sends new note to the board data service
    */
@@ -219,8 +251,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Deletes the note passed as the parameter
-   * Sends a DELETE request to the server and removes the note from the list of board notes
+   * Deletes given note. Sends a request to the server and updates shared board
    */
   public deleteNote(note: Note): void {
     const reallyWantToDelete = confirm('Delete this note?');
@@ -235,44 +266,122 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Generates a CSS style string of the board element based on the number of columns and rows in the board
+   * Opens dialog with the NewGridLineComponent inside
    */
-  public getBoardWidth() {
-    return `width:${this.NOTE_WIDTH * this.board.cols}px;height:${this.NOTE_HEIGHT * this.board.rows}px`;
-  }
-  
-  /**
-   * Generates a CSS style string of the board wrapper element based on the number of columns and rows in the board
-   */
-  public getBoardWrapperStyle() {
-    // if board is wider than 100% of the screen or higher than 100%, set fixed width and height
-    return `width: min(100% - 80px, ${this.NOTE_WIDTH * this.board.cols}px); height: min(100% - 100px, ${this.NOTE_HEIGHT * this.board.rows}px)`; 
+  public openNewColumnDialog(rangeStart: number): void {
+    this.dialog.open(NewGridLineComponent, {
+      data: { boardId: this.board.id, rangeStart: rangeStart, type: BoardGridLineType.COLUMN, mode: State.CREATE}
+    });
   }
 
   /**
-   * Converts timestamp sent from the server to the TS Date object
+   * Deletes a column name
    */
-  public getNoteCreationDate(note: Note) {
-    return new Date(Number(note.creationDate));
+  public deleteColumn(column: BoardGridLine): void {
+    // confirm user wants to delete
+    const reallyWantToDelete = confirm("Delete column?");
+    if (reallyWantToDelete) {
+      // make a http delete request, update shared board
+      this.boardApiService.deleteBoardGridLine(column).subscribe(() => {
+        // successfully deleted
+        // update shared board
+        this.sharedBoard.deleteGridLine(column);
+      }, err => {
+        this.snackbar.open("Error occurred when deleting column", "Ok");
+      });
+    }
   }
+
+  /**
+   * Edits the board grid line. Sends an updated line to the server
+   */
+  public editBoardGridLine(updatedLine: BoardGridLine): void {
+    this.boardApiService.editBoardGridLine(updatedLine).subscribe(line => {
+      // success, update shared board
+      this.sharedBoard.updateGridLine(line);
+    }, err => {
+      // some error
+      this.snackbar.open("Error occurred", "Ok");
+    });
+  }
+
+  /**
+   * Opens NewGridLineComponent
+   */
+  public openEditBoardGridLineDialog(updatedLine: BoardGridLine): void {
+    this.dialog.open(NewGridLineComponent, {data: {line: updatedLine, mode: State.EDIT}});
+  }
+
+  /**
+   * Returns shrinked left column, or same column if shrink is impossible
+   */
+  public shrinkedLeft(column: BoardGridLine): BoardGridLine {
+    // copy all fields of column to a new object
+    const newColumn = {...column};
+    const newRangeStart = column.rangeStart + 1;
+    newColumn.rangeStart = newRangeStart;
+    return newColumn;
+  }
+
+  /**
+   * Returns shrinked right column, or same column if shrink is impossible
+   */
+  public shrinkedRight(column: BoardGridLine): BoardGridLine {
+    // copy all fields of column to a new object
+    const newColumn = {...column};
+    const newRangeEnd = column.rangeEnd - 1;
+    newColumn.rangeEnd = newRangeEnd;
+    return newColumn;
+  }
+
+  /**
+   * Expands the left end of the column 1 unit left if possible
+   */
+  public expandedLeft(column: BoardGridLine): BoardGridLine {
+    // copy all fields of column to a new object
+    const newColumn = {...column};
+    const newRangeStart = column.rangeStart - 1;
+    newColumn.rangeStart = newRangeStart;
+    return newColumn;
+  }
+
+  /**
+   * Expands the right end of the column 1 unit right if possible
+   */
+  public expandedRight(column: BoardGridLine): BoardGridLine {
+    // copy all fields of column to a new object
+    const newColumn = {...column};
+    const newRangeEnd = column.rangeEnd + 1;
+    newColumn.rangeEnd = newRangeEnd;
+    return newColumn;
+  }
+
+  public getNoteCreationDate(note: Note) {
+  return new Date(Number(note.creationDate));
+}
+
+  public boardScrolled(event: any) {
+  const scroll = event.srcElement.scrollLeft;
+  this.columnsDivRef.nativeElement.scrollLeft = scroll;
+}
 
   /**
    * Returns true if user can modify note.
    * Returns false otherwise.
    */
   public canModifyNote(note: Note) {
-    if (this.currentUser && this.boardRoles) {
-      if (!this.currentUserRole) {
-        // save user's role if it is not saved yet
-        this.currentUserRole = this.boardRoles.find(role => role.user.id === this.currentUser.id).role;
-      }
-      // if user is owner or admin, return true
-      if (this.currentUserRole === 'ADMIN' || this.currentUserRole === 'OWNER') {
-        return true;
-      }
-      // if user is author of the note also return true
-      return this.currentUser.id === note.creator.id;
+  if (this.currentUser && this.boardRoles) {
+    if (!this.currentUserRole) {
+      // save user's role if it is not saved yet
+      this.currentUserRole = this.boardRoles.find(role => role.user.id === this.currentUser.id).role;
     }
-    return false;
+    // if user is owner or admin, return true
+    if (this.currentUserRole === 'ADMIN' || this.currentUserRole === 'OWNER') {
+      return true;
+    }
+    // if user is author of the note also return true
+    return this.currentUser.id === note.creator.id;
   }
+  return false;
+}
 }

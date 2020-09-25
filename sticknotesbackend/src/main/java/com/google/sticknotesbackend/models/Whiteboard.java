@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class Whiteboard implements Serializable {
   // used by load group in order to not load notes
   public static class WithoutNotesAndCreator {}
+  public static class WithoutGridLines {}
 
   public @Id Long id;
   public Long creationDate; // it's a timestamp
@@ -22,6 +23,7 @@ public class Whiteboard implements Serializable {
   public int cols;
   public String backgroundImg;
   public @Load(unless=WithoutNotesAndCreator.class) ArrayList<Ref<Note>> notes = new ArrayList<Ref<Note>>();
+  public @Load(unless=WithoutGridLines.class) ArrayList<Ref<BoardGridLine>> gridLines = new ArrayList<Ref<BoardGridLine>>();
 
   public Whiteboard() {
     this.rows = -1;

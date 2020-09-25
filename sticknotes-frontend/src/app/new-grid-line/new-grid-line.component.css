@@ -1,0 +1,12 @@
+.new-line-form {
+  width: 200px;
+  height: 160px;
+}
+
+.new-line-form form {
+  margin-bottom: 10px;
+}
+
+mat-form-field {
+  width: 100%;
+}

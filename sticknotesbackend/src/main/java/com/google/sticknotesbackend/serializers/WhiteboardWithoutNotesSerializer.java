@@ -3,12 +3,16 @@
  */
 package com.google.sticknotesbackend.serializers;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.Whiteboard;
+import com.googlecode.objectify.Ref;
+import com.google.gson.Gson;
+
 import java.lang.reflect.Type;
 
 /**
@@ -29,6 +33,15 @@ public class WhiteboardWithoutNotesSerializer implements JsonSerializer<Whiteboa
     board.addProperty("rows", src.rows);
     board.addProperty("cols", src.cols);
     board.addProperty("backgroundImg", src.backgroundImg);
+
+    if (src.gridLines != null) {
+      // create json array for grid lines
+      JsonArray linesArr = new JsonArray();
+      for (Ref<BoardGridLine> lineRef: src.gridLines) {
+        linesArr.add(new Gson().toJsonTree(lineRef.get()));
+      }
+      board.add("gridLines", linesArr);
+    }
     return board;
   }
 }

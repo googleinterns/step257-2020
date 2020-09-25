@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.googlecode.objectify.Ref;
@@ -49,6 +50,15 @@ public class WhiteboardSerializer implements JsonSerializer<Whiteboard> {
     }
     // add array as "notes" property
     board.add("notes", notesArray);
+    // add column/rows names
+    if (src.gridLines != null) {
+      // create json array for grid lines
+      JsonArray linesArr = new JsonArray();
+      for (Ref<BoardGridLine> lineRef: src.gridLines) {
+        linesArr.add(gson.toJsonTree(lineRef.get()));
+      }
+      board.add("gridLines", linesArr);
+    }
     return board;
   }
 }

@@ -1,40 +1,93 @@
 <div class="flex-container" *ngIf="board">
   <h3>{{board.title}}</h3>
-  <div class="board-wrapper" [style]="getBoardWrapperStyle()">
-    <div class="board" [style]="getBoardWidth()">
-      <div *ngFor="let y of board.rows | rangeLoop">
-        <div *ngFor="let x of board.cols | rangeLoop" class="new-note-container" [style]="getSlotStyle(x, y)">
-          <button mat-icon-button aria-label="Create new note" (click)="openNewNoteDialog(x, y)">
-            <mat-icon color="primary">add</mat-icon>
+  <div class="rc-wrapper" [style]="styler.getRCWrapperStyle()">
+    <div #columnsDiv class="horizontal-scroll" [style]="styler.getBoardWrapperWidth()">
+      <!-- Scroll container for the visible width of board -->
+      <div class="c-wrapper" [style]="styler.getBoardWidth()">
+        <!-- Full width of board-->
+        <div class="column-name mat-elevation-z6" *ngFor="let column of boardColumnNames"
+          [style]="styler.getColumnDivStyle(column)">
+          <div class="cn-flex-container">
+            <h4 class="mat-h4">{{column.title}}</h4>
+            <!-- Pass column data to menu -->
+            <button class="note-button" mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{column: column}">
+              <mat-icon class="note-icon">more_vert</mat-icon>
+            </button>
+          </div>
+        </div>
+        <div class="column-name mat-elevation-z6" *ngFor="let coord of newColumnNameButtonCoordinates" [style]="styler.getPlusButtonStyle(coord)">
+          <button class="note-button" mat-icon-button (click)="openNewColumnDialog(coord)">
+            <mat-icon class="note-icon">add</mat-icon>
           </button>
         </div>
       </div>
     </div>
-    <div *ngFor="let note of board.notes; let i = index">
-      <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)" (cdkDragEnded)="onNoteDrop($event, note)"
-        cdkDrag [cdkDragDisabled]="!canModifyNote(note)" class="mat-card-wrapper" [style]="getNoteStyle(note)">
-        <mat-card [style]="'background-color:' + note.color">
-          <mat-card-content>
-            <div class="card-header">
-              <div class="card-header-buttons-group">
-                <button *ngIf="canModifyNote(note)" mat-icon-button class="note-button" (click)="deleteNote(note);">
-                  <mat-icon class="note-icon">delete</mat-icon>
-                </button>
-                <button *ngIf="canModifyNote(note)" mat-icon-button class="note-button" (click)="openEditNoteDialog(note)">
-                  <mat-icon class="note-icon">edit</mat-icon>
-                </button>
+    <div #boardWrapper class="board-wrapper" [style]="styler.getBoardWrapperStyle()" (scroll)="boardScrolled($event)">
+      <div class="board" [style]="styler.getBoardStyle()">
+        <div *ngFor="let y of board.rows | rangeLoop">
+          <div *ngFor="let x of board.cols | rangeLoop" class="new-note-container" [style]="styler.getSlotStyle(x, y)">
+            <button mat-icon-button aria-label="Create new note" (click)="openNewNoteDialog(x, y)">
+              <mat-icon color="primary">add</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div *ngFor="let note of board.notes; let i = index">
+        <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)"
+          (cdkDragEnded)="onNoteDrop($event, note)" cdkDrag [cdkDragDisabled]="!canModifyNote(note)"
+          class="mat-card-wrapper" [style]="styler.getNoteStyle(note)">
+          <mat-card [style]="'background-color:' + note.color">
+            <mat-card-content>
+              <div class="card-header">
+                <div class="card-header-buttons-group">
+                  <button *ngIf="canModifyNote(note)" mat-icon-button class="note-button" (click)="deleteNote(note);">
+                    <mat-icon class="note-icon">delete</mat-icon>
+                  </button>
+                  <button *ngIf="canModifyNote(note)" mat-icon-button class="note-button"
+                    (click)="openEditNoteDialog(note)">
+                    <mat-icon class="note-icon">edit</mat-icon>
+                  </button>
+                </div>
+                <mat-icon *ngIf="canModifyNote(note)" cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
               </div>
-              <mat-icon *ngIf="canModifyNote(note)" cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
-            </div>
-            <p>{{note.creator.email}}</p>
-            <!-- noteContent pipe applies translation if it is enabled, otherwise returns original note's content -->
-            <p>{{note | noteContent}}</p>
-            <img class="note-image" *ngIf="note.image" [src]="note.image" alt="Image attached to the note">
-            <!-- amCalendar is a moment js pipe used to make date human readable -->
-            <p>{{getNoteCreationDate(note) | amCalendar}}</p>
-          </mat-card-content>
-        </mat-card>
+              <p>{{note.creator.email}}</p>
+              <!-- noteContent pipe applies translation if it is enabled, otherwise returns original note's content -->
+              <p>{{note | noteContent}}</p>
+              <img class="note-image" *ngIf="note.image" [src]="note.image" alt="Image attached to the note">
+              <p>{{getNoteCreationDate(note) | amCalendar}}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
       </div>
     </div>
   </div>
 </div>
+<!-- Menu of column header element -->
+<mat-menu #menu="matMenu">
+  <ng-template matMenuContent let-column="column">
+  <button mat-menu-item (click)="editBoardGridLine(expandedLeft(column))">
+    <mat-icon>first_page</mat-icon>
+    <span>Expand left</span>
+  </button>
+  <button mat-menu-item (click)="editBoardGridLine(expandedRight(column))">
+    <mat-icon>last_page</mat-icon>
+    <span>Expand right</span>
+  </button>
+  <button mat-menu-item (click)="editBoardGridLine(shrinkedLeft(column))">
+    <mat-icon>chevron_right</mat-icon>
+    <span>Shrink left</span>
+  </button>
+  <button mat-menu-item (click)="editBoardGridLine(shrinkedRight(column))">
+    <mat-icon>chevron_left</mat-icon>
+    <span>Shrink right</span>
+  </button>
+  <button mat-menu-item (click)="openEditBoardGridLineDialog(column)">
+    <mat-icon>edit</mat-icon>
+    <span>Edit</span>
+  </button>
+  <button mat-menu-item (click)="deleteColumn(column)">
+    <mat-icon>delete</mat-icon>
+    <span>Delete</span>
+  </button>
+</ng-template>
+</mat-menu>

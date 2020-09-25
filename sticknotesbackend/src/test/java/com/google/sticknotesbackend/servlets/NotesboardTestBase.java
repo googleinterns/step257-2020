@@ -10,7 +10,9 @@ import com.google.cloud.NoCredentials;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
+import com.google.sticknotesbackend.enums.BoardGridLineType;
 import com.google.sticknotesbackend.enums.Role;
+import com.google.sticknotesbackend.models.BoardGridLine;
 import com.google.sticknotesbackend.models.Note;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
@@ -69,6 +71,7 @@ public abstract class NotesboardTestBase {
     ObjectifyService.register(Note.class);
     ObjectifyService.register(User.class);
     ObjectifyService.register(UserBoardRole.class);
+    ObjectifyService.register(BoardGridLine.class);
   }
 
   /**
@@ -170,6 +173,20 @@ public abstract class NotesboardTestBase {
     // save the role
     userBoardRole.id = ofy().save().entity(userBoardRole).now().getId();
     return userBoardRole;
+  }
+
+  /**
+   * Creates a mock boardgridline and stores it in the datastore
+   */
+  protected BoardGridLine createBoardGridLine(Long boardId) {
+    BoardGridLine line = new BoardGridLine();
+    line.type = BoardGridLineType.COLUMN;
+    line.boardId = boardId;
+    line.rangeStart = 0;
+    line.rangeEnd = 2;
+    line.title = "title";
+    line.id = ofy().save().entity(line).now().getId();
+    return line;
   }
 
   /**

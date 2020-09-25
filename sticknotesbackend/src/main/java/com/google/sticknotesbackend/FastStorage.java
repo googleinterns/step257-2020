@@ -1,44 +1,24 @@
+/**
+ * This class manages UserBoardRole, Notes and Board objects in memcache.
+ */
 package com.google.sticknotesbackend;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.sticknotesbackend.models.User;
 import com.google.sticknotesbackend.models.UserBoardRole;
 import com.google.sticknotesbackend.models.Whiteboard;
 import com.google.sticknotesbackend.models.Note;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.Ref;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import javax.cache.Cache;
-import javax.cache.CacheException;
-import javax.cache.CacheFactory;
-import javax.cache.CacheManager;
+
 
 /**
  * This class provides a few methods that speed up datastore read operations by using Memcache.
  * Basically this is an additional layer between code and datastore that uses cache.
  */
-public class FastStorage {
-  private static Cache cacheInstance;
-  private static Cache getCacheInstance() {
-    if (cacheInstance == null) {
-      try {
-        CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
-        // set cache expiration to one hour
-        Map<Object, Object> properties = new HashMap<>();
-        properties.put(GCacheFactory.EXPIRATION_DELTA, TimeUnit.HOURS.toSeconds(1));
-        cacheInstance = cacheFactory.createCache(properties);
-      } catch (CacheException e) {
-        return null;
-      }
-    }
-    return cacheInstance;
-  }
-
+public class FastStorage extends LocalCacheManager{
   /**
    * Updates the board in datastore.
    * Updates the "lastUpdated" field.
@@ -117,6 +97,11 @@ public class FastStorage {
     ofy().delete().entity(board).now();
   }
 
+  /**
+   * @param noteId - note to retrieve
+   * Returns a Note object for given note id.
+   * Tries to get value from cache, if it is empty gets value from datastore and updates cache
+   */
   public static Note getNote(Long noteId){
     Cache cache = getCacheInstance();
     Note note = (Note)cache.get(Long.toString(noteId));
@@ -127,6 +112,12 @@ public class FastStorage {
     return note;
   }
 
+  /**
+   * @param note - note to update
+   * Updates the "lastUpdated" field.
+   * Updates the note in datastore.
+   * Stores the note in cache
+   */
   public static void updateNote(Note note){
     note.lastUpdated = System.currentTimeMillis();
     ofy().save().entity(note).now();
@@ -135,6 +126,10 @@ public class FastStorage {
     cache.put(Long.toString(note.id), note);
   }
 
+  /**
+   * Removes note from cache and from datastore
+   * @param note - note to remove
+   */
   public static void removeNote(Note note){
     Cache cache = getCacheInstance();
     String cacheKey = Long.toString(note.id);
