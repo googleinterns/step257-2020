@@ -94,10 +94,10 @@ export class UserListComponent implements OnInit, OnDestroy {
    */
   private compUsers(activeIdSet){
     return function(a, b){
-      if(a.role === UserRole.OWNER || (activeIdSet.has(+a.id) && !activeIdSet.has(Number(b.id)))){
+      if(a.role === UserRole.OWNER || (activeIdSet.has(Number(a.id)) && !activeIdSet.has(Number(b.id)))){
         return -1;
       }
-      else if(b.role === UserRole.OWNER || (activeIdSet.has(+b.id) && !activeIdSet.has(Number(a.id)))){
+      else if(b.role === UserRole.OWNER || (activeIdSet.has(Number(b.id)) && !activeIdSet.has(Number(a.id)))){
         return 1;
       }
       return 0;
