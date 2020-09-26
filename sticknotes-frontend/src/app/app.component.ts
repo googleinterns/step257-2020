@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Component } from '@angular/core';
 
 @Component({

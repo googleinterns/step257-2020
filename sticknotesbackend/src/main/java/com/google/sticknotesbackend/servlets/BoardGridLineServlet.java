@@ -1,3 +1,6 @@
+/**
+ * Copyright 2020 Google LLC
+ */
 package com.google.sticknotesbackend.servlets;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
@@ -50,7 +53,7 @@ public class BoardGridLineServlet extends AppAbstractServlet {
       return;
     }
     // load board and check that new line doesn't overlap with any other line
-    Whiteboard board = FastStorage.getWhiteboardLite(line.boardId);
+    Whiteboard board = ofy().load().type(Whiteboard.class).id(line.boardId).now();
     for(int i = 0; i < board.gridLines.size(); i++){
       // get line from reference
       BoardGridLine l = board.gridLines.get(i).get();
@@ -95,9 +98,14 @@ public class BoardGridLineServlet extends AppAbstractServlet {
       return;
     }
     // load board
-    Whiteboard board = FastStorage.getWhiteboardLite(lineToDelete.boardId);
+    Whiteboard board = ofy().load().type(Whiteboard.class).id(lineToDelete.boardId).now();
     // remove line from board
-    board.gridLines.removeIf(lineRef -> lineRef.get().id.equals(lineToDelete.id)); 
+    board.gridLines.removeIf(lineRef -> {
+      if (lineRef.get() != null) {
+        return lineRef.get().id.equals(lineToDelete.id);
+      }
+      return false;
+    });
     FastStorage.updateBoard(board);
     // remove line itself
     ofy().delete().entity(lineToDelete).now();

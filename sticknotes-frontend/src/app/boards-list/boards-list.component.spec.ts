@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BoardsListComponent } from './boards-list.component';

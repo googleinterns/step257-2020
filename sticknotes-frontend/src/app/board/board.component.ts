@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Vector2 } from '../utility/vector';
@@ -47,11 +49,12 @@ export class BoardComponent implements OnInit, OnDestroy {
   /**
    * Setter of the columns div reference
    */
-  @ViewChild("columnsDiv", { read: ElementRef, static: false }) set columnsDivRefSetter(data: any) {
+  @ViewChild('columnsDiv', { read: ElementRef, static: false }) set columnsDivRefSetter(data: any) {
     this.columnsDivRef = data;
-  };
+  }
 
-  constructor(private dialog: MatDialog,
+  constructor(
+    private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private notesApiService: NotesApiService,
     private sharedBoard: SharedBoardService,
@@ -279,7 +282,7 @@ export class BoardComponent implements OnInit, OnDestroy {
    */
   public deleteColumn(column: BoardGridLine): void {
     // confirm user wants to delete
-    const reallyWantToDelete = confirm("Delete column?");
+    const reallyWantToDelete = confirm('Delete column?');
     if (reallyWantToDelete) {
       // make a http delete request, update shared board
       this.boardApiService.deleteBoardGridLine(column).subscribe(() => {
@@ -287,7 +290,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         // update shared board
         this.sharedBoard.deleteGridLine(column);
       }, err => {
-        this.snackbar.open("Error occurred when deleting column", "Ok");
+        this.snackbar.open('Error occurred when deleting column', 'Ok');
       });
     }
   }
@@ -301,7 +304,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       this.sharedBoard.updateGridLine(line);
     }, err => {
       // some error
-      this.snackbar.open("Error occurred", "Ok");
+      this.snackbar.open('Error occurred', 'Ok');
     });
   }
 
@@ -356,32 +359,35 @@ export class BoardComponent implements OnInit, OnDestroy {
     return newColumn;
   }
 
-  public getNoteCreationDate(note: Note) {
-  return new Date(Number(note.creationDate));
-}
+  public getNoteCreationDate(note: Note): Date {
+    return new Date(Number(note.creationDate));
+  }
 
-  public boardScrolled(event: any) {
-  const scroll = event.srcElement.scrollLeft;
-  this.columnsDivRef.nativeElement.scrollLeft = scroll;
-}
+  /**
+   * Syncronizes scroll values of the board and board header
+   */
+  public boardScrolled(event: any): void {
+    const scroll = event.srcElement.scrollLeft;
+    this.columnsDivRef.nativeElement.scrollLeft = scroll;
+  }
 
   /**
    * Returns true if user can modify note.
    * Returns false otherwise.
    */
-  public canModifyNote(note: Note) {
-  if (this.currentUser && this.boardRoles) {
-    if (!this.currentUserRole) {
-      // save user's role if it is not saved yet
-      this.currentUserRole = this.boardRoles.find(role => role.user.id === this.currentUser.id).role;
+  public canModifyNote(note: Note): boolean {
+    if (this.currentUser && this.boardRoles) {
+      if (!this.currentUserRole) {
+        // save user's role if it is not saved yet
+        this.currentUserRole = this.boardRoles.find(role => role.user.id === this.currentUser.id).role;
+      }
+      // if user is owner or admin, return true
+      if (this.currentUserRole === 'ADMIN' || this.currentUserRole === 'OWNER') {
+        return true;
+      }
+      // if user is author of the note also return true
+      return this.currentUser.id === note.creator.id;
     }
-    // if user is owner or admin, return true
-    if (this.currentUserRole === 'ADMIN' || this.currentUserRole === 'OWNER') {
-      return true;
-    }
-    // if user is author of the note also return true
-    return this.currentUser.id === note.creator.id;
+    return false;
   }
-  return false;
-}
 }

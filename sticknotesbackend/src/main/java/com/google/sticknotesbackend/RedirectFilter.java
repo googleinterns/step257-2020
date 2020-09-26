@@ -1,3 +1,6 @@
+/**
+ * Copyright 2020 Google LLC
+ */
 package com.google.sticknotesbackend;
 
 import java.io.IOException;

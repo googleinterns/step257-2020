@@ -1,6 +1,8 @@
+// Copyright 2020 Google LLC
+
 import { Injectable } from '@angular/core';
 import { CreateNoteApiData, Note, NoteUpdateRequest, NotesUpdatesResponseData } from '../interfaces';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -31,7 +33,7 @@ export class NotesApiService {
       content: note.content,
       image: note.image,
       id: note.id
-    }
+    };
     return this.http.post<Note>('api/edit-note/', updateNoteData);
   }
 

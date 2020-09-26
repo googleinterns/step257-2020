@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 /**
  * Helper class to store a cartesian coordinate point.
  */

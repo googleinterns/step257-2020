@@ -1,4 +1,5 @@
-<div class="flex-container" *ngIf="board">
+<!-- Copyright 2020 Google LLC -->
+<div class="flex-container" *ngIf="board && styler">
   <h3>{{board.title}}</h3>
   <div class="rc-wrapper" [style]="styler.getRCWrapperStyle()">
     <div #columnsDiv class="horizontal-scroll" [style]="styler.getBoardWrapperWidth()">
@@ -31,32 +32,32 @@
             </button>
           </div>
         </div>
-      </div>
-      <div *ngFor="let note of board.notes; let i = index">
-        <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)"
-          (cdkDragEnded)="onNoteDrop($event, note)" cdkDrag [cdkDragDisabled]="!canModifyNote(note)"
-          class="mat-card-wrapper" [style]="styler.getNoteStyle(note)">
-          <mat-card [style]="'background-color:' + note.color">
-            <mat-card-content>
-              <div class="card-header">
-                <div class="card-header-buttons-group">
-                  <button *ngIf="canModifyNote(note)" mat-icon-button class="note-button" (click)="deleteNote(note);">
-                    <mat-icon class="note-icon">delete</mat-icon>
-                  </button>
-                  <button *ngIf="canModifyNote(note)" mat-icon-button class="note-button"
-                    (click)="openEditNoteDialog(note)">
-                    <mat-icon class="note-icon">edit</mat-icon>
-                  </button>
+        <div *ngFor="let note of board.notes; let i = index">
+          <div cdkDragBoundary=".board" (cdkDragStarted)="onNoteDragStart($event)"
+            (cdkDragEnded)="onNoteDrop($event, note)" cdkDrag [cdkDragDisabled]="!canModifyNote(note)"
+            class="mat-card-wrapper" [style]="styler.getNoteStyle(note)">
+            <mat-card [style]="'background-color:' + note.color">
+              <mat-card-content>
+                <div class="card-header">
+                  <div class="card-header-buttons-group">
+                    <button *ngIf="canModifyNote(note)" mat-icon-button class="note-button" (click)="deleteNote(note);">
+                      <mat-icon class="note-icon">delete</mat-icon>
+                    </button>
+                    <button *ngIf="canModifyNote(note)" mat-icon-button class="note-button"
+                      (click)="openEditNoteDialog(note)">
+                      <mat-icon class="note-icon">edit</mat-icon>
+                    </button>
+                  </div>
+                  <mat-icon *ngIf="canModifyNote(note)" cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
                 </div>
-                <mat-icon *ngIf="canModifyNote(note)" cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
-              </div>
-              <p>{{note.creator.email}}</p>
-              <!-- noteContent pipe applies translation if it is enabled, otherwise returns original note's content -->
-              <p>{{note | noteContent}}</p>
-              <img class="note-image" *ngIf="note.image" [src]="note.image" alt="Image attached to the note">
-              <p>{{getNoteCreationDate(note) | amCalendar}}</p>
-            </mat-card-content>
-          </mat-card>
+                <p>{{note.creator.email}}</p>
+                <!-- noteContent pipe applies translation if it is enabled, otherwise returns original note's content -->
+                <p>{{note | noteContent}}</p>
+                <img class="note-image" *ngIf="note.image" [src]="note.image" alt="Image attached to the note">
+                <p>{{getNoteCreationDate(note) | amCalendar}}</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
         </div>
       </div>
     </div>
