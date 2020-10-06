@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NewBoardComponent } from '../new-board/new-board.component';
@@ -16,7 +18,8 @@ export class BoardsListComponent implements OnInit {
   public logoutUrl: string;
   private currentUserId: string;
 
-  constructor(private dialog: MatDialog,
+  constructor(
+    private dialog: MatDialog,
     private boardApiService: BoardApiService,
     private userService: UserService,
     private snackbar: MatSnackBar) { }
@@ -46,14 +49,14 @@ export class BoardsListComponent implements OnInit {
   /**
    * Creates a link to the board
    */
-  public getBoardLink(boardPreview: BoardPreview) {
+  public getBoardLink(boardPreview: BoardPreview): string {
     return `/board/${boardPreview.id}`;
   }
 
   /**
    * Sends a request to delete a board
    */
-  public deleteBoard(event: any, boardId: string, boardTitle: string) {
+  public deleteBoard(event: any, boardId: string, boardTitle: string): void {
     // stop click event from opening the board
     event.stopPropagation();
     // ask user if they really want to delete a note
@@ -75,14 +78,14 @@ export class BoardsListComponent implements OnInit {
   /**
    * Returns true if currently logged in user can delete given board
    */
-  public canDeleteBoard(boardPreview: BoardPreview) {
+  public canDeleteBoard(boardPreview: BoardPreview): boolean {
     return boardPreview.ownerId === this.currentUserId;
   }
 
-  /** 
-   * Logs user out of the app 
+  /**
+   * Logs user out of the app
    */
-  public logout() {
+  public logout(): void {
     if (this.logoutUrl) {
       window.location.href = this.logoutUrl;
     }

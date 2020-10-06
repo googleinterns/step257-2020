@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
@@ -11,9 +13,9 @@ export class TranslateService {
   // note.id mapped to note translation
   private notesTranslation = {};
   // another hashtable that stores the original version of notes content
-  private notesOriginalContent = {}
+  private notesOriginalContent = {};
   // current language of notes in notesTranslation map
-  private currentTranslation = "original";
+  private currentTranslation = 'original';
   public notesTargetLanguage = new BehaviorSubject<string>(null);
 
   /**
@@ -21,14 +23,14 @@ export class TranslateService {
    * To add more language, set value and viewValue of the language
    */
   public translateLanguages = [
-    { value: "original", viewValue: "Original language" },
-    { value: "en", viewValue: "English" },
-    { value: "hr", viewValue: "Hrvatski" },
-    { value: "pl", viewValue: "Polski" },
-    { value: "ro", viewValue: "Română" },
-    { value: "te", viewValue: "తెలుగు" },
-    { value: "uk", viewValue: "Українська" },
-    { value: "zh", viewValue: "中文" },
+    { value: 'original', viewValue: 'Original language' },
+    { value: 'en', viewValue: 'English' },
+    { value: 'hr', viewValue: 'Hrvatski' },
+    { value: 'pl', viewValue: 'Polski' },
+    { value: 'ro', viewValue: 'Română' },
+    { value: 'te', viewValue: 'తెలుగు' },
+    { value: 'uk', viewValue: 'Українська' },
+    { value: 'zh', viewValue: '中文' },
   ];
 
   constructor(private http: HttpClient, private sharedBoard: SharedBoardService) {
@@ -49,7 +51,7 @@ export class TranslateService {
           // update original note content map
           this.notesOriginalContent[note.id] = note.content;
         }
-        // if new translation was requested, translate note 
+        // if new translation was requested, translate note
         else if (this.translationEnabled && this.currentTranslation !== this.notesTargetLanguage.value) {
           notesToTranslate.push(note);
         }
@@ -76,7 +78,7 @@ export class TranslateService {
    * Returns translation for note with given id.
    * If no translation enabled, returns note's original content
    */
-  public getNoteTranslation(noteId: string) {
+  public getNoteTranslation(noteId: string): string {
     if (this.translationEnabled) {
       return this.notesTranslation[noteId];
     }
@@ -91,14 +93,14 @@ export class TranslateService {
     const payload = {
       texts: arrOfStrings,
       targetLanguage: targetLanguage
-    }
+    };
     return this.http.post<{ result: string[] }>('api/translate/', payload);
   }
 
   /**
    * Returns true if translation is enabled, false otherwise
    */
-  get translationEnabled() {
-    return (this.notesTargetLanguage.value !== null && this.notesTargetLanguage.value !== "original");
+  get translationEnabled(): boolean {
+    return (this.notesTargetLanguage.value !== null && this.notesTargetLanguage.value !== 'original');
   }
 }

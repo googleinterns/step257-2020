@@ -1,4 +1,6 @@
 /** 
+ * Copyright 2020 Google LLC
+ * 
  * ActiveUsersManager is used to access an mange memcache connected with active users lists.
 */
 

@@ -1,4 +1,6 @@
 /**
+ * Copyright 2020 Google LLC
+ * 
  * This class manages UserBoardRole, Notes and Board objects in memcache.
  */
 package com.google.sticknotesbackend;
@@ -23,6 +25,8 @@ public class FastStorage extends LocalCacheManager{
    * Updates the board in datastore.
    * Updates the "lastUpdated" field.
    * Stores the board in cache
+   * !!!!! ALWAYS PUT FULL BOARD HERE !!!! 
+   * !!!!! NEVER PASS BOARD LOADED WITH LOAD GROUP WITHOUT NOTES OR BOARD LINES HERE !!!!!
    */
   public static void updateBoard(Whiteboard board) {
     board.lastUpdated = System.currentTimeMillis();

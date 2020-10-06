@@ -1,3 +1,6 @@
+/**
+ * Copyright 2020 Google LLC
+ */
 package com.google.sticknotesbackend.servlets;
 
 import com.google.cloud.storage.BlobId;
@@ -5,6 +8,8 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.gson.JsonObject;
+import com.google.sticknotesbackend.enums.EnvironmentVariable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -12,7 +17,6 @@ import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -23,11 +27,15 @@ import org.apache.commons.io.IOUtils;
  */
 @WebServlet("api/file-upload/")
 @MultipartConfig
-public class ImageUploadServlet extends HttpServlet {
+public class ImageUploadServlet extends AppAbstractServlet {
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String projectId = "notesboard";
-    String bucketName = "notesboard-file-uploads";
+    String projectId = System.getenv(EnvironmentVariable.PROJECT_ID.name);
+    String bucketName = System.getenv(EnvironmentVariable.GCS_BUCKET_NAME.name);
+    if (projectId == null || bucketName == null) {
+      badRequest("PROJECT_ID and GCS_BUCKET_NAME env vars must be set", response);
+      return;
+    }
     // get the uploaded file
     Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
     String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString(); // MSIE fix.

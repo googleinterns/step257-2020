@@ -1,3 +1,5 @@
+// Copyright 2020 Google LLC
+
 /**
  * This service allows to:
  * - get authentication status
@@ -30,9 +32,9 @@ export class UserService {
   }
 
   /**
-   * If user was not fetched yet function fetches the user, if fetching was successful 
+   * If user was not fetched yet function fetches the user, if fetching was successful
    * returns true, else it returns false. If user is already available in the userSubject
-   * function returns current value of au
+   * function returns current value of authenticated subject
    */
   isAuthenticated(): Observable<boolean> {
     if (this.userSubject.value == null) {
@@ -45,6 +47,7 @@ export class UserService {
     }
     return this.authenticated.asObservable();
   }
+
   /**
    * returns observable of user or fetches the user if user was not fetched yet
    */
@@ -54,18 +57,21 @@ export class UserService {
     }
     return this.userSubject.asObservable();
   }
+
   /**
    * removes user by pushing null value to the userSubject
    */
   removeUser(): void {
     this.userSubject.next(null);
   }
+
   /**
    * fetches login url from server
    */
   getLoginUrl(): Observable<{ url: string }> {
     return this.http.get<{ url: string }>('api/login-url/');
   }
+
   /**
    * fetches logout url from server
    */
